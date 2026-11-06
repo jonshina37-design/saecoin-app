@@ -1,815 +1,929 @@
 SAECOIN — BACKEND SPECIFICATION
 
-Version: 1.0
+Version: 1.1
 Project: SAECOIN App
 Ticker: SAC (Provisional)
-Status: Draft
-Document Type: Backend Technical Specification
+Architecture: Centralized Client–Server
+API: REST / JSON
+Status: Draft — Updated for Approved Requirements
 
 ---
 
 1. PURPOSE
 
-This document defines the backend requirements, responsibilities, API behavior, business logic, security controls, and operational requirements for the SAECOIN App.
+This document defines the backend requirements and processing rules for the SAECOIN mobile application.
 
-The backend is responsible for managing:
+The backend is the authoritative system responsible for:
 
-- User accounts.
-- Authentication and authorization.
-- Community verification status.
-- Mining sessions.
-- Mining eligibility.
-- Mining Power.
-- Reward calculations.
-- Reward ledger.
-- Referral relationships.
-- Account validity.
-- Account inactivity and cancellation.
+- User registration and authentication.
+- Account status management.
+- Mining session scheduling and activation.
+- Session validation.
+- Regular Mining Reward calculation.
+- Referral Bonus calculation.
+- Referral group management.
+- Balance management.
+- Ledger transactions.
+- KYC processing.
 - Notifications.
-- Administrative operations.
+- Admin operations.
+- Audit logging.
+- Backup and recovery.
+- Public ledger publication.
+- Explorer data services.
 
-The backend must remain the authoritative source of truth for all account, mining, and reward-related operations.
+The mobile application must never independently approve or create authoritative rewards, balances or account status changes.
 
-2. PROJECT SCOPE
+2. BACKEND ARCHITECTURE
 
-This specification covers the SAECOIN App backend only.
-
-It does not define or implement:
-
-- Blockchain full nodes.
-- Proof-of-Work consensus.
-- CPU mining.
-- GPU mining.
-- UTXO processing.
-- On-chain transactions.
-- Blockchain wallet infrastructure.
-
-App Mining is a virtual reward distribution mechanism.
-
-No real blockchain mining occurs through the mobile application.
-
-The future SAECOIN blockchain will be developed separately.
-
-3. BACKEND ARCHITECTURE
-
-The backend should use a modular architecture.
+The backend will follow a modular architecture.
 
 SAECOIN BACKEND
 │
 ├── API Layer
-│   ├── Authentication API
-│   ├── User API
-│   ├── Mining API
-│   ├── Reward API
-│   ├── Referral API
-│   ├── Community API
-│   ├── History API
-│   └── Admin API
 │
-├── Business Logic Layer
-│   ├── Authentication Service
-│   ├── User Service
-│   ├── Mining Service
-│   ├── Reward Service
-│   ├── Referral Service
-│   ├── Community Service
-│   ├── Account Validity Service
-│   └── Notification Service
-│
-├── Background Processing
-│   ├── Session Processor
-│   ├── Reward Processor
-│   ├── Inactivity Checker
-│   ├── Referral Processor
-│   └── Notification Processor
-│
-├── Data Access Layer
-│
-└── Database
+├── Authentication Module
+├── User Account Module
+├── Mining Session Module
+├── Reward Engine
+├── Referral Engine
+├── Balance Service
+├── Ledger Service
+├── KYC Service
+├── Notification Service
+├── Admin Service
+├── Audit Service
+├── Backup Service
+└── Public Ledger Publisher
+       │
+       ▼
+   Database Layer
 
-Each module must have a clearly defined responsibility.
+These are logical modules. They may initially run as one backend application with clearly separated responsibilities.
 
-Business rules must not be implemented exclusively inside the mobile application.
+The architecture must not introduce unnecessary microservices during the initial implementation.
 
-4. TECHNOLOGY REQUIREMENTS
+3. TECHNOLOGY REQUIREMENTS
 
-The backend must support:
+The backend technology stack must be finalized before implementation.
 
-- Self-hosted deployment.
-- REST API communication.
-- Secure authentication.
-- Relational data integrity.
-- Background processing.
+The implementation must support:
+
+- Secure HTTPS communication.
+- REST APIs.
+- JSON request and response formats.
+- A relational database.
 - Database transactions.
-- Automated testing.
-- Logging and monitoring.
-- Backup and recovery.
+- Background processing.
+- Scheduled jobs.
+- Secure password hashing.
+- Role-based access control.
+- Structured application logging.
+- Automated backups.
+- Monitoring and alerting.
 
-The backend framework, programming language, database engine, and authentication implementation remain subject to final technology selection.
+The exact backend language, framework, database engine, hosting environment and dependency versions must be documented in the implementation setup.
 
-A lightweight self-hosted backend is preferred.
+No external hosted backend platform is mandatory under this specification.
 
-The system must not require Firebase, Supabase, or another third-party hosted backend as mandatory infrastructure.
+4. API DESIGN
 
-External integrations may be used through isolated adapters where necessary.
+4.1 API Base Structure
 
-5. API DESIGN
+All application APIs should use versioned routes.
 
-The backend will expose versioned REST APIs.
-
-Base path:
+Illustrative base path:
 
 "/api/v1/"
 
-All API responses should use a consistent JSON structure.
+Example endpoint groups:
 
-5.1 Standard Success Response
+/api/v1/auth
+/api/v1/users
+/api/v1/mining
+/api/v1/rewards
+/api/v1/referrals
+/api/v1/balance
+/api/v1/transactions
+/api/v1/notifications
+/api/v1/kyc
+/api/v1/explorer
+
+Exact endpoint definitions must be maintained in the API documentation.
+
+4.2 Request Validation
+
+Every incoming request must be validated by the backend.
+
+Validation must include:
+
+- Authentication.
+- Authorization.
+- Required fields.
+- Data types.
+- Field lengths.
+- Allowed values.
+- Identifier validity.
+- Request state.
+- Duplicate request detection.
+- Rate limits where appropriate.
+
+Client-side validation does not replace backend validation.
+
+4.3 Response Structure
+
+API responses should use consistent JSON structures.
+
+Illustrative success response:
 
 {
   "success": true,
-  "message": "Request completed successfully",
   "data": {},
-  "error": null
+  "request_id": "unique-request-id"
 }
 
-5.2 Standard Error Response
+Illustrative error response:
 
 {
   "success": false,
-  "message": "Request could not be completed",
-  "data": null,
   "error": {
     "code": "INVALID_REQUEST",
-    "details": {}
-  }
+    "message": "The request could not be processed."
+  },
+  "request_id": "unique-request-id"
 }
 
-Sensitive internal information must never appear in API error responses.
+Internal stack traces, passwords, secrets and sensitive database details must never be returned to clients.
 
-5.3 HTTP Status Codes
+4.4 Idempotency
 
-Use appropriate HTTP status codes:
+Operations that may be retried must support idempotency.
 
-- "200" — Successful request.
-- "201" — Resource created.
-- "204" — Successful request without response body.
-- "400" — Invalid request.
-- "401" — Authentication required.
-- "403" — Operation not permitted.
-- "404" — Resource not found.
-- "409" — Conflict or duplicate operation.
-- "422" — Business rule validation failed.
-- "429" — Rate limit exceeded.
-- "500" — Internal server error.
-- "503" — Service temporarily unavailable.
+This includes:
 
-6. AUTHENTICATION AND AUTHORIZATION
+- Session activation.
+- Session completion.
+- Reward credit.
+- Referral bonus allocation.
+- Ledger transaction creation.
+- Public block publication.
+- Administrative correction processing.
 
-The backend must support secure account authentication.
+A repeated request with the same operation identifier must not create a duplicate result.
 
-Required functionality:
+5. AUTHENTICATION AND ACCOUNT MANAGEMENT
 
-- Account registration.
-- Login.
-- Logout.
-- Session invalidation.
-- Password recovery.
-- Account verification.
-- Access token validation.
-- Protected API access.
+5.1 Registration
 
-The final authentication mechanism must be selected before implementation.
+The backend must:
 
-If token-based authentication is selected:
+1. Validate registration information.
+2. Check username uniqueness.
+3. Validate the referral code if supplied.
+4. Prevent self-referral.
+5. Create a unique User ID.
+6. Create the account.
+7. Store the password using secure password hashing.
+8. Create the initial account status.
+9. Record the registration event.
+10. Return a safe account response.
 
-- Access tokens must have limited lifetimes.
-- Refresh tokens must be protected.
-- Token rotation and revocation must be supported.
-- Sensitive tokens must not appear in application logs.
-- Expired or revoked tokens must be rejected.
+An invalid referral code must be visibly rejected. It must not create a pending or temporary referral relationship.
 
-All protected API endpoints must verify the authenticated user's identity.
+5.2 Username and User ID
 
-A user must not be able to access another user's private information by changing an ID in an API request.
+The username is permanent and also serves as the user's Referral Code.
 
-7. USER ACCOUNT API
+The backend must generate a unique User ID.
 
-Suggested endpoints:
+Example:
 
-Method| Endpoint| Purpose
-POST| "/auth/register"| Register account
-POST| "/auth/login"| Authenticate user
-POST| "/auth/logout"| End session
-POST| "/auth/refresh"| Refresh authentication
-POST| "/auth/forgot-password"| Request password recovery
-POST| "/auth/reset-password"| Reset password
-GET| "/users/me"| Get current user
-PATCH| "/users/me"| Update permitted profile fields
-GET| "/users/me/status"| Get account status
+Username: Emon
+User Number: 00001258
 
-The backend must validate registration data and prevent duplicate accounts according to the finalized account policy.
+The generated number must be unique and must not be reassigned to another user.
 
-8. ACCOUNT STATUS MANAGEMENT
+5.3 Login
 
-The backend must maintain an authoritative account status.
+The backend must:
 
-Suggested statuses:
+- Verify the account credentials.
+- Check account status.
+- Apply login rate limits.
+- Issue an authenticated session or token.
+- Record security-relevant login events.
+- Avoid revealing whether a particular username exists in an error response.
 
-- "PENDING_VERIFICATION"
-- "ACTIVE"
-- "MINING_ELIGIBLE"
-- "INVALID"
+5.4 Account Status
+
+The backend controls account status.
+
+Supported statuses:
+
+- "PENDING"
+- "VALID"
 - "SUSPENDED"
 - "CANCELLED"
 
-The final state transition rules must be documented and implemented consistently.
+The mobile application may display the status but cannot change it.
 
-Only authorized backend operations may change account eligibility.
+5.5 Account Cancellation
 
-The mobile application may display account status but must not independently determine it.
+A CANCELLED account is permanently cancelled.
 
-9. COMMUNITY VERIFICATION
+The backend must:
 
-Community participation is part of the App Mining eligibility requirements.
+- Prevent further mining activation.
+- Prevent further reward eligibility.
+- Preserve required historical records.
+- Forfeit the remaining balance to App Reserve according to the approved rules.
+- Record the cancellation event.
 
-Required communities:
+No reactivation is permitted.
 
-- Official Telegram.
-- Official X.
-- Official Facebook.
+The current application must not provide a user-facing Account Delete feature. Account cancellation and legally required data-retention procedures are separate matters.
 
-Suggested endpoints:
+6. MINING SESSION ENGINE
 
-Method| Endpoint| Purpose
-GET| "/community/status"| Get verification status
-POST| "/community/verification/request"| Submit verification request
-GET| "/community/requirements"| Get community requirements
+6.1 Session Schedule
 
-The backend must store verification status and relevant audit information.
+The backend must maintain three scheduled UTC sessions per day.
 
-Important restrictions:
+Session| Start UTC| End UTC
+1| 04:00| 12:00
+2| 12:00| 20:00
+3| 20:00| 04:00 next day
 
-- Never request social media passwords.
-- Never store third-party account passwords.
-- Do not claim automatic membership verification unless supported by permitted official platform APIs.
-- If automatic verification is unavailable, use an approved alternative verification procedure.
-- Verification rules must be documented before implementation.
+The backend clock is authoritative.
 
-10. MINING SESSION MANAGEMENT
+The mobile device clock must not determine session eligibility.
 
-The backend controls all mining sessions.
+6.2 Activation Rules
 
-10.1 Session Rules
-
-Current project rules:
-
-- Each session lasts 8 hours.
-- A user can activate a maximum of 3 sessions per day.
-- Each session must be activated manually.
-- An active session continues even if the application is closed.
-- A session becomes successful only after the full 8 hours and backend validation.
-- The device clock must not determine session validity.
-- Duplicate activation requests must be prevented.
-
-10.2 Suggested Session Statuses
-
-- "ACTIVE"
-- "COMPLETED"
-- "FAILED"
-- "CANCELLED"
-
-10.3 Mining API
-
-Method| Endpoint| Purpose
-POST| "/mining/sessions"| Activate mining session
-GET| "/mining/sessions/current"| Get current session
-GET| "/mining/sessions/history"| Get session history
-GET| "/mining/status"| Get mining eligibility and status
-GET| "/mining/limits"| Get daily session limits
-
-10.4 Session Activation
-
-When a user requests a new session, the backend must:
+The backend must:
 
 1. Authenticate the user.
-2. Check account status.
-3. Check community eligibility.
-4. Check whether the user is allowed to mine.
-5. Check whether another session is active.
-6. Check the daily activation limit.
-7. Create a unique session record.
-8. Record the authoritative server start time.
-9. Calculate the session end time.
-10. Return the session information.
+2. Identify the current scheduled session.
+3. Verify that activation is within the allowed session window.
+4. Check account status.
+5. Check whether the user has already activated that session.
+6. Save the activation record.
+7. Return the activation result.
 
-The operation must be atomic.
+Rules:
 
-If activation fails, no partial mining session may be created.
+- One activation per user per scheduled session.
+- Activation is accepted at any time within the entire eight-hour slot.
+- A missed session cannot be activated retrospectively.
+- A duplicate activation must not create a second record.
+- Activation alone does not make the session successful.
 
-10.5 Server Time Authority
+6.3 Session Completion
 
-The backend must control:
+A session can be marked successful only after:
 
-- Session start time.
-- Session end time.
-- Completion time.
-- Daily activation limits.
-- Reward processing time.
+1. The scheduled slot ends.
+2. The backend confirms an accepted activation.
+3. The session validation rules pass.
+4. The result is saved successfully.
 
-The mobile application may display a countdown, but the countdown is informational only.
+The backend must maintain a clear processing state for each session.
 
-Changing the device date or time must not change mining eligibility or session validity.
+Suggested internal states:
 
-10.6 Duplicate Request Protection
+- "SCHEDULED"
+- "OPEN"
+- "ACTIVATED"
+- "PROCESSING"
+- "SUCCESS"
+- "FAILED"
+- "PENDING_RETRY"
 
-Mining activation must support idempotency.
+These are backend processing states, separate from account statuses.
 
-Repeated requests caused by network retries must not create multiple sessions.
+6.4 Effective Session Counter
 
-The backend should use an idempotency key or an equivalent duplicate-request protection mechanism.
+The project requires 2,160 effective sessions.
 
-10.7 Session Completion
+Backend mining downtime must pause effective session progression.
 
-The backend must validate:
+After recovery, the system must resume from the correct effective session state.
 
-- Session ownership.
-- Session status.
-- Server-side start time.
-- Server-side end time.
-- Required session duration.
-- Account status.
-- Reward eligibility.
+The backend must not:
 
-Only a valid session may be marked "COMPLETED".
+- Skip a required effective session.
+- Count a failed processing attempt as successful.
+- Create duplicate session records.
+- Change historical session results without an approved correction process.
 
-The mobile application must never be allowed to directly mark a session as successful.
+7. TOKENOMICS AND REWARD ENGINE
 
-11. DAILY SESSION LIMIT
+7.1 Fixed Supply
 
-The maximum number of mining sessions is 3 per user per project-defined day.
+The total SAECOIN supply is:
 
-The daily boundary must use a fixed server-side project timezone.
+31,000,000 SAC
 
-The timezone and exact daily reset policy must be finalized before implementation.
+Allocation| SAC
+Regular Mining| 12,960,000
+Referral Bonus| 4,320,000
+Initial App Reserve| 1,000,000
+Unused App Mining Allocation transferred to App Reserve| 720,000
+Total App Reserve| 1,720,000
+Founder/Personal Reserve| 12,000,000
+Node Mining| 0
+Total Supply| 31,000,000
 
-The backend must not use the device's local timezone to calculate the daily limit.
+The Founder/Personal Reserve must remain separate from the App Reserve.
 
-All activation attempts must be checked against the same authoritative daily accounting rule.
+Node Mining has no allocation in the current application.
 
-12. ACCOUNT VALIDITY
+7.2 Network-Wide Session Pools
 
-An account becomes valid after completing 21 successful mining sessions.
+Each effective session has these network-wide distribution pools:
+
+Pool| SAC
+Regular Mining| 6,000
+Referral Bonus| 2,000
+Total| 8,000
+
+Across 2,160 effective sessions:
+
+- Regular Mining: 12,960,000 SAC.
+- Referral Bonus: 4,320,000 SAC.
+- Total App Mining Distribution: 17,280,000 SAC.
+
+These are network-wide pools, not guaranteed individual rewards.
+
+7.3 Reward Calculation
+
+The Reward Engine must:
+
+1. Receive validated session results.
+2. Retrieve the applicable session eligibility.
+3. Calculate eligible user participation.
+4. Determine each user's allocation.
+5. Apply deterministic rounding and remainder rules.
+6. Check remaining allocation.
+7. Create unique reward records.
+8. Submit reward entries to the Ledger Service.
+9. Confirm successful credit.
+10. Record processing status.
+
+The exact individual allocation formula, rounding method and remainder treatment must be defined consistently in "08-Mining-Reward-Specification.md".
+
+7.4 Budget Protection
+
+The backend must enforce:
+
+- Regular Mining distribution cannot exceed 12,960,000 SAC.
+- Referral Bonus distribution cannot exceed 4,320,000 SAC.
+- Combined App Mining distribution cannot exceed 17,280,000 SAC.
+- Total supply cannot exceed 31,000,000 SAC.
+
+The backend must reject any allocation that would exceed its approved budget.
+
+No reward may be created solely from a client request.
+
+7.5 Reward Timing
+
+Under normal operation, reward credit should complete within five minutes after the scheduled session ends.
+
+If processing fails:
+
+- Preserve the pending operation.
+- Retry safely.
+- Prevent duplicate credits.
+- Reconcile the result.
+- Alert Admin when manual review is required.
+
+8. INITIAL VALIDITY AND INACTIVITY
+
+8.1 Initial Validity
+
+A new user requires 21 successful sessions to become VALID.
+
+Regular Mining Reward is paid during these first 21 successful sessions.
+
+Referral Bonus is not available until the account is VALID.
+
+The backend must track successful sessions independently for each user.
+
+8.2 Inactivity
+
+After becoming VALID:
+
+- The user must complete at least one successful session within every rolling window of 90 scheduled session slots.
+- A successful session resets the inactivity counter.
+- Activation alone does not reset the counter.
+- If no successful session occurs within the next 90 slots, the account becomes permanently CANCELLED.
+
+This rule applies only to VALID users.
+
+During the 21-session rebuild after a referral group change, the inactivity counter is suspended until validity is regained.
+
+8.3 Cancellation
+
+When the inactivity limit is reached:
+
+1. The backend changes the account to CANCELLED.
+2. Future activation is blocked.
+3. Future reward eligibility is removed.
+4. Remaining balance is forfeited to App Reserve.
+5. A cancellation transaction or accounting record is created.
+6. The event is added to the Audit Log.
+7. The user is notified.
+
+Cancellation must be permanent.
+
+9. REFERRAL ENGINE
+
+9.1 Referral Relationship
+
+The backend must maintain one current Referral Group for each user.
+
+The username is the permanent Referral Code.
 
 The backend must:
 
-1. Count only successfully validated sessions.
-2. Prevent duplicate session counting.
-3. Update the account's successful session count.
-4. Evaluate account validity.
-5. Record the validity transition.
-6. Update referral eligibility where applicable.
+- Validate the code at registration or group change.
+- Prevent self-referral.
+- Enforce the maximum of 10 direct referrals.
+- Reject invalid codes.
+- Store referral relationship history.
+- Prevent duplicate relationship creation.
 
-A failed, cancelled, or incomplete session must not count toward the 21-session requirement.
+9.2 Referrer Eligibility
 
-13. MINING REWARD MANAGEMENT
+A referrer must:
 
-The backend is responsible for all reward calculations and allocations.
+- Be active in the same session.
+- Have at least three active direct referrals in that session.
 
-13.1 App Mining Allocation
+If eligible, the referrer and all active direct referrals participate in the applicable referral distribution.
 
-The current proposed App Mining allocation is:
+If a parent group is ineligible, an otherwise eligible child group may still qualify.
 
-"5,000,000 SAC"
+One user may receive at most one Referral Bonus share per session.
 
-This allocation is separate from future blockchain mining and other future allocations.
+9.3 Group Change
 
-13.2 Provisional Daily Budget
-
-Category| Daily Budget
-Regular Mining| 4,500 SAC
-Referral Bonus| 1,000 SAC
-Safety Reserve| 500 SAC
-Total| 6,000 SAC
-
-These figures remain provisional until the Mining Reward Specification is finalized.
-
-13.3 Reward Processing
+A user may change the referral group once during their lifetime, after completing the initial 21 successful sessions and becoming VALID.
 
 The backend must:
 
-1. Validate session completion.
-2. Obtain the applicable Mining Power.
-3. Apply the approved reward formula.
-4. Check the applicable daily budget.
-5. Check the remaining App Mining allocation.
-6. Calculate any eligible referral bonus.
-7. Record the reward transaction.
-8. Update the user's virtual reward balance.
-9. Record the processing result.
+1. Verify the lifetime group-change opportunity remains unused.
+2. Validate the new username.
+3. Verify the new referrer has capacity.
+4. Reject self-referral.
+5. Reject selection of the current referrer.
+6. Save the group-change history.
+7. Mark the lifetime opportunity as used.
+8. Apply the new relationship from the next new session.
+9. Keep the old relationship for the currently active session.
 
-All reward operations must be atomic and protected against duplicate processing.
+The user may select any registered username, including a former ancestor in the referral chain. No ancestry-cycle restriction is imposed by this rule.
 
-13.4 Reward Ledger
+An invalid attempt must not consume the lifetime opportunity.
 
-The system must maintain an auditable reward ledger.
+After a successful group change:
 
-Suggested transaction types:
+- The 21-session validity progress resets.
+- The account becomes pending validity.
+- Regular Mining Reward continues.
+- Referral Bonus is disabled until validity is regained.
+- Existing balance remains unchanged.
+- The inactivity counter is suspended until validity is regained.
 
-- "MINING_REWARD"
-- "REFERRAL_BONUS"
-- "REWARD_ADJUSTMENT"
-- "REWARD_REVERSAL"
-- "ACCOUNT_CANCELLATION_RETURN"
+The backend must apply all changes atomically.
 
-Ledger records must not be silently edited or deleted.
+10. BALANCE AND LEDGER SERVICE
 
-Corrections must use traceable adjustment or reversal records.
+10.1 Balance Authority
 
-The reward ledger must preserve:
+The backend is the only authority allowed to update user balances.
 
+The mobile application can request balance information but cannot submit an arbitrary new balance.
+
+10.2 Ledger Requirements
+
+Every balance-changing operation must produce a traceable ledger entry.
+
+Each transaction must have:
+
+- Unique Transaction ID.
 - User ID.
-- Transaction type.
-- Amount.
-- Related session ID, where applicable.
-- Related referral ID, where applicable.
-- Creation timestamp.
-- Processing status.
-- Audit reference.
+- Transaction Type.
+- Amount in SAC.
+- Related Session ID where applicable.
+- Related Reward ID where applicable.
+- Timestamp in UTC.
+- Processing Status.
+- Reference to related transaction where required.
 
-13.5 Virtual Reward Balance
-
-The displayed SAC balance is a virtual App Mining balance.
-
-It must not be represented as an on-chain balance.
-
-The app must clearly communicate that virtual rewards are not blockchain transactions and do not guarantee market value.
-
-No withdrawal or transfer functionality may be enabled unless a separate approved distribution policy is implemented.
-
-14. REFERRAL MANAGEMENT
-
-The backend must control all referral relationships and bonus calculations.
-
-Current rules:
-
-- A referrer may have a maximum of 10 accepted referrals.
-- A referred account must complete 21 successful sessions to become valid.
-- Both parties may qualify for a Mining Power bonus after the referred account becomes valid.
-- Each participant must independently be actively mining for their own referral bonus to apply to that session.
-- An inactive participant does not receive a banked or deferred bonus.
-- One participant's eligibility must not depend on the other participant being active.
-
-Suggested endpoints:
-
-Method| Endpoint| Purpose
-GET| "/referrals/me"| Get referral information
-GET| "/referrals/me/list"| Get referred users
-GET| "/referrals/me/summary"| Get referral summary
-POST| "/referrals/validate"| Validate referral code
-
-The backend must prevent:
-
-- Self-referrals.
-- Duplicate referral relationships.
-- Invalid referral codes.
-- Referral limit violations.
-- Unauthorized referral changes.
-
-The referral bonus percentage and exact Mining Power formula must follow the finalized Mining Reward Specification.
-
-15. INACTIVITY AND ACCOUNT CANCELLATION
-
-The current proposed inactivity rule is:
-
-An account may be cancelled after 90 consecutive 8-hour session windows without activating a mining session.
-
-This represents 720 hours, or 30 continuous days.
-
-The precise time anchor and cancellation procedure must be finalized before implementation.
+10.3 Transaction Integrity
 
 The backend must:
 
-1. Track the last qualifying mining activation.
-2. Evaluate inactivity using server-side timestamps.
-3. Identify accounts reaching the approved inactivity threshold.
-4. Apply the approved cancellation process.
-5. Record the cancellation event.
-6. Revoke applicable mining and referral eligibility.
-7. Process unused virtual reward balances according to the approved policy.
-8. Preserve required audit records.
+- Use atomic operations for reward and balance updates.
+- Prevent duplicate credits.
+- Prevent unauthorized debits.
+- Preserve transaction history.
+- Reconcile balances against ledger entries.
+- Maintain audit references.
 
-Under the current proposed policy, unused virtual reward balances return to the Main Reward Pool.
+Existing ledger records must not be silently modified or deleted.
 
-Cancellation must not silently erase historical accounting records.
+Corrections must be recorded as new approved entries.
 
-Any data deletion or anonymization must follow applicable privacy and legal requirements.
+11. KYC SERVICE
 
-16. NOTIFICATION MANAGEMENT
+KYC is required only after all 2,160 effective sessions have finished.
 
-The backend should support notifications for:
+KYC must not be required:
 
-- Mining session activation.
-- Mining session completion.
-- Mining eligibility changes.
-- Account validity.
-- Referral qualification.
-- Referral bonus events.
-- Community verification.
-- Security events.
-- Account cancellation warnings.
+- At registration.
+- During the first 21 successful sessions.
+- During normal mining before completion of all effective sessions.
 
-Suggested endpoints:
+After the full session program ends:
 
-Method| Endpoint| Purpose
-GET| "/notifications"| Get notifications
-PATCH| "/notifications/{id}/read"| Mark notification as read
-POST| "/notifications/read-all"| Mark all as read
+1. The backend marks KYC as required.
+2. The user receives an In-App and Push notification.
+3. The user submits the required information.
+4. The backend validates the submission.
+5. The authorized Admin reviews it.
+6. The backend records the final status.
 
-Push notification providers must not control mining or reward validity.
+If KYC is not completed, the user's balance becomes temporarily locked.
 
-Notification delivery failure must not change a user's mining session or reward record.
+The balance is not forfeited solely because KYC remains incomplete.
 
-17. ADMINISTRATIVE API
+Provider, document types, data retention and jurisdiction-specific requirements remain subject to a separate approved KYC policy.
 
-Administrative functionality must be protected by role-based access control.
-
-Suggested roles:
-
-- "SUPER_ADMIN"
-- "ADMIN"
-- "SUPPORT"
-- "MODERATOR"
-- "AUDITOR"
-
-Suggested endpoints:
-
-Method| Endpoint| Purpose
-GET| "/admin/dashboard"| Administrative overview
-GET| "/admin/users"| Search users
-GET| "/admin/users/{id}"| View user details
-PATCH| "/admin/users/{id}/status"| Manage permitted account status
-GET| "/admin/mining/sessions"| Review sessions
-GET| "/admin/rewards"| Review reward ledger
-GET| "/admin/referrals"| Review referrals
-GET| "/admin/audit-logs"| Review administrative activity
-
-Administrative permissions must be limited by role.
-
-Every sensitive administrative action must create an audit record.
-
-No administrator should be able to silently alter historical reward records.
-
-18. BACKGROUND PROCESSING
-
-The backend must support reliable background processing.
-
-Required tasks:
-
-- Session completion checks.
-- Reward processing.
-- Referral eligibility updates.
-- Inactivity checks.
-- Account cancellation processing.
-- Notification delivery.
-- Scheduled maintenance.
-
-Background jobs must be safe to retry.
-
-A repeated job must not create duplicate rewards, duplicate session completions, or duplicate cancellation records.
-
-Critical background jobs must record their execution status and errors.
-
-19. DATABASE REQUIREMENTS
-
-The database must support relational integrity and transactional operations.
-
-Core entities should include:
-
-- Users.
-- Authentication sessions.
-- Community verification records.
-- Mining sessions.
-- Reward ledger.
-- Referral relationships.
-- Account status history.
-- Notifications.
-- Administrative users.
-- Audit logs.
-- System configuration.
-
-Database schema details will be defined separately in:
-
-"07-Database-Schema.md"
-
-The selected database engine must support the consistency and transaction requirements of mining and reward processing.
-
-20. SECURITY REQUIREMENTS
-
-Mandatory backend security controls:
-
-- Secure password hashing.
-- Authentication and authorization.
-- Request validation.
-- Rate limiting.
-- Protection against unauthorized access.
-- Protection against replay and duplicate requests.
-- Secure secret management.
-- Restricted administrative access.
-- Audit logging.
-- Secure database access.
-- Dependency security review.
-- Backup protection.
-- Transport encryption for production deployments.
-
-Sensitive data must not be exposed through:
-
-- API responses.
-- Application logs.
-- Error messages.
-- Debug endpoints.
-- Public configuration files.
-
-21. API RATE LIMITING
-
-Rate limits must protect the backend against abuse.
-
-Higher protection should be applied to:
-
-- Login attempts.
-- Registration.
-- Password recovery.
-- Mining activation.
-- Referral validation.
-- Administrative endpoints.
-
-Rate limits must be configurable.
-
-The backend should return "429 Too Many Requests" when a limit is exceeded.
-
-Rate limiting must not accidentally prevent legitimate session completion or reward processing.
-
-22. LOGGING AND AUDIT TRAILS
-
-The backend must record important operational events.
-
-Required logging categories:
-
-- Authentication events.
-- Account status changes.
-- Mining activation.
-- Mining completion.
-- Reward processing.
-- Referral qualification.
-- Account cancellation.
-- Administrative actions.
-- Security events.
-- Background job failures.
-
-Logs must not contain passwords, access tokens, seed phrases, or other sensitive credentials.
-
-Audit records must be protected against unauthorized modification.
-
-23. DEPLOYMENT REQUIREMENTS
-
-The backend must support local development and future self-hosted production deployment.
-
-Development requirements:
-
-- Local backend startup.
-- Local database setup.
-- Environment-based configuration.
-- Database migrations.
-- Test data support.
-- Health-check endpoint.
-
-Suggested health endpoint:
-
-"GET /health"
-
-Suggested readiness endpoint:
-
-"GET /ready"
-
-Health checks must distinguish between application availability and dependency readiness.
-
-Production requirements:
-
-- HTTPS.
-- Secure environment configuration.
-- Restricted database access.
-- Monitoring.
-- Backup and recovery.
-- Controlled deployment.
-- Database migration procedures.
-- Error monitoring.
-
-Production secrets must never be committed to GitHub.
-
-24. BACKUP AND RECOVERY
+12. NOTIFICATION SERVICE
 
 The backend must support:
 
-- Scheduled database backups.
-- Backup integrity verification.
-- Protected backup storage.
-- Documented recovery procedures.
-- Recovery testing.
-- Reward ledger consistency checks.
-
-Backup frequency and retention periods must be finalized before production launch.
-
-Recovery procedures must prevent duplicate reward processing after restoration.
-
-25. TESTING REQUIREMENTS
-
-Backend testing must include:
-
-- API unit tests.
-- Authentication tests.
-- Authorization tests.
-- Mining session tests.
-- Session duration validation.
-- Duplicate activation tests.
-- Daily session limit tests.
-- Account validity tests.
-- Reward calculation tests.
-- Reward ledger consistency tests.
-- Referral eligibility tests.
-- Inactivity tests.
-- Cancellation tests.
-- Database transaction tests.
-- Background job retry tests.
-- Security tests.
-- API integration tests.
-
-Critical business rules must have automated tests.
-
-26. EXTERNAL INTEGRATIONS
-
-External services must be isolated behind dedicated integration modules.
-
-Possible integrations:
-
-- Email delivery.
+- In-App notifications.
 - Push notifications.
-- Advertising providers.
-- Community platforms.
-- Analytics.
+- Notification history.
+- Notification delivery tracking where supported.
 
-External services must not become the authoritative source for:
+Events include:
 
-- Account validity.
-- Mining session completion.
+- Activation accepted.
+- Session successful.
+- Session failed.
+- Reward credited.
+- Referral Bonus credited.
+- Referral group changed.
+- Account became VALID.
+- Account suspended.
+- Account reactivated.
+- Account cancelled.
+- KYC required.
+- KYC verified.
+- Maintenance announcements.
+
+If OS push permission is denied, In-App notification history must remain available.
+
+A user may delete notifications from their own notification history, but this must not delete underlying system or ledger records.
+
+13. ADMIN BACKEND
+
+13.1 Roles
+
+Main Admin
+
+The Main Admin has final approval authority.
+
+Responsibilities:
+
+- Review security cases.
+- Approve or reject protected requests.
+- Review reward correction requests.
+- Review recovery requests.
+- Manage Sub-Admins.
+- Review Audit Logs.
+- Review system reports.
+
+Sub-Admin
+
+Sub-Admins may:
+
+- Verify information.
+- Review submitted evidence.
+- Prepare reports.
+- Forward requests.
+
+Sub-Admins cannot make final approval or rejection decisions.
+
+13.2 Approval Workflow
+
+Request Received
+       |
+       v
+Sub-Admin Verification
+       |
+       v
+Main Admin Review
+       |
+       v
+Approve / Reject
+       |
+       v
+Backend Validation
+       |
+       v
+Approved Backend Action
+       |
+       v
+Audit Log
+
+The backend must verify the authorized role before applying an administrative decision.
+
+13.3 Account Suspension
+
+The backend may automatically suspend an account when suspected fraud or a security issue is detected.
+
+It must:
+
+- Record the reason.
+- Preserve relevant evidence.
+- Record the triggering event.
+- Notify the user where appropriate.
+- Allow the user to submit evidence.
+- Send the case for Admin review.
+
+Admin cannot directly suspend, cancel or delete an account through an arbitrary manual status change.
+
+The Main Admin reviews the evidence and approves or rejects the proposed outcome.
+
+13.4 Reward Correction
+
+A reward correction request must include:
+
+- User ID.
+- Session ID.
+- Reward ID.
+- Existing ledger entry.
+- Proposed correction amount.
+- Reason.
+- Relevant transaction history.
+
+The backend must validate all supplied information.
+
+Main Admin approval is required before execution.
+
+The original ledger entry must remain unchanged. A correction must be recorded as a new transaction with an audit reference.
+
+14. AUDIT LOG SERVICE
+
+The backend must maintain audit records for important actions.
+
+Audit events include:
+
+- Login and security events.
+- Account status changes.
+- Session processing.
 - Reward calculation.
-- Reward balances.
-- Referral eligibility.
+- Reward correction.
+- Referral group changes.
+- KYC decisions.
+- Admin approvals and rejections.
+- Backup operations.
+- Recovery operations.
+- Public signing key replacement.
+- Ledger correction.
+- Maintenance operations.
 
-If an external service is unavailable, core accounting and mining data must remain consistent.
+Audit records must include:
 
-27. FUTURE BLOCKCHAIN INTEGRATION
+- Event ID.
+- Event type.
+- Actor or system identity.
+- Related User ID where applicable.
+- Related Session ID or Transaction ID where applicable.
+- Timestamp in UTC.
+- Action result.
+- Reason or reference where required.
 
-The current backend manages virtual App Mining rewards only.
+Audit history must not be silently deleted or altered.
 
-Future blockchain integration may introduce:
+15. PUBLIC LEDGER PUBLISHER
 
-- On-chain distribution.
-- Blockchain account mapping.
-- Distribution eligibility checks.
-- Distribution records.
-- Transaction references.
+The Public Ledger Publisher creates app-operated public blocks from validated backend records.
 
-These capabilities must be designed and implemented separately after the blockchain protocol and distribution policy are finalized.
+15.1 Publishing Process
 
-The current backend must not pretend that virtual reward credits are already blockchain transactions.
+1. Wait for the session to end.
+2. Validate session and transaction records.
+3. Prepare public transaction data.
+4. Create a uniquely identified block.
+5. Calculate the block hash.
+6. Link it to the previous block.
+7. Sign the block with the backend signing key.
+8. Publish it to the Explorer.
+9. Record publication status.
 
-28. OPEN DECISIONS
+15.2 Publishing Failure
 
-The following items require final approval before implementation:
+If publication fails:
 
-1. Backend programming language and framework.
-2. Database engine.
-3. Authentication and token strategy.
-4. Project-wide timezone and daily reset boundary.
-5. Exact inactivity time anchor.
-6. Community verification method.
-7. Advertising provider and permitted ad flow.
-8. Background job implementation.
-9. Administrative interface technology.
-10. Reward formula and referral bonus calculation.
-11. Backup frequency and retention policy.
-12. Production hosting and deployment approach.
+- Preserve the prepared block.
+- Mark publication as "PENDING".
+- Retry safely.
+- Prevent duplicate block publication.
+- Record every attempt.
+- Alert Main Admin if failure continues beyond the configured threshold.
 
-These decisions must remain consistent with the PRD, Technical Requirements, App Architecture, Database Schema, Mining Reward Specification, and Security Specification.
+15.3 Public Verification
 
-29. FINAL BACKEND POLICY
+The Explorer must provide the applicable public verification key.
 
-The backend is the authoritative system for SAECOIN App account status, mining eligibility, session validation, reward calculations, referral eligibility, and virtual reward balances.
+Users must be able to verify block hashes and signatures.
 
-The mobile application must never independently approve mining sessions or create authoritative reward credits.
+Historical public keys must remain available for historical blocks.
 
-All critical operations must be secure, auditable, transactional, and protected against duplicate processing.
+15.4 Signing Key Replacement
 
-The App Mining backend must remain separate from the future SAECOIN blockchain implementation.
+If a signing key is lost, compromised or replaced:
+
+- Main Admin approval is required.
+- The new key must be securely generated and stored.
+- The old public key must remain available.
+- Existing blocks remain associated with the old key.
+- New blocks use the new signing key.
+- The replacement must be recorded in the Audit Log.
+
+The public ledger is app-operated and is not decentralized or trustless.
+
+16. BACKUP AND RECOVERY SERVICE
+
+16.1 Backup Schedule
+
+A backup must be created after every Mining Session.
+
+The system must preserve backup history for all 2,160 effective sessions.
+
+16.2 Backup Destinations
+
+Approved destinations:
+
+1. Encrypted Laptop backup.
+2. Automatic SAECOIN Google Drive upload.
+3. Manual Pen Drive backup through the Admin Panel.
+
+Backups must not overwrite the only available historical copy.
+
+16.3 Encryption
+
+Backup encryption must use:
+
+- A secure password.
+- A separate encryption key.
+- Secure key management.
+- Integrity verification.
+
+The Recovery Key must be stored offline and separately from ordinary backup files.
+
+16.4 Recovery
+
+If the primary laptop is lost or damaged:
+
+- Restore from an available encrypted backup.
+- Require the Recovery Key.
+- Require Main Admin approval.
+- Verify database integrity.
+- Verify the latest valid backup.
+- Reconcile session and reward records.
+- Confirm ledger consistency.
+- Record the recovery operation.
+
+If both the required Recovery Key and encryption key material are lost, the backup may be unrecoverable.
+
+16.5 Backup Failure
+
+The backend must:
+
+- Record backup failure.
+- Alert Admin.
+- Preserve the previous valid backup.
+- Retry according to the recovery policy.
+- Record successful recovery.
+
+Monthly recovery tests must verify the Laptop, Pen Drive and Drive backup sources.
+
+17. MAINTENANCE AND OUTAGE HANDLING
+
+17.1 Maintenance Mode
+
+During critical maintenance:
+
+- Display an Under Maintenance state.
+- Stop affected activation operations.
+- Stop affected reward processing.
+- Preserve all records.
+- Preserve all balances.
+- Prevent affected financial operations.
+- Notify users where possible.
+- Record maintenance start and end times.
+
+17.2 Backend Downtime
+
+When the mining backend is unavailable:
+
+- Effective session progression pauses.
+- Incomplete operations remain pending.
+- No unvalidated session becomes successful.
+- No duplicate rewards may be created.
+- Processing resumes from the last verified state.
+
+17.3 Recovery Approval
+
+If a failure creates incomplete session or reward operations:
+
+1. Backend validates the affected records.
+2. A recovery request is prepared.
+3. Admin reviews the request.
+4. Main Admin approves or rejects.
+5. Backend processes approved operations.
+6. Unique identifiers prevent duplicate processing.
+7. Audit Log records the final outcome.
+
+18. LOGGING AND MONITORING
+
+The backend must support structured logging and operational monitoring.
+
+Monitor:
+
+- API availability.
+- Authentication failures.
+- Database health.
+- Mining session processing.
+- Reward processing.
+- Referral calculations.
+- Ledger consistency.
+- Public block publication.
+- Backup completion.
+- Storage capacity.
+- Security events.
+
+Logs must not contain:
+
+- Plaintext passwords.
+- Seed phrases.
+- Private keys.
+- Recovery codes.
+- Authentication tokens.
+- Unnecessary KYC information.
+
+19. PERFORMANCE AND RELIABILITY
+
+The backend must be designed to:
+
+- Handle concurrent API requests.
+- Prevent race conditions.
+- Process session results consistently.
+- Protect database integrity.
+- Avoid duplicate reward allocation.
+- Support safe background retries.
+- Recover from temporary service failures.
+
+Performance targets and load limits must be established during testing.
+
+The system must not sacrifice financial or ledger correctness for speed.
+
+20. IMPLEMENTATION DEPENDENCIES
+
+Backend implementation must remain consistent with:
+
+- "01-App-PRD.md"
+- "02-UI-UX-Design.md"
+- "03-App-Flow-Specification.md"
+- "04-Technical-Requirements.md"
+- "05-App-Architecture.md"
+- "07-Database-Schema.md"
+- "08-Mining-Reward-Specification.md"
+- "09-Referral-Specification.md"
+- "10-Security-Specification.md"
+- "11-Testing-Strategy.md"
+- "12-Release-and-Launch-Plan.md"
+
+If conflicting rules are discovered, implementation must pause until the conflict is resolved and the affected documents are updated.
+
+21. FINAL BACKEND POLICY
+
+The backend is the single authoritative system for SAECOIN App operations.
+
+All session validation, reward calculation, referral eligibility, balance changes, account status decisions, administrative approvals and ledger operations must be controlled by backend rules.
+
+Every important operation must be traceable, recoverable and protected against duplicate execution.
+
+The backend must preserve the approved tokenomics and must never exceed the fixed 31,000,000 SAC total supply.
+
+The current system is a centralized application with an app-operated public ledger. It must not be represented as a decentralized blockchain.
 
 ---
 
