@@ -1,784 +1,755 @@
-SAECOIN — DATABASE SCHEMA
+SAECOIN — DATABASE SCHEMA SPECIFICATION
 
-Version: 1.0
+Version: 1.1
 Project: SAECOIN App
 Ticker: SAC (Provisional)
-Status: Draft
-Document Type: Database Technical Specification
+Database Type: Relational Database
+Architecture: Centralized Client–Server
+Status: Draft — Updated for Approved Requirements
 
 ---
 
 1. PURPOSE
 
-This document defines the proposed database structure for the SAECOIN App.
+This document defines the logical database structure for the SAECOIN application.
 
-The database must support:
+The database must securely store and maintain:
 
 - User accounts.
 - Authentication sessions.
-- Community verification.
-- Mining sessions.
-- Mining eligibility.
-- Account validity.
-- Mining Power.
-- Virtual SAC rewards.
-- Reward ledger.
+- User profiles.
 - Referral relationships.
-- Referral bonuses.
-- Account inactivity.
+- Mining session schedules.
+- Session activations.
+- Session results.
+- Reward records.
+- User balances.
+- Ledger transactions.
+- KYC records.
 - Notifications.
-- Administrative access.
-- Audit records.
-- System configuration.
+- Admin accounts.
+- Admin approval requests.
+- Audit logs.
+- Backup records.
+- Public ledger blocks.
+- Public ledger transactions.
 
-The database must maintain consistency, security, traceability, and reliable financial-style accounting for all virtual reward operations.
+The database is the persistent data layer. The backend remains responsible for validating and authorizing all operations.
+
+This document defines a logical schema. Exact SQL types, indexes, constraints and migration scripts will be finalized during implementation.
 
 2. DATABASE DESIGN PRINCIPLES
 
 The database must follow these principles:
 
-1. Maintain clear relationships between entities.
-2. Prevent duplicate records where uniqueness is required.
-3. Use transactions for critical operations.
-4. Preserve reward ledger history.
-5. Store authoritative timestamps on the server.
-6. Validate relationships through database constraints.
-7. Prevent unauthorized access to sensitive records.
-8. Support reliable backup and recovery.
-9. Keep application logic separate from database structure.
-10. Avoid unnecessary duplication of authoritative data.
+1. Use stable unique identifiers.
+2. Maintain referential integrity.
+3. Use atomic transactions for related financial operations.
+4. Prevent duplicate session activation.
+5. Prevent duplicate reward credit.
+6. Preserve historical records.
+7. Store timestamps in UTC.
+8. Store monetary amounts using exact integer or fixed-precision representations.
+9. Never use floating-point values for SAC accounting.
+10. Maintain an auditable history of administrative operations.
+11. Support encrypted backups and recovery.
+12. Protect sensitive personal and authentication data.
 
-The selected database engine remains subject to final approval.
+3. ENTITY RELATIONSHIP OVERVIEW
 
-The schema is designed around relational database capabilities.
+Users
+  |
+  +---- User Profiles
+  |
+  +---- Authentication Sessions
+  |
+  +---- Referral Relationships
+  |
+  +---- Mining Activations
+  |          |
+  |          +---- Mining Sessions
+  |          |
+  |          +---- Session Results
+  |                       |
+  |                       +---- Reward Records
+  |                                  |
+  |                                  +---- Ledger Transactions
+  |
+  +---- User Balance
+  |
+  +---- KYC Records
+  |
+  +---- Notifications
 
-3. DATABASE OVERVIEW
+Admin Accounts
+  |
+  +---- Admin Requests
+  |
+  +---- Audit Logs
 
-The proposed database contains the following logical tables:
+Mining Sessions
+  |
+  +---- Public Ledger Blocks
+               |
+               +---- Public Ledger Transactions
 
-database/
-│
-├── users
-├── user_auth_sessions
-├── user_status_history
-├── community_verifications
-│
-├── mining_sessions
-├── mining_daily_usage
-│
-├── reward_ledger
-├── reward_processing
-│
-├── referrals
-├── referral_bonus_records
-│
-├── notifications
-│
-├── admin_users
-├── admin_roles
-├── admin_user_roles
-│
-├── audit_logs
-├── background_jobs
-└── system_settings
+Backup Records
 
-These are logical table names. Final naming and data types must follow the selected database engine and migration conventions.
+This is a logical relationship overview. The final relational design must be verified before database migrations are created.
 
-4. COMMON DATA RULES
+4. IDENTIFIER AND DATA TYPE POLICY
 
-4.1 Primary Keys
+4.1 Primary Identifiers
 
-Every main entity must have a unique primary key.
+Use unique, non-reusable primary identifiers.
 
-UUID-based identifiers are proposed for records that may be created across different services.
+Recommended logical identifiers:
 
-4.2 Timestamps
+- "user_id"
+- "session_id"
+- "activation_id"
+- "session_result_id"
+- "reward_id"
+- "transaction_id"
+- "referral_id"
+- "notification_id"
+- "admin_id"
+- "admin_request_id"
+- "audit_id"
+- "block_id"
+- "backup_id"
 
-Store authoritative timestamps in UTC.
+UUID or another suitable unique identifier may be used.
 
-Suggested timestamp fields:
+The public User Number is separate from the internal database primary key.
+
+4.2 SAC Amount Representation
+
+SAC amounts must use an exact representation.
+
+The implementation must define the smallest supported SAC unit before production.
+
+Possible approaches:
+
+- Integer smallest units.
+- Fixed-precision decimal database type.
+
+Floating-point types such as "FLOAT" and "DOUBLE" must not be used for financial accounting.
+
+All calculations must be deterministic and reproducible.
+
+4.3 Timestamp Policy
+
+All authoritative timestamps must use UTC.
+
+Examples:
 
 - "created_at"
 - "updated_at"
-- "started_at"
-- "completed_at"
-- "expires_at"
-- "cancelled_at"
+- "activated_at"
+- "session_start_at"
+- "session_end_at"
+- "reward_created_at"
+- "transaction_created_at"
 
-The application may convert timestamps to the user's display timezone.
-
-The device clock must never determine authoritative mining or reward timestamps.
-
-4.3 Monetary Values
-
-SAC amounts must use exact decimal or integer-based units.
-
-Floating-point database types must not be used for reward accounting.
-
-The final SAC precision and smallest accounting unit must be defined in the Mining Reward Specification.
-
-4.4 Status Fields
-
-Statuses should use controlled values.
-
-The application must reject unknown or invalid status transitions.
-
-4.5 Deletion Policy
-
-Critical accounting records must not be physically deleted through normal application operations.
-
-Use status changes, audit records, and adjustment transactions where appropriate.
-
-Personal information deletion or anonymization must follow applicable legal and privacy requirements.
+The mobile application may display localized times, but the backend and database must store authoritative times in UTC.
 
 5. USERS TABLE
 
 Table: "users"
 
-Purpose: Stores user account information.
+Purpose: Store the main user account information.
 
-Field| Suggested Type| Rules
-id| UUID| Primary key
-username| VARCHAR| Unique, if username login is supported
-email| VARCHAR| Unique, if email registration is enabled
-phone_number| VARCHAR| Unique, if phone registration is enabled
-password_hash| VARCHAR| Secure password hash
-display_name| VARCHAR| Optional
-profile_image_url| TEXT| Optional
-account_status| VARCHAR| Controlled status
-successful_sessions| INTEGER| Default 0
-is_valid| BOOLEAN| Default false
-last_mining_activation_at| TIMESTAMP| Nullable
-valid_at| TIMESTAMP| Nullable
-cancelled_at| TIMESTAMP| Nullable
-created_at| TIMESTAMP| Required
-updated_at| TIMESTAMP| Required
+Column| Logical Type| Description
+user_id| UUID / Unique ID| Internal primary key
+user_number| Unique String| Public numeric user identifier
+username| String| Permanent username and referral code
+password_hash| String| Secure password hash
+account_status| Enum| PENDING, VALID, SUSPENDED, CANCELLED
+referral_group_change_used| Boolean| Whether lifetime group change was used
+successful_session_count| Integer| Current validity progress
+inactivity_slot_count| Integer| Current inactivity counter
+kyc_status| Enum| NOT_REQUIRED, REQUIRED, PENDING, VERIFIED, REJECTED
+created_at| Timestamp| Account creation time
+updated_at| Timestamp| Last update time
 
-5.1 Account Status Values
+Constraints:
 
-Suggested values:
+- "user_id" must be unique.
+- "user_number" must be unique.
+- "username" must be unique.
+- Username must be permanent after registration.
+- Password must never be stored in plaintext.
+- Account status changes must follow backend rules.
 
-- "PENDING_VERIFICATION"
-- "ACTIVE"
-- "MINING_ELIGIBLE"
-- "INVALID"
-- "SUSPENDED"
-- "CANCELLED"
+6. USER PROFILES TABLE
 
-The exact transition rules must follow the Backend Specification.
+Table: "user_profiles"
 
-5.2 Constraints
+Purpose: Store non-authentication profile information.
 
-- Primary key must be unique.
-- Enabled login identifiers must be unique.
-- Successful session count cannot be negative.
-- Account validity must be determined by backend logic.
-- Password hashes must never contain plaintext passwords.
+Column| Logical Type| Description
+profile_id| UUID / Unique ID| Primary key
+user_id| Foreign Key| Associated user
+display_name| String| Display name
+avatar_reference| String / Nullable| Profile image reference
+created_at| Timestamp| Creation time
+updated_at| Timestamp| Last update time
 
-6. USER AUTHENTICATION SESSIONS TABLE
+Profile information must not be used as an alternative authentication credential.
 
-Table: "user_auth_sessions"
+Sensitive personal information must be stored only when required and protected appropriately.
 
-Purpose: Stores active and historical authentication sessions.
+7. AUTHENTICATION SESSIONS TABLE
 
-Field| Suggested Type| Rules
-id| UUID| Primary key
-user_id| UUID| Foreign key to users
-refresh_token_hash| VARCHAR| Secure token hash
-device_identifier| VARCHAR| Optional
-expires_at| TIMESTAMP| Required
-revoked_at| TIMESTAMP| Nullable
-created_at| TIMESTAMP| Required
-last_used_at| TIMESTAMP| Nullable
+Table: "auth_sessions"
 
-Requirements:
+Purpose: Maintain authenticated user sessions.
 
-- Store token hashes instead of plaintext refresh tokens.
-- Revoke tokens during logout or security events.
-- Reject expired and revoked sessions.
-- Support multiple devices according to the authentication policy.
-
-7. USER STATUS HISTORY TABLE
-
-Table: "user_status_history"
-
-Purpose: Records account status changes.
-
-Field| Suggested Type| Rules
-id| UUID| Primary key
-user_id| UUID| Foreign key to users
-previous_status| VARCHAR| Nullable
-new_status| VARCHAR| Required
-reason| VARCHAR| Required
-changed_by| UUID| User, admin, or system reference
-created_at| TIMESTAMP| Required
+Column| Logical Type| Description
+auth_session_id| UUID| Primary key
+user_id| Foreign Key| Associated user
+token_identifier_hash| String| Hashed token identifier where applicable
+created_at| Timestamp| Session creation time
+expires_at| Timestamp| Expiration time
+revoked_at| Timestamp / Nullable| Revocation time
+device_description| String / Nullable| Limited device information
 
 Requirements:
 
-- Record every important status transition.
-- Do not silently overwrite historical transitions.
-- Restrict modification to authorized backend operations.
+- Store only the information necessary to validate sessions.
+- Never store reusable plaintext access tokens.
+- Revoke sessions after applicable security events.
+- Apply expiration and rotation policies.
 
-8. COMMUNITY VERIFICATIONS TABLE
+8. REFERRAL RELATIONSHIPS TABLE
 
-Table: "community_verifications"
+Table: "referral_relationships"
 
-Purpose: Stores community participation verification records.
+Purpose: Maintain referral group relationships and history.
 
-Field| Suggested Type| Rules
-id| UUID| Primary key
-user_id| UUID| Foreign key to users
-platform| VARCHAR| Telegram, X, Facebook
-verification_status| VARCHAR| Controlled status
-verification_method| VARCHAR| Required
-external_reference| VARCHAR| Optional
-verified_at| TIMESTAMP| Nullable
-expires_at| TIMESTAMP| Nullable
-created_at| TIMESTAMP| Required
-updated_at| TIMESTAMP| Required
+Column| Logical Type| Description
+referral_id| UUID| Primary key
+referred_user_id| Foreign Key| User joining the group
+referrer_user_id| Foreign Key| Referrer
+relationship_status| Enum| ACTIVE, REPLACED
+effective_from_session_id| Foreign Key / Nullable| First effective session
+effective_until_session_id| Foreign Key / Nullable| Last effective session
+relationship_type| Enum| INITIAL, GROUP_CHANGE
+created_at| Timestamp| Relationship creation time
 
-Suggested verification statuses:
+Constraints:
 
-- "PENDING"
-- "VERIFIED"
-- "REJECTED"
-- "EXPIRED"
-- "REVOKED"
+- A user has only one current referral group.
+- A referrer may have at most 10 direct referrals.
+- Self-referral is prohibited.
+- The current referrer cannot be selected again during group change.
+- Referral history must be preserved.
+- Group changes must follow the one-lifetime-change rule.
 
-Requirements:
-
-- A user must not have duplicate active verification records for the same platform and verification requirement.
-- Never store social media passwords.
-- Verification must follow approved platform rules.
-- Verification method and evidence must be auditable.
+The database must support historical referral relationships without overwriting the previous relationship.
 
 9. MINING SESSIONS TABLE
 
 Table: "mining_sessions"
 
-Purpose: Stores every mining session activation and result.
+Purpose: Store the official scheduled session records.
 
-Field| Suggested Type| Rules
-id| UUID| Primary key
-user_id| UUID| Foreign key to users
-status| VARCHAR| Controlled session status
-started_at| TIMESTAMP| Server timestamp
-scheduled_end_at| TIMESTAMP| Server-calculated
-completed_at| TIMESTAMP| Nullable
-mining_day| DATE| Project-defined day
-mining_power_snapshot| DECIMAL| Required snapshot
-idempotency_key| VARCHAR| Unique within user scope
-failure_reason| VARCHAR| Nullable
-created_at| TIMESTAMP| Required
-updated_at| TIMESTAMP| Required
-
-9.1 Session Statuses
-
-- "ACTIVE"
-- "COMPLETED"
-- "FAILED"
-- "CANCELLED"
-
-9.2 Constraints
-
-- A user cannot have multiple active sessions unless a future policy explicitly permits it.
-- Session end time must be later than start time.
-- A completed session must have a valid completion timestamp.
-- A failed or cancelled session cannot generate a normal mining reward.
-- Duplicate activation requests must not create duplicate sessions.
-- A session must belong to exactly one user.
-
-9.3 Session Duration
-
-The current session duration is 8 hours.
-
-The backend must calculate the scheduled end time using server time.
-
-The database must preserve the original start and scheduled end timestamps.
-
-The mobile application's countdown must not modify these values.
-
-10. MINING DAILY USAGE TABLE
-
-Table: "mining_daily_usage"
-
-Purpose: Tracks daily mining activation limits.
-
-Field| Suggested Type| Rules
-id| UUID| Primary key
-user_id| UUID| Foreign key to users
-mining_day| DATE| Required
-activation_count| INTEGER| Default 0
-created_at| TIMESTAMP| Required
-updated_at| TIMESTAMP| Required
+Column| Logical Type| Description
+session_id| UUID| Primary key
+session_number| Integer| Effective session number
+session_date| Date| Scheduled UTC date
+session_slot| Integer| Slot 1, 2 or 3
+start_at| Timestamp| Scheduled start UTC
+end_at| Timestamp| Scheduled end UTC
+processing_status| Enum| SCHEDULED, OPEN, PROCESSING, SUCCESS, FAILED, PENDING_RETRY
+effective_session| Boolean| Whether it counts toward 2,160
+created_at| Timestamp| Creation time
+completed_at| Timestamp / Nullable| Completion time
 
 Constraints:
 
-- Unique combination of "user_id" and "mining_day".
-- Activation count cannot be negative.
-- Activation count cannot exceed the approved daily limit through normal backend operations.
-- The current maximum is 3 activations per project-defined day.
+- Effective session numbers must be unique.
+- Session slot and schedule must be consistent.
+- Session records must not be duplicated.
+- Downtime must pause effective session progression.
+- Historical session results must remain traceable.
 
-The project timezone and daily reset boundary must be finalized before implementation.
+10. MINING ACTIVATIONS TABLE
 
-Activation count updates must be transaction-safe to prevent simultaneous requests from exceeding the limit.
+Table: "mining_activations"
 
-11. REWARD LEDGER TABLE
+Purpose: Record user activation requests.
 
-Table: "reward_ledger"
+Column| Logical Type| Description
+activation_id| UUID| Primary key
+user_id| Foreign Key| Activating user
+session_id| Foreign Key| Scheduled session
+activation_status| Enum| ACCEPTED, REJECTED
+idempotency_key| String| Duplicate request protection
+activated_at| Timestamp| Backend acceptance time
+request_reference| String / Nullable| Request tracking reference
 
-Purpose: Maintains the authoritative history of virtual SAC reward transactions.
+Mandatory constraints:
 
-Field| Suggested Type| Rules
-id| UUID| Primary key
-user_id| UUID| Foreign key to users
-transaction_type| VARCHAR| Controlled type
-amount| DECIMAL| Exact SAC amount
-related_session_id| UUID| Nullable
-related_referral_id| UUID| Nullable
-reference_id| UUID| Optional external operation reference
-idempotency_key| VARCHAR| Unique where applicable
-description| TEXT| Optional
-created_at| TIMESTAMP| Required
-created_by| UUID| System or authorized admin reference
+- Unique combination of "user_id" and "session_id".
+- Unique idempotency key within the appropriate operation scope.
+- Only one accepted activation per user per scheduled session.
+- Missed sessions cannot be activated retrospectively.
 
-11.1 Transaction Types
+11. SESSION RESULTS TABLE
 
-- "MINING_REWARD"
-- "REFERRAL_BONUS"
-- "REWARD_ADJUSTMENT"
-- "REWARD_REVERSAL"
-- "ACCOUNT_CANCELLATION_RETURN"
+Table: "session_results"
 
-11.2 Ledger Rules
+Purpose: Store the backend-validated outcome of each user's scheduled session.
 
-1. Every accepted reward must have a ledger record.
-2. Duplicate reward processing must be prevented.
-3. Historical ledger records must not be silently edited.
-4. Corrections must use adjustment or reversal records.
-5. Every record must be traceable to its originating operation.
-6. Reward amounts must use exact numeric representation.
-7. Ledger entries must be created within the same database transaction as the corresponding balance update, if a cached balance is maintained.
-
-11.3 Balance Calculation
-
-The authoritative virtual reward balance must be calculated from the user's eligible ledger entries.
-
-A cached balance may be maintained for performance, but it must be reconciled against the ledger.
-
-The cache must never become an independent source of truth.
-
-The rules for positive and negative transaction types must be defined explicitly in the reward implementation.
-
-12. REWARD PROCESSING TABLE
-
-Table: "reward_processing"
-
-Purpose: Tracks the processing state of reward operations.
-
-Field| Suggested Type| Rules
-id| UUID| Primary key
-user_id| UUID| Foreign key to users
-session_id| UUID| Foreign key to mining_sessions
-processing_status| VARCHAR| Controlled status
-calculated_amount| DECIMAL| Exact amount
-processing_key| VARCHAR| Unique
-processed_at| TIMESTAMP| Nullable
-failure_reason| TEXT| Nullable
-created_at| TIMESTAMP| Required
-updated_at| TIMESTAMP| Required
-
-Suggested statuses:
-
-- "PENDING"
-- "PROCESSING"
-- "COMPLETED"
-- "FAILED"
-
-Requirements:
-
-- Each eligible session must have at most one successful normal reward-processing operation.
-- Retry operations must not create duplicate ledger entries.
-- Processing and ledger creation must be transaction-safe.
-- Failed processing must be traceable.
-
-13. REFERRALS TABLE
-
-Table: "referrals"
-
-Purpose: Stores referral relationships.
-
-Field| Suggested Type| Rules
-id| UUID| Primary key
-referrer_user_id| UUID| Foreign key to users
-referred_user_id| UUID| Foreign key to users
-referral_code| VARCHAR| Optional
-status| VARCHAR| Controlled status
-accepted_at| TIMESTAMP| Nullable
-qualified_at| TIMESTAMP| Nullable
-revoked_at| TIMESTAMP| Nullable
-created_at| TIMESTAMP| Required
-updated_at| TIMESTAMP| Required
-
-Suggested statuses:
-
-- "PENDING"
-- "ACCEPTED"
-- "QUALIFIED"
-- "REVOKED"
+Column| Logical Type| Description
+session_result_id| UUID| Primary key
+user_id| Foreign Key| User
+session_id| Foreign Key| Scheduled session
+activation_id| Foreign Key| Accepted activation
+result_status| Enum| SUCCESS, FAILED, PENDING_RETRY
+validation_reference| String / Nullable| Validation record
+validated_at| Timestamp / Nullable| Validation time
+created_at| Timestamp| Record creation time
 
 Constraints:
 
-- A user cannot refer themselves.
-- A referred account can have only one accepted referrer.
-- A referrer cannot exceed 10 accepted referrals under the current policy.
-- Duplicate referral relationships must be prevented.
-- Referral status changes must be recorded and auditable.
+- A user must not have duplicate final results for the same session.
+- SUCCESS requires backend validation.
+- Activation alone must not create SUCCESS.
+- Failed or pending operations must remain traceable.
 
-14. REFERRAL BONUS RECORDS TABLE
+12. REWARD RECORDS TABLE
 
-Table: "referral_bonus_records"
+Table: "reward_records"
 
-Purpose: Tracks referral bonus calculations and eligibility.
+Purpose: Store calculated Regular Mining and Referral Bonus rewards.
 
-Field| Suggested Type| Rules
-id| UUID| Primary key
-referral_id| UUID| Foreign key to referrals
-beneficiary_user_id| UUID| Foreign key to users
-session_id| UUID| Foreign key to mining_sessions
-mining_power_bonus| DECIMAL| Exact configured value
-applied| BOOLEAN| Required
-reason| VARCHAR| Required
-created_at| TIMESTAMP| Required
+Column| Logical Type| Description
+reward_id| UUID| Primary key
+user_id| Foreign Key| Reward recipient
+session_id| Foreign Key| Related session
+session_result_id| Foreign Key| Validated session result
+reward_type| Enum| REGULAR_MINING, REFERRAL_BONUS
+amount| Exact SAC Amount| Reward amount
+reward_status| Enum| PENDING, APPROVED, CREDITED, FAILED, REVERSED
+calculation_reference| String| Calculation version/reference
+created_at| Timestamp| Creation time
+credited_at| Timestamp / Nullable| Credit time
+
+Constraints:
+
+- Unique reward allocation per user, session and reward type.
+- A reward must reference a valid processing context.
+- Reward amount must not be negative.
+- Allocation must remain within the approved budget.
+- Duplicate reward credits are prohibited.
+
+13. USER BALANCES TABLE
+
+Table: "user_balances"
+
+Purpose: Maintain a ledger-consistent balance summary.
+
+Column| Logical Type| Description
+balance_id| UUID| Primary key
+user_id| Foreign Key| User
+available_balance| Exact SAC Amount| Available balance
+locked_balance| Exact SAC Amount| Temporarily locked balance
+updated_at| Timestamp| Last update time
+
+Constraints:
+
+- One balance record per user.
+- Amounts must use exact numeric representation.
+- Negative balances must be prevented unless a separately approved accounting rule permits them.
+- Balance updates must occur through authorized backend operations.
+- Balance summaries must reconcile with the ledger.
+
+The balance table is a summary, not an independent source of authority.
+
+14. LEDGER TRANSACTIONS TABLE
+
+Table: "ledger_transactions"
+
+Purpose: Maintain the authoritative accounting history of balance-changing operations.
+
+Column| Logical Type| Description
+transaction_id| UUID| Primary key
+user_id| Foreign Key| Related user
+session_id| Foreign Key / Nullable| Related mining session
+reward_id| Foreign Key / Nullable| Related reward
+transaction_type| Enum| MINING_REWARD, REFERRAL_BONUS, RESERVE_TRANSFER, CORRECTION, KYC_LOCK, KYC_UNLOCK, OTHER_APPROVED
+amount| Exact SAC Amount| Transaction amount
+transaction_status| Enum| PENDING, CONFIRMED, REVERSED
+reference_transaction_id| Foreign Key / Nullable| Related transaction
+idempotency_key| String / Nullable| Duplicate protection
+description| String| Transaction purpose
+created_at| Timestamp| Creation time
 
 Requirements:
 
-- Track each participant's bonus independently.
-- A participant must be actively mining in the relevant session for their bonus to apply.
-- An inactive participant must not receive a banked or deferred bonus.
-- One participant's eligibility must not depend on the other participant being active.
-- A bonus must not be duplicated for the same beneficiary, referral, and session.
-- The final bonus formula must follow the Mining Reward Specification.
+- Every balance-changing operation must be traceable.
+- Transaction IDs must be unique.
+- Existing confirmed transactions must not be silently modified or deleted.
+- Corrections must create new entries.
+- Reconciliation must be possible.
+- Transaction history must remain auditable.
 
-15. NOTIFICATIONS TABLE
+The implementation must define debit/credit direction and accounting conventions consistently before production.
+
+15. KYC RECORDS TABLE
+
+Table: "kyc_records"
+
+Purpose: Store KYC submission and review metadata.
+
+Column| Logical Type| Description
+kyc_id| UUID| Primary key
+user_id| Foreign Key| User
+kyc_status| Enum| REQUIRED, PENDING, VERIFIED, REJECTED
+provider_reference| String / Nullable| Provider reference
+submission_reference| String / Nullable| Protected document reference
+submitted_at| Timestamp / Nullable| Submission time
+reviewed_by_admin_id| Foreign Key / Nullable| Reviewing Admin
+reviewed_at| Timestamp / Nullable| Review time
+rejection_reason| String / Nullable| Safe reason
+
+Requirements:
+
+- KYC becomes required only after all 2,160 effective sessions finish.
+- KYC must not be required at registration.
+- KYC documents must not be publicly exposed.
+- Access must be restricted.
+- Data retention and deletion requirements must follow applicable law and the approved KYC policy.
+
+16. NOTIFICATIONS TABLE
 
 Table: "notifications"
 
-Purpose: Stores user notifications.
+Purpose: Maintain user notification history.
 
-Field| Suggested Type| Rules
-id| UUID| Primary key
-user_id| UUID| Foreign key to users
-notification_type| VARCHAR| Required
-title| VARCHAR| Required
-message| TEXT| Required
-is_read| BOOLEAN| Default false
-related_reference_id| UUID| Nullable
-created_at| TIMESTAMP| Required
-read_at| TIMESTAMP| Nullable
+Column| Logical Type| Description
+notification_id| UUID| Primary key
+user_id| Foreign Key| Recipient
+notification_type| String / Enum| Event type
+title| String| Notification title
+message| String| Notification message
+delivery_status| Enum| CREATED, PUSH_SENT, PUSH_FAILED
+read_at| Timestamp / Nullable| Read time
+deleted_at| Timestamp / Nullable| User history deletion time
+created_at| Timestamp| Creation time
 
 Requirements:
 
-- Notifications must belong to a valid user.
-- Read status must be tracked.
-- Notification delivery failure must not affect mining or reward records.
+- Support In-App notifications.
+- Support Push notifications.
+- Preserve underlying system and ledger records.
+- User deletion must affect only their notification history.
+- OS push permission status must not prevent In-App history from working.
 
-16. ADMIN USERS TABLE
+17. ADMIN ACCOUNTS TABLE
 
-Table: "admin_users"
+Table: "admin_accounts"
 
-Purpose: Stores administrative accounts separately from normal user accounts.
+Purpose: Store administrative identities and roles.
 
-Field| Suggested Type| Rules
-id| UUID| Primary key
-email| VARCHAR| Unique
-password_hash| VARCHAR| Secure password hash
-status| VARCHAR| Controlled status
-created_at| TIMESTAMP| Required
-updated_at| TIMESTAMP| Required
-last_login_at| TIMESTAMP| Nullable
+Column| Logical Type| Description
+admin_id| UUID| Primary key
+username| String| Unique Admin username
+password_hash| String| Secure password hash
+admin_role| Enum| MAIN_ADMIN, SUB_ADMIN
+otp_secret_encrypted| Binary / Protected String| Encrypted OTP secret
+account_status| Enum| ACTIVE, SUSPENDED
+created_at| Timestamp| Creation time
+updated_at| Timestamp| Last update time
 
-Administrative accounts must use stronger security controls than ordinary user accounts.
+Requirements:
 
-17. ADMIN ROLES TABLE
+- Main Admin has final approval authority.
+- Sub-Admin cannot approve or reject protected requests.
+- Admin authentication requires password and Authenticator App OTP.
+- OTP recovery and Main Admin recovery must follow the Security Specification.
 
-Table: "admin_roles"
+18. ADMIN REQUESTS TABLE
 
-Purpose: Defines administrative roles.
+Table: "admin_requests"
 
-Field| Suggested Type| Rules
-id| UUID| Primary key
-role_name| VARCHAR| Unique
-description| TEXT| Optional
-created_at| TIMESTAMP| Required
+Purpose: Store requests requiring administrative review.
 
-Suggested roles:
+Column| Logical Type| Description
+admin_request_id| UUID| Primary key
+request_type| Enum| SUSPENSION_REVIEW, REWARD_CORRECTION, RECOVERY, LEDGER_CORRECTION, OTHER
+related_user_id| Foreign Key / Nullable| Related user
+related_session_id| Foreign Key / Nullable| Related session
+related_reward_id| Foreign Key / Nullable| Related reward
+submitted_by_admin_id| Foreign Key / Nullable| Submitting Admin
+verified_by_admin_id| Foreign Key / Nullable| Verifying Sub-Admin
+reviewed_by_admin_id| Foreign Key / Nullable| Main Admin
+request_status| Enum| RECEIVED, SUB_ADMIN_VERIFICATION, MAIN_ADMIN_REVIEW, APPROVED, REJECTED, EXECUTED
+reason| String| Request reason
+evidence_reference| String / Nullable| Protected evidence reference
+decision_reason| String / Nullable| Approval or rejection reason
+created_at| Timestamp| Request creation
+reviewed_at| Timestamp / Nullable| Review time
+executed_at| Timestamp / Nullable| Execution time
 
-- "SUPER_ADMIN"
-- "ADMIN"
-- "SUPPORT"
-- "MODERATOR"
-- "AUDITOR"
+Requirements:
 
-18. ADMIN USER ROLES TABLE
+- Every request must be traceable.
+- Main Admin approval is required for protected actions.
+- Backend validation must occur before execution.
+- Approval decisions must be recorded.
+- Existing financial records must remain preserved.
 
-Table: "admin_user_roles"
-
-Purpose: Connects administrators with their assigned roles.
-
-Field| Suggested Type| Rules
-id| UUID| Primary key
-admin_user_id| UUID| Foreign key to admin_users
-admin_role_id| UUID| Foreign key to admin_roles
-assigned_at| TIMESTAMP| Required
-assigned_by| UUID| Nullable
-
-Constraints:
-
-- Prevent duplicate assignment of the same role to the same administrator.
-- Only authorized administrators may assign or revoke roles.
-- Role changes must be auditable.
-
-19. AUDIT LOGS TABLE
+19. AUDIT LOG TABLE
 
 Table: "audit_logs"
 
-Purpose: Maintains records of sensitive system and administrative operations.
+Purpose: Maintain traceable records of important system and Admin actions.
 
-Field| Suggested Type| Rules
-id| UUID| Primary key
-actor_type| VARCHAR| User, admin, or system
-actor_id| UUID| Nullable
-action| VARCHAR| Required
-entity_type| VARCHAR| Required
-entity_id| UUID| Nullable
-old_values| JSON| Optional
-new_values| JSON| Optional
-ip_address| VARCHAR| Optional
-created_at| TIMESTAMP| Required
-
-Requirements:
-
-- Record sensitive operations.
-- Restrict access to audit records.
-- Prevent ordinary users from modifying audit records.
-- Avoid storing passwords, tokens, and other secrets.
-- Preserve sufficient information to investigate reward and account disputes.
-
-20. BACKGROUND JOBS TABLE
-
-Table: "background_jobs"
-
-Purpose: Tracks scheduled and asynchronous processing.
-
-Field| Suggested Type| Rules
-id| UUID| Primary key
-job_type| VARCHAR| Required
-job_status| VARCHAR| Controlled status
-reference_id| UUID| Nullable
-attempts| INTEGER| Default 0
-scheduled_at| TIMESTAMP| Required
-started_at| TIMESTAMP| Nullable
-completed_at| TIMESTAMP| Nullable
-last_error| TEXT| Nullable
-created_at| TIMESTAMP| Required
-updated_at| TIMESTAMP| Required
-
-Suggested job types:
-
-- "SESSION_COMPLETION"
-- "REWARD_PROCESSING"
-- "REFERRAL_QUALIFICATION"
-- "INACTIVITY_CHECK"
-- "ACCOUNT_CANCELLATION"
-- "NOTIFICATION_DELIVERY"
+Column| Logical Type| Description
+audit_id| UUID| Primary key
+actor_type| Enum| USER, ADMIN, SYSTEM
+actor_id| String / Nullable| Actor identifier
+event_type| String| Event name
+related_user_id| Foreign Key / Nullable| Related user
+related_transaction_id| Foreign Key / Nullable| Related transaction
+related_session_id| Foreign Key / Nullable| Related session
+action_result| String| Result
+reason| String / Nullable| Reason
+metadata_reference| String / Nullable| Protected metadata reference
+created_at| Timestamp| Event time
 
 Requirements:
 
-- Jobs must support safe retries.
-- Duplicate execution must not duplicate business operations.
-- Failed jobs must be observable.
-- Critical job results must be traceable.
+- Audit records must not be silently deleted.
+- Sensitive information must not be copied into logs unnecessarily.
+- Important administrative actions must always generate audit entries.
+- Audit access must be restricted.
 
-21. SYSTEM SETTINGS TABLE
+20. PUBLIC LEDGER BLOCKS TABLE
 
-Table: "system_settings"
+Table: "public_ledger_blocks"
 
-Purpose: Stores controlled application configuration.
+Purpose: Store published app-operated public ledger blocks.
 
-Field| Suggested Type| Rules
-id| UUID| Primary key
-setting_key| VARCHAR| Unique
-setting_value| JSON| Required
-description| TEXT| Optional
-updated_by| UUID| Nullable
-updated_at| TIMESTAMP| Required
+Column| Logical Type| Description
+block_id| UUID| Internal primary key
+block_number| Integer| Public block number
+session_id| Foreign Key| Related mining session
+block_hash| String| Cryptographic block hash
+previous_block_hash| String / Nullable| Previous block hash
+signature| Binary / String| Backend digital signature
+signing_key_id| String| Public signing key reference
+session_close_at| Timestamp| Session close time UTC
+published_at| Timestamp / Nullable| Publication time UTC
+publishing_status| Enum| PENDING, PUBLISHED, FAILED
+created_at| Timestamp| Block creation time
 
-Possible settings:
+Constraints:
 
-- Session duration.
-- Daily session limit.
-- Required successful session count.
-- Maximum accepted referrals.
-- Inactivity threshold.
-- Project timezone.
-- Daily reward budget.
-- Mining reward parameters.
-- Referral bonus parameters.
-- App Mining allocation.
+- Block number must be unique.
+- Block hash must be unique.
+- Previous block references must be valid.
+- Published blocks must not be overwritten.
+- Corrections must create new correction records or blocks.
+- Historical signing key references must remain available.
 
-Sensitive credentials and private secrets must not be stored as ordinary application settings.
+21. PUBLIC LEDGER TRANSACTIONS TABLE
 
-Changes to critical settings must require authorization and create audit records.
+Table: "public_ledger_transactions"
 
-22. TABLE RELATIONSHIPS
+Purpose: Store the public transaction records associated with published blocks.
 
-The main relationships are:
+Column| Logical Type| Description
+public_transaction_id| UUID| Primary key
+block_id| Foreign Key| Related public block
+transaction_id| Foreign Key| Internal ledger transaction
+public_user_identifier| String| Public User ID
+amount| Exact SAC Amount| Public transaction amount
+transaction_purpose| String| Public purpose
+session_confirmation| String| Session reference
+total_balance| Exact SAC Amount / Nullable| Balance according to approved public policy
+created_at| Timestamp| Record creation time
 
-users
-  │
-  ├── user_auth_sessions
-  ├── user_status_history
-  ├── community_verifications
-  ├── mining_sessions
-  │      ├── reward_processing
-  │      └── referral_bonus_records
-  │
-  ├── mining_daily_usage
-  ├── reward_ledger
-  ├── referrals
-  │      └── referral_bonus_records
-  │
-  └── notifications
+Only approved public fields may be exposed through the Explorer.
 
-admin_users
-  └── admin_user_roles
-         └── admin_roles
+Passwords, KYC information, authentication data and other private information must never be published.
 
-audit_logs
-background_jobs
-system_settings
+22. BACKUP RECORDS TABLE
 
-Foreign keys must enforce valid relationships.
+Table: "backup_records"
 
-Deleting a parent record must not accidentally erase critical accounting history.
+Purpose: Track backup creation and verification.
 
-23. DATABASE INDEXING
-
-Indexes should be added for frequently queried fields.
-
-Suggested indexes:
-
-Table| Indexed Fields
-users| email, phone_number, account_status
-mining_sessions| user_id, status, started_at
-mining_daily_usage| user_id, mining_day
-reward_ledger| user_id, created_at, transaction_type
-reward_processing| session_id, processing_status
-referrals| referrer_user_id, referred_user_id, status
-referral_bonus_records| beneficiary_user_id, session_id
-notifications| user_id, is_read, created_at
-audit_logs| actor_id, entity_type, entity_id, created_at
-background_jobs| job_status, scheduled_at
-
-Unique indexes must be used where duplicate records are prohibited.
-
-The final indexing strategy must be reviewed using actual query patterns and performance tests.
-
-24. TRANSACTION AND DATA INTEGRITY RULES
-
-The following operations require database transaction protection:
-
-1. Mining session activation.
-2. Daily mining usage updates.
-3. Session completion.
-4. Reward calculation and ledger insertion.
-5. Cached balance updates, if maintained.
-6. Referral qualification.
-7. Referral bonus processing.
-8. Account cancellation and reward return.
-9. Administrative reward adjustments.
-
-If a critical operation fails, the database must not be left in a partially updated state.
-
-Concurrent requests must not bypass session limits, referral limits, or reward allocation limits.
-
-Use appropriate database locking, unique constraints, isolation levels, and transaction boundaries.
-
-25. DATA RETENTION AND PRIVACY
-
-The system must distinguish between personal data and accounting records.
+Column| Logical Type| Description
+backup_id| UUID| Primary key
+backup_type| Enum| LAPTOP, GOOGLE_DRIVE, PEN_DRIVE
+session_id| Foreign Key / Nullable| Related session
+backup_reference| String| Protected backup location/reference
+backup_status| Enum| STARTED, COMPLETED, FAILED, VERIFIED
+checksum| String / Nullable| Integrity checksum
+created_at| Timestamp| Backup creation time
+verified_at| Timestamp / Nullable| Verification time
 
 Requirements:
 
-- Restrict access to personal information.
-- Retain only necessary personal information.
-- Define retention periods.
-- Protect backups.
-- Support applicable data deletion or anonymization requirements.
-- Preserve legally required audit and accounting records.
-- Avoid exposing private data through logs or analytics.
+- A backup must be created after every Mining Session.
+- Backup history must be preserved.
+- Backup files must be encrypted.
+- Integrity must be verified.
+- Failures must be reported to Admin.
+- Monthly recovery tests must be recorded.
 
-The final retention policy must be approved before production launch.
+23. REQUIRED UNIQUE CONSTRAINTS
 
-26. MIGRATION MANAGEMENT
+The final database implementation must enforce suitable uniqueness constraints.
 
-Database schema changes must use version-controlled migrations.
+At minimum:
 
-Rules:
+Table| Unique Constraint
+users| user_id
+users| user_number
+users| username
+referral_relationships| Current relationship per referred user
+mining_sessions| session_number
+mining_activations| user_id + session_id
+mining_activations| idempotency key within operation scope
+session_results| user_id + session_id
+reward_records| user_id + session_id + reward_type
+user_balances| user_id
+ledger_transactions| transaction_id
+public_ledger_blocks| block_number
+public_ledger_blocks| block_hash
 
-- Every schema change must have a migration.
-- Migrations must be reviewed.
-- Destructive migrations require additional review.
-- Production migrations must be backed up and planned.
-- Migration failures must be handled safely.
-- Migration history must be maintained.
+The implementation must also enforce appropriate foreign key constraints.
 
-Do not manually modify production database schemas without a documented migration.
+24. TRANSACTION AND CONCURRENCY REQUIREMENTS
 
-27. BACKUP AND RECOVERY
+The backend must use database transactions for related operations.
 
-The database must support:
+Examples:
 
-- Scheduled backups.
-- Protected backup storage.
-- Backup integrity verification.
-- Recovery procedures.
-- Recovery testing.
-- Ledger reconciliation after restoration.
+24.1 Reward Credit
 
-Backup frequency and retention periods remain subject to final operational policy.
+The following operations must be consistent:
 
-28. OPEN DECISIONS
+1. Validate reward eligibility.
+2. Check duplicate reward status.
+3. Create reward record.
+4. Create ledger transaction.
+5. Update balance summary.
+6. Mark reward credited.
+7. Commit the operation.
 
-The following items must be finalized before implementation:
+If any required step fails, the operation must not leave a partially credited balance.
 
-1. Database engine.
-2. UUID and identifier implementation.
-3. SAC precision and smallest accounting unit.
-4. Project timezone and daily reset boundary.
-5. Exact inactivity time anchor.
-6. Final mining reward formula.
-7. Referral bonus formula.
-8. Cached balance strategy.
-9. Data retention policy.
-10. Backup frequency and retention.
-11. Final migration tooling.
-12. Database indexing based on real query patterns.
+24.2 Referral Group Change
 
-These decisions must remain consistent with the Backend Specification, Mining Reward Specification, Security Specification, and App Architecture.
+The following must be processed atomically:
+
+1. Validate user eligibility.
+2. Validate new referrer.
+3. Check referral capacity.
+4. Close the old relationship.
+5. Create the new relationship.
+6. Mark the lifetime group-change opportunity as used.
+7. Reset validity progress.
+8. Record the audit event.
+
+24.3 Cancellation
+
+Cancellation must coordinate:
+
+- Account status.
+- Balance forfeiture.
+- App Reserve accounting.
+- Ledger entry.
+- Audit event.
+- Notification event.
+
+The database must not leave the account cancelled while the required accounting operation is silently incomplete.
+
+25. DATA RETENTION AND DELETION
+
+The following records require protected retention:
+
+- Ledger transactions.
+- Mining session results.
+- Reward records.
+- Referral relationship history.
+- Public ledger blocks.
+- Audit logs.
+- Administrative approval history.
+
+Deleting a notification must not delete its source event.
+
+Account cancellation must not automatically delete historical financial records.
+
+Any personal data retention or deletion procedure must comply with applicable law and the approved privacy policy.
+
+26. DATABASE MIGRATIONS
+
+Every schema change must use a documented migration.
+
+Migration requirements:
+
+- Versioned migration files.
+- Reviewed schema changes.
+- Backup before production migration.
+- Rollback or recovery strategy.
+- Migration testing.
+- Referential integrity verification.
+- Data consistency checks.
+
+Production schema changes must not be performed through undocumented manual edits.
+
+27. DATABASE SECURITY
+
+Mandatory requirements:
+
+- Restrict database access.
+- Use separate application and administrative permissions where appropriate.
+- Encrypt backups.
+- Protect database credentials.
+- Avoid exposing the database directly to mobile clients.
+- Use parameterized queries or safe ORM operations.
+- Validate all inputs.
+- Restrict access to KYC and Admin data.
+- Avoid logging secrets.
+- Monitor unusual database activity.
+
+28. UNDECIDED IMPLEMENTATION DETAILS
+
+The following must be finalized before production:
+
+1. Database engine and version.
+2. Exact SQL data types.
+3. Smallest supported SAC unit.
+4. Individual reward allocation formula.
+5. Rounding and remainder policy.
+6. Final transaction debit/credit convention.
+7. Public total-balance disclosure policy.
+8. KYC provider and document storage design.
+9. Data retention periods.
+10. Final index and query optimization strategy.
+11. Database replication and disaster recovery configuration.
+
+These decisions must be documented before the production schema is frozen.
 
 29. FINAL DATABASE POLICY
 
-The database must preserve accurate account, mining, referral, and reward information.
+The database must preserve the integrity of SAECOIN account, session, reward, referral, balance and ledger records.
 
-Reward accounting must remain traceable and resistant to duplicate processing.
+All authoritative changes must be validated by the backend and recorded through controlled operations.
 
-Critical operations must be transaction-safe.
+Financial records must use exact numeric representations, and duplicate processing must be prevented.
 
-The reward ledger must remain the authoritative record of virtual SAC credits and debits.
+The database must support complete auditability, encrypted backup, recovery and reconciliation.
 
-The database must support the current App Mining system without depending on future blockchain functionality.
+The database is part of a centralized application architecture. It does not independently establish a decentralized blockchain.
 
 ---
 
