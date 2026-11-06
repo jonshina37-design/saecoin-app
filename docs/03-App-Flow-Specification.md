@@ -1,173 +1,176 @@
 SAECOIN — APP FLOW SPECIFICATION
 
-Version: 1.0
+Document ID: SAECOIN-APP-FLOW-003
+Version: 1.1
 Project: SAECOIN App
-Ticker: SAC
-Platform: Android (React Native + Expo + TypeScript)
-Status: Draft
+Status: Draft — Updated for Approved Requirements
+Platforms: Android and iOS
+Framework: React Native + Expo
+Language: TypeScript
+Backend: Shared server-authoritative backend
+Time Standard: UTC
 
 ---
 
 1. PURPOSE
 
-This document defines the complete user navigation and application flow for the SAECOIN App.
+This document defines the complete application flow and user interaction requirements for SAECOIN App.
 
-It describes how users move through the application, from opening the app and creating an account to activating mining sessions, earning virtual rewards, inviting referrals, and managing their accounts.
+It describes how users navigate the application, interact with mining sessions, receive virtual SAC rewards, manage referrals, complete KYC, and access public ledger information.
 
-This document covers the App Mining application only.
+It also defines the backend interactions required for each major operation.
 
-It does not define the future SAECOIN blockchain node, Proof-of-Work mining software, or on-chain transaction system.
+The application must use the same business rules and backend services on Android and iOS.
 
-2. APPLICATION FLOW OVERVIEW
+The backend is authoritative for all account, session, reward, referral, and ledger operations.
+
+2. GENERAL APPLICATION FLOW
 
 The main application flow is:
 
-App Launch
-    |
-    v
+Application Launch
+       |
+       v
 Splash Screen
-    |
-    v
-Check Login Session
-    |
-    +---- Not Logged In
-    |         |
-    |         v
-    |    Onboarding
-    |         |
-    |         v
-    |    Registration / Login
-    |         |
-    |         v
-    |    Account Verification
-    |         |
-    |         v
-    |    Community Joining
-    |         |
-    |         v
-    |    Dashboard
-    |
-    +---- Logged In
-              |
-              v
-        Check Account Status
-              |
-              +---- Active
-              |       |
-              |       v
-              |    Dashboard
-              |
-              +---- Restricted / Cancelled
-                      |
-                      v
-                 Account Status Screen
-
-The backend must determine the authoritative account status.
-
-3. SPLASH SCREEN FLOW
-
-When the user opens the application:
-
-1. Display the SAECOIN logo.
-2. Initialize the application.
-3. Check network connectivity.
-4. Check whether a valid login session exists.
-5. Request the latest account status from the backend when authenticated.
-6. Navigate to the appropriate screen.
-
-Possible destinations:
-
-- Onboarding.
-- Login.
-- Dashboard.
-- Account verification.
-- Community joining.
-- Account restricted or cancelled screen.
-- Maintenance or connection error screen.
-
-The splash screen must not independently determine account validity.
-
-4. ONBOARDING FLOW
-
-First-time users see the onboarding screens.
-
-Suggested sequence:
-
-Onboarding Screen 1
        |
        v
-Onboarding Screen 2
+Check Authentication
+       |
+       +----------------------+
+       |                      |
+       v                      v
+Not Authenticated       Authenticated
+       |                      |
+       v                      v
+Onboarding/Login        Load Account Status
+       |                      |
+       v                      v
+Registration/Login      Validate Account
+       |                      |
+       v                      v
+Backend Authentication  Load Dashboard
+       |                      |
+       v                      v
+Open Dashboard <--------+
+
+The application must not rely on locally stored account status as the final authority.
+
+Account status must be retrieved or validated through the backend.
+
+3. APPLICATION INITIALIZATION FLOW
+
+3.1 Launch
+
+When the application launches:
+
+1. Display the splash screen.
+2. Initialize the application environment.
+3. Load essential configuration.
+4. Check whether a valid authentication session exists.
+5. Validate the session with the backend.
+6. Retrieve the current account state.
+7. Navigate to the appropriate screen.
+
+3.2 Authentication Validation
+
+If the authentication session is valid:
+
+- Retrieve the user's account information.
+- Retrieve account status.
+- Load the dashboard.
+
+If authentication has expired:
+
+- Clear invalid authentication state securely.
+- Navigate to Login.
+- Preserve no sensitive credentials in ordinary application storage.
+
+If the backend is unavailable:
+
+- Display an appropriate connection or maintenance state.
+- Do not assume that the user is authenticated or eligible for mining based only on cached data.
+
+4. REGISTRATION FLOW
+
+Open Application
        |
        v
-Onboarding Screen 3
-       |
-       v
-Get Started
-       |
-       v
-Registration / Login
-
-Onboarding should explain:
-
-- What SAECOIN App is.
-- How App Mining sessions work.
-- How virtual rewards are calculated.
-- How referral eligibility works.
-- That App Mining is not real CPU/GPU mining.
-- That virtual rewards do not guarantee future market value.
-- That future distribution depends on the approved project policy and blockchain readiness.
-
-Users may skip onboarding where permitted.
-
-5. REGISTRATION FLOW
-
-New users must create an account.
-
-Suggested registration fields:
-
-- Full name or display name.
-- Email address.
-- Password.
-- Confirm password.
-- Referral code (optional).
-- Acceptance of Terms and Conditions.
-- Acceptance of Privacy Policy.
-
-Registration flow:
-
 Registration Screen
+       |
+       v
+Enter Registration Details
+       |
+       v
+Enter Referral Code (if applicable)
        |
        v
 Validate Input
        |
        v
-Check Existing Account
+Submit Registration
        |
        v
-Create Account
+Backend Validation
        |
-       v
-Email / Account Verification
-       |
-       v
-Community Joining
-       |
-       v
-Dashboard
+       +------------------------+
+       |                        |
+       v                        v
+Registration Failed      Registration Successful
+       |                        |
+       v                        v
+Show Error               Create Account
+                                |
+                                v
+                         Assign Unique User ID
+                                |
+                                v
+                         Save Referral Relationship
+                                |
+                                v
+                         Registration Confirmation
+                                |
+                                v
+                         Dashboard / Onboarding
 
-Rules:
+4.1 Registration Input
 
-1. Validate all required fields.
-2. Prevent duplicate accounts according to the approved account policy.
-3. Store passwords securely using an approved password-hashing method.
-4. Never store plain-text passwords.
-5. Referral codes must be validated by the backend.
-6. Account creation does not automatically make the account valid for reward eligibility.
-7. Every account must complete 21 successful mining sessions to become valid.
+The registration form may contain:
 
-6. LOGIN FLOW
+- Username.
+- Approved account identifier.
+- Password.
+- Confirm Password.
+- Referral Code.
+- Terms and Privacy Policy acceptance.
 
-Existing users can log in.
+The exact account identifier and verification process must follow the finalized authentication specification.
+
+4.2 Referral Validation
+
+When a referral code is supplied:
+
+1. The backend checks whether the code exists.
+2. The backend checks whether the code is valid.
+3. The backend prevents self-referral.
+4. The backend checks the direct referral limit.
+5. The backend creates the relationship only if validation succeeds.
+
+Invalid referral codes must be rejected visibly.
+
+The system must not create pending relationships for invalid referral codes.
+
+4.3 Registration Completion
+
+After successful registration:
+
+- Assign a unique User ID.
+- Store the username as the permanent referral code.
+- Save the referral relationship, if valid.
+- Initialize the account status.
+- Initialize the successful session count to zero.
+- Initialize the reward balance according to the approved account rules.
+
+5. LOGIN FLOW
 
 Login Screen
      |
@@ -175,667 +178,897 @@ Login Screen
 Enter Credentials
      |
      v
+Submit Login
+     |
+     v
 Backend Authentication
      |
-     v
-Check Account Status
-     |
-     +---- Active
-     |       |
-     |       v
-     |    Dashboard
-     |
-     +---- Verification Required
-     |       |
-     |       v
-     |    Verification Screen
-     |
-     +---- Cancelled
-     |       |
-     |       v
-     |    Account Status Screen
-     |
-     +---- Suspended / Restricted
-             |
-             v
-        Account Status Screen
+     +----------------------+
+     |                      |
+     v                      v
+Invalid Credentials    Authentication Successful
+     |                      |
+     v                      v
+Show Error             Create Authentication Session
+                            |
+                            v
+                     Load Account Status
+                            |
+                            v
+                     Open Dashboard
 
-The backend must control authentication and authorization.
+The backend must enforce authentication and account access restrictions.
 
-The application must not bypass account restrictions through local storage or modified client requests.
+The mobile application must not independently approve login attempts.
 
-7. COMMUNITY JOINING FLOW
+6. ACCOUNT RECOVERY FLOW
 
-Joining the official SAECOIN community channels is a mandatory onboarding requirement.
-
-Required channels:
-
-- Telegram.
-- X.
-- Facebook.
-
-Flow:
-
-Community Joining Screen
-       |
-       v
-Display Official Links
-       |
-       v
-User Opens Community Links
-       |
-       v
-User Completes Required Joining Actions
-       |
-       v
-Approved Verification Method
-       |
-       v
-Backend Records Status
-       |
-       v
-Continue to Dashboard
-
-Rules:
-
-1. Display official community links.
-2. Explain the joining requirements clearly.
-3. Do not request social media passwords.
-4. Do not claim automatic membership verification unless a supported and approved verification method exists.
-5. If direct platform verification is unavailable, use an approved alternative verification process.
-6. The backend must store the verification status and timestamp.
-7. Users who have not completed the required process must not be treated as fully onboarded.
-
-8. DASHBOARD FLOW
-
-The dashboard is the main screen after successful onboarding and login.
-
-It should display:
-
-- Virtual App Mining balance.
-- Account validity status.
-- Successful mining session count.
-- Daily session progress.
-- Current mining status.
-- Mining activation button.
-- Referral summary.
-- Community status.
-- Notifications.
-- Advertisement area, where permitted.
-
-Suggested dashboard navigation:
-
-Dashboard
-   |
-   +---- Mining
-   |
-   +---- Referral
-   |
-   +---- History
-   |
-   +---- Profile
-
-The displayed reward balance must be clearly labelled as a virtual App Mining balance.
-
-It must not be presented as an on-chain wallet balance or a guaranteed cash value.
-
-9. MINING FLOW
-
-9.1 Mining Screen
-
-The Mining screen displays:
-
-- Current mining status.
-- Session duration.
-- Countdown timer.
-- Daily session count.
-- Successful session count.
-- Account validity progress.
-- Current applicable Mining Power information.
-- Session activation button.
-
-Each session lasts 8 hours.
-
-Users may activate a maximum of 3 sessions per day.
-
-9.2 Session Activation Flow
-
-Mining Screen
+Login Screen
      |
      v
-Tap Start Mining
+Forgot Password
      |
      v
-Check Login Status
+Enter Account Identifier
      |
      v
-Check Account Eligibility
+Request Recovery
      |
      v
-Check Daily Session Limit
+Backend Recovery Validation
      |
      v
-Check Existing Active Session
+Send Approved Verification Method
      |
      v
-Request Session From Backend
+User Completes Verification
      |
      v
-Check Advertisement Requirements
+Set New Password
      |
      v
-Session Activation
+Backend Updates Credentials
      |
      v
-Mining Countdown
+Revoke Required Existing Sessions
+     |
+     v
+Recovery Confirmation
 
-Before activation, the backend must validate:
+Requirements:
 
-1. Account status.
-2. Community requirement status.
-3. Whether the account is permitted to mine.
-4. Whether another session is already active.
-5. Whether the daily session limit has been reached.
-6. Whether the account is cancelled or restricted.
-7. Applicable reward budget and Mining Power rules.
+- Verification must be performed by the backend.
+- OTP must expire.
+- Sensitive recovery information must not be exposed.
+- Account enumeration must be prevented.
+- Recovery operations must be logged where required.
 
-The backend must create the session record and return its authoritative start and end timestamps.
+7. DASHBOARD FLOW
 
-9.3 Advertisement Flow
+After successful authentication:
 
-The proposed app design includes:
+1. Request current user profile.
+2. Request account status.
+3. Request current virtual SAC balance.
+4. Request current mining session.
+5. Request successful session count.
+6. Request reward history summary.
+7. Request referral summary.
+8. Request notification summary.
+9. Display dashboard.
 
-- Banner advertisements in designated areas.
-- Video advertisements associated with session activation.
+The dashboard must show backend-confirmed data.
 
-The final implementation must comply with the selected advertising provider's policies.
+If any request fails, the application must display an appropriate loading, error, or stale-data indicator.
 
-A video advertisement must not be treated as a successful mining session by itself.
+Cached information must never be presented as a newly confirmed reward or session result.
 
-If the advertising provider does not permit the proposed forced-ad flow, the activation process must be adjusted before release.
+8. MINING SESSION FLOW
 
-9.4 Active Mining Flow
+8.1 Daily UTC Schedule
 
-After a successful activation:
+The system uses three fixed eight-hour scheduled sessions.
 
-Session Activated
+Session| Start UTC| End UTC
+Session 1| 04:00| 12:00
+Session 2| 12:00| 20:00
+Session 3| 20:00| 04:00 next day
+
+The backend clock is authoritative.
+
+8.2 Session Activation Flow
+
+Open Mining Screen
        |
        v
-Display Active Status
+Request Current Session
        |
        v
-Display Countdown
+Backend Checks Eligibility
        |
-       v
-User May Close App
-       |
-       v
-Backend Continues Session Timing
-       |
-       v
-Session End Time Reached
-       |
-       v
-Backend Validates Session
-       |
-       v
-Calculate Applicable Reward
-       |
-       v
-Record Successful Session
+       +-----------------------------+
+       |                             |
+       v                             v
+Not Eligible                    Eligible
+       |                             |
+       v                             v
+Show Reason                  Show Activate Button
+                                     |
+                                     v
+                              User Activates
+                                     |
+                                     v
+                              Send Activation Request
+                                     |
+                                     v
+                              Backend Validation
+                                     |
+                                     +----------------------+
+                                     |                      |
+                                     v                      v
+                                Rejected               Accepted
+                                     |                      |
+                                     v                      v
+                                Show Error           Save Activation
+                                                            |
+                                                            v
+                                                    Show ACTIVATED
 
-Rules:
+8.3 Activation Rules
 
-- The backend is authoritative for session timing.
-- The mobile countdown is only a display.
-- Closing the app must not automatically cancel a valid active session.
-- Changing the device clock must not affect the session.
-- Reinstalling the app must not reset backend session records.
-- A session is successful only after the required 8-hour duration and backend validation.
+- One activation per user per scheduled session.
+- Activation is permitted at any time during the complete eight-hour session.
+- Activation at the beginning or near the end counts for that scheduled session.
+- A missed session cannot be activated retrospectively.
+- The same session cannot be activated twice.
 
-9.5 Session Completion Flow
+The backend must enforce all activation restrictions.
 
-Active Session
-      |
-      v
-8 Hours Completed
-      |
-      v
-Backend Validation
-      |
-      +---- Valid
-      |       |
-      |       v
-      |   Calculate Reward
-      |       |
-      |       v
-      |   Update Virtual Balance
-      |       |
-      |       v
-      |   Record Successful Session
-      |
-      +---- Invalid
-              |
-              v
-        Record Failure / Review
+8.4 After Activation
 
-The application must show a completion message only after receiving confirmation from the backend.
+After the backend confirms activation:
 
-A failed or invalid session must not generate a successful-session count or reward.
+- Display ACTIVATED.
+- Disable the activation button for that session.
+- Display the session end time.
+- Continue displaying the session status.
 
-10. ACCOUNT VALIDITY FLOW
+Closing the application, shutting down the device, or losing internet connectivity after valid activation does not cancel the session.
 
-Every account must complete 21 successful mining sessions to become valid.
+8.5 Session Completion
+
+At the scheduled session end:
+
+1. The backend closes the session.
+2. The backend validates activation records.
+3. The backend validates account eligibility.
+4. The backend validates referral eligibility where applicable.
+5. The backend calculates eligible rewards.
+6. The backend checks reward budget limits.
+7. The backend creates reward records.
+8. The backend updates the relevant account balances.
+9. The backend marks the session result.
+10. The backend publishes the corresponding public ledger information.
+
+The mobile application retrieves the confirmed result.
+
+8.6 Reward Processing Flow
+
+Scheduled Session Ends
+          |
+          v
+Backend Session Closure
+          |
+          v
+Validate Session Records
+          |
+          v
+Validate Account Eligibility
+          |
+          v
+Calculate Regular Mining Pool
+          |
+          v
+Calculate Referral Bonus Pool
+          |
+          v
+Check Allocation Limits
+          |
+          v
+Create Unique Reward Records
+          |
+          v
+Update Balances Atomically
+          |
+          v
+Mark Session Successful
+          |
+          v
+Notify User
+          |
+          v
+Publish Public Ledger Records
+
+Reward processing should normally complete within five minutes after session end.
+
+If processing fails:
+
+- Keep the relevant operation pending.
+- Record the failure.
+- Retry safely after recovery.
+- Prevent duplicate rewards through unique IDs and idempotency.
+
+A session activation alone must never be presented as proof of reward completion.
+
+9. SESSION STATUS FLOW
+
+The interface must handle these statuses:
+
+Status| Meaning
+UPCOMING| Scheduled session has not started
+AVAILABLE| User may activate
+ACTIVATED| Backend accepted activation
+PROCESSING| Backend validation or reward processing is pending
+SUCCESSFUL| Session validation completed successfully
+FAILED| Session was unsuccessful
+MISSED| User did not activate the session
+MAINTENANCE| Relevant session operations are paused
+
+The backend determines the final status.
+
+10. EFFECTIVE SESSION COUNT FLOW
+
+The total target is 2,160 effective scheduled sessions.
+
+The effective session counter must advance only when the relevant scheduled session has been processed according to the approved operational rules.
+
+If backend or mining operations are stopped:
+
+- Pause the effective session count.
+- Preserve the current effective-session position.
+- Resume from the previous state after recovery.
+
+Downtime must not consume effective session allocations.
+
+The application must display remaining effective sessions using backend-confirmed data.
+
+11. ACCOUNT VALIDITY FLOW
+
+11.1 Initial Account Validation
 
 New Account
      |
      v
-0 Successful Sessions
+PENDING
      |
      v
-Complete Mining Sessions
+Complete Successful Sessions
      |
      v
-21 Successful Sessions?
+Backend Validates Each Session
      |
-     +---- No
-     |      |
-     |      v
-     |   Continue Progress
+     v
+Increase Successful Session Count
      |
-     +---- Yes
-            |
-            v
-      Account Becomes Valid
-
-The backend must maintain the successful-session count.
-
-The client must not be able to manually change the count or account validity status.
-
-The dashboard should display progress, for example:
-
-"12 / 21 Successful Sessions"
-
-11. DAILY SESSION LIMIT FLOW
-
-Users may activate a maximum of 3 sessions per day.
-
-Each session lasts 8 hours.
-
-The backend must define the official daily boundary and timezone.
-
-The application must display:
-
-- Sessions completed today.
-- Sessions remaining today.
-- Active session status.
-- Next eligible activation time, when applicable.
-
-Example:
-
-Daily Limit: 3 Sessions
-
-Session 1: Completed
-Session 2: Active
-Session 3: Available
-
-Remaining: 1 Activation
-
-The backend must prevent users from exceeding the limit through multiple devices or repeated API requests.
-
-12. REFERRAL FLOW
-
-Users may invite other people using their referral code or referral link.
-
-Maximum referrals per referrer: 10 accounts.
-
-Flow:
-
-Referral Screen
-      |
-      v
-Display Referral Code
-      |
-      v
-Share Referral Link
-      |
-      v
-New User Registers
-      |
-      v
-Referral Code Validated
-      |
-      v
-Referral Relationship Recorded
-      |
-      v
-Referred User Completes 21 Sessions
-      |
-      v
-Referral Becomes Valid
-      |
-      v
-Eligible Mining Power Bonus
+     v
+Has User Completed 21 Successful Sessions?
+     |
+     +------------------------+
+     |                        |
+     v                        v
+No                       Yes
+     |                        |
+     v                        v
+Remain PENDING             Set VALID
 
 Rules:
 
-1. Referral relationships must be recorded by the backend.
-2. A referrer may have a maximum of 10 accepted referral accounts.
-3. A referred account becomes valid after completing 21 successful sessions.
-4. Once the referral becomes valid, both users become eligible for the applicable Mining Power bonus.
-5. The bonus is applied only during a session in which the relevant user is actively mining.
-6. If a user is not actively mining during a session, that user's bonus is not applied for that session.
-7. An inactive user's missed bonus is not banked or paid later.
-8. The other participant's bonus eligibility is evaluated independently.
-9. The bonus percentage and exact reward calculation must follow the finalized Mining Reward Specification.
-10. Referral rewards must remain within the approved App Mining allocation.
+- The account needs 21 successful sessions.
+- Activation alone does not count.
+- Failed or missed sessions do not count.
+- The backend must validate each successful session.
 
-13. MINING HISTORY FLOW
+11.2 After Becoming VALID
 
-Users can review previous mining sessions.
+After the 21st successful session:
 
-The History screen should display:
+- Set account status to VALID.
+- Enable referral reward eligibility when other conditions are satisfied.
+- Start the rolling 90 scheduled session-slot inactivity rule.
 
-- Session date.
-- Session start time.
-- Session completion time.
-- Session status.
-- Virtual reward amount.
-- Applicable Mining Power information, where appropriate.
+11.3 Inactivity Flow
 
-Possible statuses:
+Account VALID
+      |
+      v
+Track Scheduled Session Slots
+      |
+      v
+Successful Session?
+      |
+      +----------------------+
+      |                      |
+      v                      v
+Yes                         No
+      |                      |
+      v                      v
+Reset Counter          Increase Counter
+                             |
+                             v
+                    Has Counter Reached 90?
+                             |
+                      +------+------+
+                      |             |
+                      v             v
+                     No            Yes
+                      |             |
+                      v             v
+                 Continue      CANCELLED
 
-- Active.
-- Completed.
-- Failed.
-- Under Review.
+Rules:
+
+- The counter applies only to VALID users.
+- It counts scheduled session slots, not calendar days.
+- It resets only after a successful session.
+- Activation alone does not reset the counter.
+- If no successful session occurs within the next 90 scheduled slots, the account becomes permanently CANCELLED.
+
+11.4 Cancellation Flow
+
+When an account is cancelled:
+
+- Block further normal mining participation.
+- Prevent future referral reward eligibility.
+- Mark the account permanently CANCELLED.
+- Transfer the remaining virtual balance to the App Reserve according to the approved forfeiture rule.
+- Preserve required audit and accounting records.
+
+Cancelled accounts cannot be reactivated.
+
+12. REFERRAL FLOW
+
+12.1 Referral Registration
+
+New User Registration
+         |
+         v
+Enter Referral Code
+         |
+         v
+Backend Validates Code
+         |
+         +-------------------------+
+         |                         |
+         v                         v
+Invalid Code                  Valid Code
+         |                         |
+         v                         v
+Reject Referral             Check Self-Referral
+                                   |
+                                   v
+                           Check Direct Limit
+                                   |
+                                   v
+                           Create Relationship
+                                   |
+                                   v
+                           Registration Complete
+
+12.2 Referral Eligibility
+
+The backend must determine referral bonus eligibility for each session.
+
+The referrer must:
+
+- Be eligible in the same session.
+- Have at least three direct referrals active in that session.
+
+If the parent group is not eligible, a qualifying child group may still participate.
+
+One user may receive no more than one Referral Bonus share per session.
+
+The frontend must display the eligibility result provided by the backend.
+
+12.3 Direct Referral Limit
+
+The maximum direct referrals per user is 10.
+
+When the limit is reached:
+
+- Reject additional direct referral relationships.
+- Show a clear explanation.
+- Do not create an invalid or pending relationship.
+
+13. REFERRAL GROUP CHANGE FLOW
+
+A user may change their Referral Group once during their lifetime.
+
+The change is permitted only after the initial 21 successful sessions and VALID status.
+
+Account VALID
+      |
+      v
+Open Referral Group Screen
+      |
+      v
+Check Lifetime Change Availability
+      |
+      +---------------------------+
+      |                           |
+      v                           v
+Already Used                  Available
+      |                           |
+      v                           v
+Disable Change               Enter New Referrer
+                                  |
+                                  v
+                           Backend Validates
+                                  |
+                                  +----------------------+
+                                  |                      |
+                                  v                      v
+                              Invalid                 Valid
+                                  |                      |
+                                  v                      v
+                             Show Error           Save Group Change
+                                                         |
+                                                         v
+                                                  Apply Next New Session
+                                                         |
+                                                         v
+                                               Reset Validity Progress
+                                                         |
+                                                         v
+                                                    PENDING
+
+Rules:
+
+- A valid change is automatic.
+- No previous referrer approval is required.
+- Invalid attempts do not consume the opportunity.
+- The user cannot return to the same current referrer.
+- The new relationship becomes effective from the next new session.
+- An already active session retains the previous group.
+- Existing reward balance is not changed.
+- The 21-session validity count resets.
+- Referral Bonus becomes unavailable until the account becomes VALID again.
+- The 90-slot inactivity counter is suspended during the rebuild period.
+
+The backend must enforce the one-lifetime-change rule.
+
+14. KYC FLOW
+
+KYC is required only after all 2,160 effective sessions have been completed.
+
+User Completes Effective Sessions
+               |
+               v
+Backend Confirms Completion
+               |
+               v
+KYC Requirement Activated
+               |
+               v
+Display KYC Instructions
+               |
+               v
+User Submits Required Information
+               |
+               v
+Backend Sends Verification Request
+               |
+               v
+Verification Result
+               |
+        +------+------+
+        |             |
+        v             v
+    Approved       Pending/Rejected
+        |             |
+        v             v
+Update Status     Show Required Action
+        |
+        v
+Unlock Eligible Balance
+
+If KYC is pending:
+
+- The eligible balance may remain temporarily locked.
+- The balance must not be forfeited solely because verification is incomplete.
+
+The provider, accepted documents, and verification process remain subject to separate approval.
+
+15. REWARD HISTORY FLOW
+
+Open Reward History
+        |
+        v
+Request Reward Records
+        |
+        v
+Backend Returns Records
+        |
+        v
+Display Reward List
+        |
+        v
+Select Reward
+        |
+        v
+Display Reward Details
+
+The application must display backend-confirmed records.
+
+Each reward record should include:
+
+- Reward ID.
+- Session ID.
+- Category.
+- Amount.
+- Status.
+- UTC timestamp.
+
+Users cannot edit or delete reward records.
+
+16. PUBLIC EXPLORER FLOW
+
+Open Explorer
+      |
+      v
+Search Block / Transaction / User ID
+      |
+      v
+Send Search Request
+      |
+      v
+Backend Returns Public Records
+      |
+      v
+Display Results
+      |
+      v
+Open Block or Transaction
+      |
+      v
+Display Hash and Signature
+      |
+      v
+Verify Public Record
+
+The Explorer must support:
+
+- Block search.
+- Transaction search.
+- User ID search.
+- Block details.
+- Transaction details.
+- Hash verification.
+- Digital signature verification.
+
+The public ledger is application-operated, not decentralized.
+
+The Explorer must not expose personal information, KYC records, authentication secrets, or recovery data.
+
+17. PUBLIC LEDGER CORRECTION FLOW
+
+Published records must never be silently edited or deleted.
+
+Correction Request
+        |
+        v
+Backend Validation
+        |
+        v
+Main Admin Review
+        |
+        +-----------------------+
+        |                       |
+        v                       v
+    Rejected                 Approved
+        |                       |
+        v                       v
+Keep Existing Record      Create Correction Block
+                                |
+                                v
+                       Reference Original Block
+                                |
+                                v
+                       Publish New Correction Block
+                                |
+                                v
+                       Update Explorer Display
+                                |
+                                v
+                       Record Audit Log
+
+The original block must remain visible.
+
+18. NOTIFICATION FLOW
+
+Notifications must support:
+
+- In-App notifications.
+- Push notifications.
+
+Notification events include:
+
+- Session availability.
+- Activation confirmation.
+- Session success or failure.
+- Reward crediting.
+- Referral bonus.
+- Group change.
+- Account validity changes.
+- Account suspension or reactivation.
+- Account cancellation.
+- KYC requirement.
+- KYC verification.
+- Maintenance announcements.
+
+If push permission is denied:
+
+- In-App notification history remains available.
+- The user may enable push notifications in operating-system settings.
+
+Deleting a notification must not delete its underlying system record.
+
+19. ACCOUNT SUSPENSION FLOW
+
+The backend may automatically suspend an account when fraud or security concerns are detected.
+
+Administrators must not directly suspend, cancel, or delete accounts.
+
+Backend Detects Security Concern
+             |
+             v
+Automatic Suspension
+             |
+             v
+Record Reason and Evidence
+             |
+             v
+Notify User Where Appropriate
+             |
+             v
+User Submits Evidence
+             |
+             v
+Backend Validates Evidence
+             |
+             v
+Sub-Admin Verification
+             |
+             v
+Main Admin Review
+             |
+             +--------------------+
+             |                    |
+             v                    v
+          Approved             Rejected
+             |                    |
+             v                    v
+       Reactivate Account     Remain Suspended
+             |                    |
+             v                    v
+        Record Audit Log      Record Audit Log
+
+The user must be able to see the suspension status and relevant next steps.
+
+20. ADMIN APPROVAL FLOW
+
+The standard administrative workflow is:
+
+Request Received
+       |
+       v
+Sub-Admin Verification
+       |
+       v
+Main Admin Review
+       |
+       v
+Approve / Reject
+       |
+       v
+Backend Action
+       |
+       v
+Audit Log
+
+Only the Main Admin has final approval authority.
+
+Sub-Admins may verify records, review evidence, and prepare reports.
+
+21. REWARD CORRECTION FLOW
+
+Reward corrections must not directly modify or delete existing ledger entries.
+
+Required information:
+
+- User ID.
+- Session ID.
+- Reward ID.
+- Existing ledger record.
+- Proposed correction.
+- Reason.
+- Transaction history.
 
 Flow:
 
-History Screen
+1. Create correction request.
+2. Backend validates the request.
+3. Main Admin reviews the validated request.
+4. Main Admin approves or rejects.
+5. Backend performs the approved correction.
+6. Original record remains available.
+7. Audit Log records the operation.
+
+22. MAINTENANCE FLOW
+
+When maintenance is initiated:
+
+1. Backend marks affected services as under maintenance.
+2. New activation requests are stopped.
+3. Affected reward processing is paused safely.
+4. The application displays maintenance information.
+5. Users receive appropriate notifications.
+6. Existing records and balances remain preserved.
+
+When maintenance ends:
+
+1. Backend checks system integrity.
+2. Pending operations are identified.
+3. Required validation and approvals are completed.
+4. Services resume.
+5. Maintenance completion is recorded.
+6. Users receive a completion notification.
+
+23. RECOVERY FLOW
+
+After a backend or infrastructure failure:
+
+Service Failure
       |
       v
-Request History From Backend
+Mark Affected Operations Pending
       |
       v
-Display Session Records
+Preserve Existing Records
       |
       v
-Select Session
+Restore Backup / Recover Database
       |
       v
-Display Session Details
-
-History must be retrieved from the backend.
-
-The client must not create or modify historical reward records.
-
-14. NOTIFICATION FLOW
-
-The application may send notifications for:
-
-- Mining session completed.
-- Mining session activation confirmed.
-- Account becomes valid.
-- Referral becomes valid.
-- Referral milestone reached.
-- Important account security events.
-- Project announcements.
-- Maintenance notifications.
-
-Notifications must not disclose passwords, seed phrases, private keys, or other sensitive information.
-
-The backend must control important account and reward notifications.
-
-15. PROFILE FLOW
-
-The Profile screen should display:
-
-- Display name.
-- Account identifier.
-- Email address, where applicable.
-- Account validity status.
-- Successful mining session count.
-- Referral count.
-- Community verification status.
-- Account creation date.
-
-Users may access:
-
-- Edit profile.
-- Settings.
-- Security settings.
-- Help and support.
-- Terms and Conditions.
-- Privacy Policy.
-- Logout.
-
-Sensitive account changes must require appropriate backend validation.
-
-16. SETTINGS AND LOGOUT FLOW
-
-Settings may include:
-
-- Notification preferences.
-- Language preferences.
-- Security options.
-- Privacy information.
-- Help and support.
-- Terms and Conditions.
-- Privacy Policy.
-
-Logout flow:
-
-Profile
-   |
-   v
-Logout
-   |
-   v
-Confirm Logout
-   |
-   v
-Clear Local Authentication Session
-   |
-   v
-Login Screen
-
-Logging out must not delete valid server-side mining sessions or historical records.
-
-17. ACCOUNT INACTIVITY AND CANCELLATION FLOW
-
-The proposed inactivity policy is:
-
-- An account becomes subject to cancellation after 90 consecutive 8-hour session windows without activating a mining session.
-- This represents 720 hours, or 30 days, when measured as continuous elapsed time.
-
-The exact inactivity time anchor and evaluation method must be finalized in the Backend Specification.
-
-Proposed flow:
-
-Valid Account
+Verify Data Integrity
       |
       v
-No Mining Session Activated
+Identify Incomplete Sessions and Rewards
       |
       v
-Inactivity Period Begins
+Backend Validation
       |
       v
-User Activates Mining?
+Admin Review and Approval
       |
-      +---- Yes
-      |       |
-      |       v
-      |   Reset Inactivity Timer
+      v
+Resume Approved Processing
       |
-      +---- No
-              |
-              v
-       90 Windows Reached?
-              |
-              +---- No
-              |      |
-              |      v
-              |   Continue Monitoring
-              |
-              +---- Yes
-                     |
-                     v
-              Backend Cancellation
-                     |
-                     v
-              Revoke Reward Eligibility
-                     |
-                     v
-              Return Virtual Balance
-              To Main Reward Pool
-                     |
-                     v
-              Account Status Updated
+      v
+Audit Log
 
-Cancellation rules:
+Incomplete sessions and reward operations must not be processed twice.
 
-1. The backend must evaluate inactivity.
-2. The mobile app must not independently cancel accounts.
-3. Cancelled accounts lose normal login access according to the approved policy.
-4. Unused virtual App Mining rewards return to the Main Reward Pool.
-5. Applicable referral eligibility and bonuses are revoked.
-6. Minimal audit records may be retained where legally necessary.
-7. Personal data must be handled according to the Privacy Policy and applicable law.
+Unique IDs and idempotency must protect recovery operations.
 
-The final policy must clearly explain the cancellation process to users before they participate.
+24. BACKUP FLOW
 
-18. ERROR AND EXCEPTION FLOWS
+After every effective mining session:
 
-The application must handle common failures.
+1. Create encrypted backup.
+2. Verify backup integrity.
+3. Store backup history.
+4. Upload to the separate SAECOIN Google Drive backup.
+5. Update the laptop backup.
+6. Allow manual Pen Drive backup through the Admin Panel.
+7. Notify Admin if backup fails.
 
-18.1 Network Failure
+Monthly recovery testing must be performed.
 
-User Action
-    |
-    v
-Network Request
-    |
-    v
-Connection Failed
-    |
-    v
-Display Error
-    |
-    v
-Retry Option
+The recovery key must be stored securely and separately from normal backups.
 
-Do not display an unconfirmed mining activation or reward as successful.
+25. AUTHORITY AND DATA FLOW
 
-18.2 Server Error
+The application must follow this authority model:
 
-- Display a clear error message.
-- Preserve the user's local interface state where safe.
-- Allow retry where appropriate.
-- Do not create duplicate sessions after a timeout.
-- Use idempotency controls for session activation requests.
-
-18.3 Authentication Expiration
-
-- Detect expired authentication.
-- Clear invalid local authentication state.
-- Redirect to Login.
-- Preserve server-side mining sessions and history.
-
-18.4 Duplicate Session Request
-
-If the user taps the activation button repeatedly:
-
-- Prevent duplicate activation requests in the interface.
-- Validate requests on the backend.
-- Return the existing active session where appropriate.
-- Never create multiple active sessions in violation of the rules.
-
-19. BOTTOM NAVIGATION FLOW
-
-The main application navigation contains five tabs:
-
-1. Home.
-2. Mining.
-3. Referral.
-4. History.
-5. Profile.
-
-The bottom navigation should remain consistent across the main application screens.
-
-Authentication, onboarding, verification, and account restriction screens may use a separate navigation layout.
-
-20. DATA AUTHORITY AND FLOW RULES
-
-The backend is authoritative for:
-
-- Account status.
-- Authentication.
-- Community verification status.
-- Mining session creation.
-- Session start and end timestamps.
-- Successful-session count.
-- Mining Power.
-- Reward calculation.
-- Virtual App Mining balance.
-- Referral relationships.
-- Referral eligibility.
-- Inactivity evaluation.
-- Account cancellation.
-- Reward ledger and history.
+Android / iOS Application
+           |
+           v
+       REST API
+           |
+           v
+   Backend Validation
+           |
+           v
+   Database / Ledger
+           |
+           v
+   Reward Processing
+           |
+           v
+   Public Ledger Publishing
+           |
+           v
+   Application Response
 
 The mobile application is responsible for:
 
 - Displaying information.
 - Collecting user input.
-- Sending authorized requests.
-- Showing loading, success, and error states.
-- Displaying backend-confirmed results.
+- Sending requests.
+- Showing backend responses.
+- Managing safe local UI state.
 
-The mobile application must never independently approve rewards or change authoritative account data.
+The backend is responsible for:
 
-21. FUTURE BLOCKCHAIN DISTRIBUTION FLOW
+- Authentication.
+- Account status.
+- Session eligibility.
+- Session validation.
+- Reward calculations.
+- Referral eligibility.
+- Balance updates.
+- KYC status.
+- Administrative approvals.
+- Ledger publication.
+- Audit logging.
 
-App Mining rewards are virtual ledger entries before the future blockchain distribution process is ready.
+The frontend must never become the authority for financial or reward-related decisions.
 
-The proposed future process is:
+26. ERROR HANDLING
 
-App Mining Completed
-        |
-        v
-Virtual Reward Recorded
-        |
-        v
-Reward Eligibility Review
-        |
-        v
-Approved Distribution Policy
-        |
-        v
-Blockchain Distribution System Ready
-        |
-        v
-Eligible Reward Distribution
+All major flows must support:
 
-Important rules:
+- Network failure.
+- Backend unavailable.
+- Invalid request.
+- Expired authentication.
+- Duplicate request.
+- Unauthorized action.
+- Maintenance.
+- Pending processing.
+- Recovery in progress.
 
-- Virtual App Mining rewards are not on-chain SAC.
-- No actual SAC UTXO is created by the mobile application.
-- No guaranteed market value or cash redemption is promised.
-- Future distribution must follow the approved project policy.
-- The distribution system must reconcile against the separate 5,000,000 SAC App Mining allocation.
+The application must display understandable error messages.
 
-22. FINAL POLICY
+It must not display false success messages when the backend has not confirmed an operation.
 
-This document defines the proposed SAECOIN App navigation and user-flow baseline.
+27. FINAL FLOW REQUIREMENTS
 
-All important actions must be validated by the backend.
+The implementation must satisfy these rules:
 
-The application must clearly distinguish virtual App Mining rewards from actual blockchain assets.
-
-Any change to mining limits, account validity, referral eligibility, reward calculation, or cancellation rules must be reviewed against the relevant specifications before implementation.
+1. Android and iOS follow identical business rules.
+2. Backend time is authoritative.
+3. Mining sessions use the approved UTC schedule.
+4. Activation is limited to once per scheduled session.
+5. Session success requires backend validation.
+6. Effective sessions total 2,160.
+7. Regular Mining pool is 6,000 SAC per session.
+8. Referral Bonus pool is 2,000 SAC per session.
+9. Total session pool is 8,000 SAC.
+10. Initial account validity requires 21 successful sessions.
+11. VALID account inactivity is measured over 90 scheduled session slots.
+12. Direct referrals are limited to 10.
+13. Referral Group change is limited to once per lifetime.
+14. KYC is required only after completion of all effective sessions.
+15. Public ledger records are signed, hash-linked, and append-only.
+16. Corrections require a new Correction Block.
+17. Administrative approval and audit rules must be enforced.
+18. Backup and recovery must prevent duplicate processing.
+19. The mobile application must not independently calculate authoritative rewards.
+20. The application must not claim to be a decentralized blockchain.
 
 ---
 
 END OF DOCUMENT
+
+Next Document: 04 — Technical Requirements SpecificationSpecification
