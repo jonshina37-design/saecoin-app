@@ -1,947 +1,970 @@
-SAECOIN — APP ARCHITECTURE
+SAECOIN — APP ARCHITECTURE SPECIFICATION
 
-Version: 1.0
+Version: 1.1
 Project: SAECOIN App
-Ticker: SAC
-Mobile Platform: Android
-Frontend: React Native + Expo + TypeScript
-Backend: Self-hosted
-Database: To be finalized
-Status: Draft
+Ticker: SAC (Provisional)
+Platforms: Android and iOS
+Mobile Technology: React Native + Expo + TypeScript
+Architecture: Client–Server
+Status: Draft — Updated for Approved Requirements
 
 ---
 
 1. PURPOSE
 
-This document defines the software architecture of the SAECOIN App.
+This document defines the software architecture of the SAECOIN mobile application and its supporting backend systems.
 
-It describes how the mobile application, backend services, database, authentication system, mining session processor, referral system, and reward ledger interact.
+The architecture establishes:
 
-The architecture must support:
+- Mobile application structure.
+- Backend service responsibilities.
+- Communication between application and backend.
+- Authentication and authorization.
+- Mining session processing.
+- Reward calculation and distribution.
+- Referral group processing.
+- Balance and transaction management.
+- Public ledger and Explorer integration.
+- Admin operations.
+- Security boundaries.
+- Data consistency and failure recovery.
 
-- Secure user authentication.
-- Account management.
-- Community verification.
-- Virtual mining sessions.
-- Reward calculation.
-- Referral processing.
-- Mining history.
-- Notifications.
-- Administrative operations.
-- Future blockchain reward distribution integration.
+This document describes the current SAECOIN App architecture only.
 
-This architecture applies only to the SAECOIN App.
+It does not define or implement a decentralized blockchain network.
 
-It does not include implementation of the future SAECOIN blockchain node or actual Proof-of-Work mining.
+2. ARCHITECTURE OVERVIEW
 
-2. ARCHITECTURAL PRINCIPLES
+SAECOIN will use a centralized client–server architecture.
 
-The system must follow these principles:
+The mobile application will provide the user interface and communicate with the backend through authenticated API requests.
 
-1. Backend-authoritative processing.
-2. Clear separation of frontend and backend.
-3. Modular software design.
-4. Secure data handling.
-5. Consistent database transactions.
-6. Auditable reward processing.
-7. Reliable session management.
-8. Minimal dependency on external hosted platforms.
-9. Maintainable code.
-10. Future expansion without unnecessary redesign.
+The backend will remain authoritative for all important application operations.
 
-The mobile application must never be the authority for account validity, mining sessions, reward balances, or referral eligibility.
+2.1 High-Level Architecture
 
-3. HIGH-LEVEL SYSTEM ARCHITECTURE
+                 SAECOIN MOBILE APP
+              Android / iOS
+       React Native + Expo + TypeScript
+                         |
+                         |
+                   HTTPS / REST API
+                         |
+                         v
+                 API / BACKEND LAYER
+                         |
+          +--------------+--------------+
+          |              |              |
+          v              v              v
+    Authentication   Mining Engine   Referral Engine
+          |              |              |
+          v              v              v
+    Account Service  Reward Service  Group Service
+          |              |              |
+          +--------------+--------------+
+                         |
+                         v
+                 LEDGER SERVICE
+                         |
+             +-----------+-----------+
+             |                       |
+             v                       v
+       Database Layer          Admin Services
+             |                       |
+             v                       v
+       Backup System          Admin Panel / API
+             |
+             v
+       Public Ledger Publisher
+             |
+             v
+          EXPLORER
 
-The system consists of four primary layers:
+This diagram represents logical responsibilities. It does not require every component to run as a separate server or process.
 
-1. Mobile Application.
-2. Backend API.
-3. Backend Business Logic.
-4. Database.
+3. CORE ARCHITECTURAL PRINCIPLES
 
-Proposed architecture:
+The following principles are mandatory:
 
-                  USER
-                   |
-                   v
-        +-----------------------+
-        |   SAECOIN ANDROID APP |
-        |                       |
-        | React Native          |
-        | Expo                  |
-        | TypeScript            |
-        +-----------------------+
-                   |
-                   | HTTPS / JSON
-                   v
-        +-----------------------+
-        |      BACKEND API      |
-        |                       |
-        | Authentication        |
-        | Request Validation    |
-        | Rate Limiting         |
-        +-----------------------+
-                   |
-                   v
-        +-----------------------+
-        |   BUSINESS SERVICES   |
-        |                       |
-        | Account Service       |
-        | Mining Service        |
-        | Reward Service        |
-        | Referral Service      |
-        | Community Service      |
-        | Notification Service  |
-        | Admin Service         |
-        +-----------------------+
-                   |
-                   v
-        +-----------------------+
-        |       DATABASE        |
-        |                       |
-        | Users                 |
-        | Sessions              |
-        | Rewards               |
-        | Referrals             |
-        | Verification          |
-        | Audit Records         |
-        +-----------------------+
-
-External services, such as advertising providers and notification delivery services, may be connected through dedicated integration modules.
-
-They must not become authoritative sources for account status or reward balances.
+1. Backend authority: the backend controls all account, mining, reward and referral decisions.
+2. Client separation: the mobile application must not independently calculate or approve rewards.
+3. Data integrity: balance and transaction changes must be recorded consistently.
+4. Idempotency: retrying an operation must not create duplicate activations, rewards or transactions.
+5. Security by design: authentication, authorization and input validation are required.
+6. Auditability: important administrative and financial operations must be traceable.
+7. Recoverability: incomplete operations must be recoverable after failures.
+8. Scalability: modules should have clear responsibilities and interfaces.
+9. Platform consistency: Android and iOS must follow the same backend rules.
+10. Specification consistency: implementation must follow the approved project specifications.
 
 4. MOBILE APPLICATION ARCHITECTURE
 
-The mobile application will use React Native, Expo, and TypeScript.
+4.1 Technology
 
-The frontend will be responsible for:
+The mobile application will use:
 
-- Displaying application screens.
-- Collecting user input.
-- Managing navigation.
-- Sending API requests.
-- Displaying backend responses.
-- Managing non-sensitive interface state.
-- Handling loading and error states.
-- Displaying mining countdowns.
-- Displaying reward and referral information.
+- React Native.
+- Expo.
+- TypeScript.
+- Shared Android and iOS codebase.
+- REST API communication.
+- JSON request and response formats.
 
-The frontend must not independently:
+The project must not switch to Kotlin/Jetpack Compose or another mobile framework without an approved architecture change.
 
-- Approve mining sessions.
-- Calculate authoritative rewards.
-- Change account validity.
-- Approve referral eligibility.
-- Modify reward balances.
-- Cancel accounts.
-- Create authoritative mining history.
+4.2 Mobile Application Layers
 
-4.1 Frontend Logical Structure
-
-Proposed structure:
-
-src/
+Mobile Application
 │
-├── app/
-│   └── App.tsx
+├── Presentation Layer
+│   ├── Screens
+│   ├── Components
+│   ├── Navigation
+│   └── UI State
 │
-├── navigation/
-│   ├── RootNavigator.tsx
-│   ├── AuthNavigator.tsx
-│   └── MainNavigator.tsx
+├── Application Layer
+│   ├── Authentication Use Cases
+│   ├── Mining Use Cases
+│   ├── Referral Use Cases
+│   ├── Balance Use Cases
+│   └── Notification Use Cases
 │
-├── screens/
-│   ├── splash/
-│   ├── onboarding/
-│   ├── auth/
-│   ├── verification/
-│   ├── community/
-│   ├── home/
-│   ├── mining/
-│   ├── referral/
-│   ├── history/
-│   ├── notifications/
-│   ├── profile/
-│   └── settings/
+├── Data Layer
+│   ├── API Client
+│   ├── Repositories
+│   ├── DTO Models
+│   └── Local Cache
 │
-├── components/
-│   ├── common/
-│   ├── buttons/
-│   ├── cards/
-│   ├── dialogs/
-│   └── navigation/
-│
-├── api/
-│   ├── client.ts
-│   ├── auth.api.ts
-│   ├── account.api.ts
-│   ├── mining.api.ts
-│   ├── reward.api.ts
-│   ├── referral.api.ts
-│   └── notification.api.ts
-│
-├── services/
-│   ├── auth.service.ts
-│   ├── session.service.ts
-│   └── storage.service.ts
-│
-├── hooks/
-├── store/
-├── types/
-├── utils/
-├── constants/
-├── theme/
-└── assets/
+└── Platform Integration
+    ├── Secure Storage
+    ├── Push Notifications
+    └── OS Permissions
 
-This is a logical baseline. The physical structure may be adjusted during implementation.
+4.3 Presentation Layer
 
-4.2 Navigation Architecture
+Responsibilities:
 
-The application will use separate navigation flows.
+- Display screens.
+- Handle user interaction.
+- Display backend-provided account status.
+- Display mining session status.
+- Display reward and balance information.
+- Display referral information.
+- Display notifications.
+- Display API errors and loading states.
 
-Root Navigator
-      |
-      +---- Authentication Flow
-      |          |
-      |          +---- Onboarding
-      |          +---- Registration
-      |          +---- Login
-      |          +---- Verification
-      |          +---- Community
-      |
-      +---- Main Application Flow
-                 |
-                 +---- Home
-                 +---- Mining
-                 +---- Referral
-                 +---- History
-                 +---- Profile
+The presentation layer must not implement authoritative reward or eligibility rules.
 
-Account restrictions must be handled through a separate status screen.
+4.4 Application Layer
 
-Navigation permissions must not replace backend authorization.
+Responsibilities:
 
-4.3 Frontend State Management
+- Coordinate application use cases.
+- Validate basic user input.
+- Request operations from repositories.
+- Manage application state.
+- Handle authentication state.
+- Interpret backend responses.
 
-The frontend may maintain:
+Client-side validation is for usability only. The backend must validate every important operation independently.
 
-- Authentication display state.
-- User profile information.
-- Current screen state.
-- Mining countdown display.
-- Cached history.
-- Notification display state.
-- Loading and error states.
+4.5 Data Layer
 
-The backend remains authoritative.
+Responsibilities:
 
-Cached data must be refreshed when necessary.
+- Communicate with backend APIs.
+- Serialize and deserialize JSON.
+- Manage authenticated requests.
+- Handle API errors.
+- Provide repository interfaces.
+- Cache non-sensitive data where appropriate.
 
-The application must not treat outdated cached information as a confirmed account or reward state.
+The local cache must never become the authoritative source of account balances or mining rewards.
+
+4.6 Platform Integration
+
+Platform-specific integrations may include:
+
+- Secure credential storage.
+- Push notification registration.
+- OS notification permissions.
+- Network connectivity status.
+- Application lifecycle handling.
+
+Sensitive data must not be stored in ordinary unencrypted application storage.
 
 5. BACKEND ARCHITECTURE
 
-The backend will operate independently from the mobile application.
+The backend is the authoritative system for SAECOIN.
 
-It will expose documented APIs and process all authoritative business operations.
+It controls:
 
-The backend must support:
-
-- Authentication.
-- User management.
-- Account verification.
-- Community verification.
-- Mining sessions.
+- Account registration and authentication.
+- User status.
+- Mining session schedules.
+- Session activation.
+- Session validation.
 - Reward calculation.
-- Referral processing.
-- Reward ledger management.
-- Mining history.
-- Notifications.
-- Administrative operations.
+- Referral eligibility.
+- Referral group relationships.
+- Balance changes.
+- KYC status.
+- Administrative approvals.
+- Ledger records.
+- Public ledger publication.
 
-5.1 Backend Logical Modules
+5.1 Logical Backend Modules
 
-Proposed module structure:
-
-backend/
+Backend
 │
-├── src/
-│   ├── main/
-│   │
-│   ├── api/
-│   │   ├── routes/
-│   │   ├── controllers/
-│   │   ├── middleware/
-│   │   └── responses/
-│   │
-│   ├── modules/
-│   │   ├── auth/
-│   │   ├── users/
-│   │   ├── verification/
-│   │   ├── community/
-│   │   ├── mining/
-│   │   ├── rewards/
-│   │   ├── referrals/
-│   │   ├── history/
-│   │   ├── notifications/
-│   │   └── admin/
-│   │
-│   ├── database/
-│   │   ├── migrations/
-│   │   ├── repositories/
-│   │   └── connection/
-│   │
-│   ├── security/
-│   ├── config/
-│   ├── jobs/
-│   ├── integrations/
-│   ├── shared/
-│   └── tests/
+├── API Gateway / HTTP Layer
 │
-├── .env.example
-├── README.md
-└── package.json
+├── Authentication Module
+├── User Account Module
+├── Mining Session Module
+├── Reward Calculation Module
+├── Referral Module
+├── Balance Module
+├── Ledger Module
+├── Notification Module
+├── KYC Module
+├── Admin Module
+├── Audit Module
+├── Backup Module
+└── Public Ledger Publisher
 
-This is a logical organization, not a finalized framework-specific directory structure.
+These are logical modules. Their final deployment arrangement may be a modular monolith or another approved implementation that preserves the same responsibilities and security boundaries.
 
-5.2 Backend Module Responsibilities
+5.2 API Layer
 
-Authentication Module
+Responsibilities:
+
+- Receive client requests.
+- Authenticate requests.
+- Validate request structure.
+- Apply authorization checks.
+- Call the appropriate backend service.
+- Return consistent responses.
+- Apply rate limiting where appropriate.
+
+The API layer must not bypass business rules or directly modify balances without the required service and ledger operations.
+
+5.3 Authentication Module
 
 Responsibilities:
 
 - Registration.
 - Login.
+- Password verification.
+- Session or token management.
 - Logout.
-- Password reset.
-- Token management.
-- Authentication validation.
+- Token expiration.
+- Account access validation.
 
-User Module
+The backend must determine whether an account is active, pending, suspended or cancelled.
+
+5.4 User Account Module
 
 Responsibilities:
 
 - User profile.
+- Permanent username.
+- Unique User ID.
 - Account status.
-- Account information.
-- User preferences.
+- Referral code.
+- Current referral group.
+- Account activity information.
+- KYC status.
 
-Verification Module
+The username is the permanent referral code.
 
-Responsibilities:
+The unique User ID must remain stable even if display information changes.
 
-- Account verification.
-- Verification status.
-- Verification history.
-
-Community Module
+5.5 Mining Session Module
 
 Responsibilities:
 
-- Official community links.
-- Membership verification status.
-- Verification records.
-- Verification timestamps.
+- Maintain the official UTC session schedule.
+- Accept session activation.
+- Enforce one activation per user per scheduled session.
+- Track session processing.
+- Validate successful sessions.
+- Handle missed sessions.
+- Pause effective session progression during backend mining downtime.
+- Resume from the correct state.
 
-Mining Module
+The backend clock is authoritative.
+
+The three daily session slots are:
+
+Session| UTC Start| UTC End
+1| 04:00| 12:00
+2| 12:00| 20:00
+3| 20:00| 04:00 next day
+
+Activation at any time within the scheduled slot counts for that full session if accepted by the backend.
+
+Activation alone does not make a session successful.
+
+A session becomes successful only after the scheduled slot ends and backend validation is completed.
+
+5.6 Reward Calculation Module
 
 Responsibilities:
+
+- Determine session reward eligibility.
+- Calculate regular mining distribution.
+- Calculate referral bonus eligibility.
+- Apply deterministic budget-safe allocation.
+- Prevent duplicate reward allocation.
+- Submit approved reward entries to the ledger.
+
+The backend must use the approved tokenomics:
+
+Allocation| SAC
+Regular Mining| 12,960,000
+Referral Bonus| 4,320,000
+App Reserve| 1,720,000
+Founder/Personal Reserve| 12,000,000
+Node Mining| 0
+Total Supply| 31,000,000
+
+The network-wide reward pools per effective session are:
+
+- Regular Mining: 6,000 SAC.
+- Referral Bonus: 2,000 SAC.
+- Total: 8,000 SAC.
+
+These are network-wide pools, not guaranteed individual rewards.
+
+The backend must ensure that actual distribution never exceeds the approved allocation.
+
+5.7 Referral Module
+
+Responsibilities:
+
+- Validate referral codes.
+- Create referral relationships.
+- Enforce the maximum of 10 direct referrals.
+- Check referrer eligibility.
+- Check active direct referrals.
+- Determine eligible referral groups.
+- Process one lifetime group change.
+- Apply the new relationship from the next new session.
+- Prevent duplicate referral bonus shares.
+
+A referrer must have at least three active direct referrals in the same session to qualify.
+
+The referral module must follow the approved Referral Specification.
+
+5.8 Balance Module
+
+Responsibilities:
+
+- Retrieve user balances.
+- Calculate available and locked balances.
+- Apply approved credits and debits.
+- Coordinate with the ledger.
+- Prevent unauthorized balance changes.
+- Support reconciliation.
+
+A balance must be derived from valid ledger transactions or maintained through a verified ledger-consistent accounting process.
+
+The mobile application must not be able to directly set a balance.
+
+5.9 Ledger Module
+
+Responsibilities:
+
+- Record financial transactions.
+- Maintain immutable transaction history.
+- Generate unique transaction identifiers.
+- Maintain transaction references.
+- Support reconciliation.
+- Record approved corrections as new entries.
+
+Existing ledger entries must never be secretly overwritten or deleted.
+
+5.10 Notification Module
+
+Responsibilities:
+
+- Generate in-app notifications.
+- Trigger push notifications.
+- Record notification history.
+- Track delivery status where supported.
+- Handle notification events.
+
+Notification events include:
 
 - Session activation.
-- Session validation.
-- Session timestamps.
-- Daily session limits.
-- Session completion.
-- Session history.
+- Session success or failure.
+- Reward credit.
+- Referral bonus.
+- Referral group change.
+- Account status change.
+- KYC status.
+- Maintenance announcements.
 
-Reward Module
+Deleting a notification from a user's notification history must not delete its underlying transaction or system record.
 
-Responsibilities:
+6. DATABASE ARCHITECTURE
 
-- Reward calculation.
-- Mining Power application.
-- Virtual reward ledger.
-- Reward balance.
-- Reward budget tracking.
-- Reward reconciliation.
+The database will be the persistent storage layer for application data.
 
-Referral Module
+The final database engine and deployment configuration must be confirmed in the Backend Specification.
 
-Responsibilities:
+Logical data domains include:
 
-- Referral code generation.
-- Referral code validation.
-- Referral relationships.
-- Referral limits.
-- Referral validity.
-- Mining Power bonus eligibility.
+Database
+│
+├── Users
+├── Authentication Sessions
+├── User Profiles
+├── Referral Relationships
+├── Mining Sessions
+├── Session Activations
+├── Session Results
+├── Reward Records
+├── Balances
+├── Ledger Transactions
+├── Notifications
+├── KYC Records
+├── Admin Accounts
+├── Admin Requests
+├── Audit Logs
+├── Backup Records
+└── Public Ledger Blocks
 
-Notification Module
+Database requirements:
 
-Responsibilities:
+- Enforce primary and foreign key constraints where appropriate.
+- Use unique constraints for critical identifiers.
+- Use atomic database transactions for related financial operations.
+- Prevent duplicate session activation.
+- Prevent duplicate reward credit.
+- Maintain immutable transaction history.
+- Support backup and recovery.
+- Record timestamps in UTC.
+- Document schema migrations.
 
-- Notification creation.
-- Notification history.
-- Delivery status.
-- User notification preferences.
+The detailed schema belongs in "07-Database-Schema.md".
 
-Admin Module
+7. API COMMUNICATION ARCHITECTURE
 
-Responsibilities:
+The mobile application will communicate with the backend through HTTPS REST APIs.
 
-- Administrative authentication.
-- Account review.
-- Account status management.
-- Reward monitoring.
-- Referral monitoring.
-- Audit history.
-- System configuration management.
+7.1 Communication Format
 
-Administrative access must use role-based permissions.
+- Protocol: HTTPS.
+- API style: REST.
+- Data format: JSON.
+- Authentication: backend-issued credentials or tokens.
+- Time standard: UTC.
+- API versioning: required for public API evolution.
 
-6. API ARCHITECTURE
+7.2 Example API Groups
 
-The mobile application will communicate with the backend through REST APIs.
-
-Production communication must use HTTPS.
-
-Proposed API base path:
-
-/api/v1/
-
-Proposed endpoint groups:
+Illustrative endpoint groups:
 
 /api/v1/auth
 /api/v1/users
-/api/v1/account
-/api/v1/verification
-/api/v1/community
 /api/v1/mining
 /api/v1/rewards
 /api/v1/referrals
-/api/v1/history
+/api/v1/balance
+/api/v1/transactions
 /api/v1/notifications
-/api/v1/admin
+/api/v1/kyc
+/api/v1/explorer
 
-The exact endpoint definitions will be documented in the Backend Specification.
+Exact endpoint names and request/response structures must be defined in the API and Backend Specifications.
 
-6.1 API Request Flow
+7.3 API Response Requirements
 
-Mobile Application
-        |
-        v
-API Request
-        |
-        v
-Authentication Middleware
-        |
-        v
-Request Validation
-        |
-        v
-Business Logic
-        |
-        v
-Database Operation
-        |
-        v
-API Response
-        |
-        v
-Mobile Application
+Responses should use consistent structures.
 
-All protected operations must validate the user's authorization.
+Successful responses should provide:
 
-6.2 API Response Standards
+- Success status.
+- Relevant data.
+- Request or correlation identifier where appropriate.
 
-Responses should use a consistent structure.
+Error responses should provide:
+
+- Stable error code.
+- Safe, understandable message.
+- Request or correlation identifier where appropriate.
+
+Internal server errors, secrets and sensitive implementation details must not be exposed to clients.
+
+8. MINING SESSION PROCESSING FLOW
+
+The following flow describes the logical session lifecycle.
+
+Scheduled Session Opens
+          |
+          v
+User Requests Activation
+          |
+          v
+Backend Authentication
+          |
+          v
+Activation Eligibility Check
+          |
+          v
+Activation Accepted?
+       /       \
+     No         Yes
+     |           |
+     v           v
+ Return Error  Save Activation
+                 |
+                 v
+          Scheduled Slot Ends
+                 |
+                 v
+          Backend Validation
+                 |
+                 v
+          Session Successful?
+              /       \
+            No         Yes
+            |           |
+            v           v
+        Save Failure  Determine Eligibility
+                        |
+                        v
+                 Calculate Rewards
+                        |
+                        v
+                 Ledger Transaction
+                        |
+                        v
+                 Update Verified Balance
+                        |
+                        v
+                 Publish Public Record
+
+The flow is logical and may be implemented through background jobs, queues or database transactions.
+
+8.1 Session Rules
+
+- One activation per user per scheduled session.
+- Missed sessions cannot be activated retrospectively.
+- Activation does not guarantee success.
+- A successful session requires backend validation after the slot ends.
+- Application closure after activation does not cancel an accepted activation.
+- Internet loss or device shutdown after accepted activation does not cancel it.
+- Duplicate requests must not create duplicate activations or rewards.
+- Reward credit should complete within five minutes after session end under normal operation.
+- If processing fails, the operation must remain pending for safe retry or reconciliation.
+
+8.2 Effective Session Counter
+
+The system has 2,160 effective sessions.
+
+If the backend mining system is unavailable, effective session progression must pause.
+
+After recovery, processing must resume from the correct session state without skipping or duplicating effective sessions.
+
+9. ACCOUNT STATUS ARCHITECTURE
+
+The backend controls account status.
+
+The application only displays the status returned by the backend.
+
+Expected statuses include:
+
+- PENDING.
+- VALID.
+- SUSPENDED.
+- CANCELLED.
+
+9.1 Initial Validity
+
+A new user must complete 21 successful sessions to become VALID.
+
+Regular Mining Reward is available during the first 21 successful sessions.
+
+Referral Bonus is available only when the user is VALID and meets the applicable referral rules.
+
+9.2 Inactivity
+
+After becoming VALID, the user must complete at least one successful session within every rolling window of 90 scheduled session slots.
+
+The counter resets only after a successful session.
+
+Activation alone does not reset the counter.
+
+If the user completes no successful session within the next 90 scheduled slots, the account becomes permanently CANCELLED.
+
+A CANCELLED account cannot be reactivated.
+
+The cancelled user's remaining balance is forfeited to App Reserve according to the approved rules.
+
+9.3 Referral Group Change
+
+A user may change their referral group once during their lifetime, after initial validity.
+
+A successful group change:
+
+- Resets the 21-session progress.
+- Returns the account to pending validity.
+- Continues Regular Mining Reward.
+- Disables Referral Bonus until validity is regained.
+- Does not change existing balance.
+- Suspends the 90-slot inactivity counter until validity is regained.
+- Takes effect from the next new session.
+
+The backend must enforce these rules.
+
+10. PUBLIC LEDGER AND EXPLORER ARCHITECTURE
+
+SAECOIN will provide an app-operated public ledger and Explorer.
+
+This ledger is not a decentralized blockchain.
+
+It is a publicly inspectable, cryptographically verifiable record system operated by the SAECOIN backend.
+
+10.1 Publishing Flow
+
+Session Ends
+     |
+     v
+Backend Validation
+     |
+     v
+Database Records Confirmed
+     |
+     v
+Ledger Transactions Prepared
+     |
+     v
+Block Created
+     |
+     v
+Block Hash Generated
+     |
+     v
+Backend Signing Key Signs Block
+     |
+     v
+Public Ledger Publisher
+     |
+     v
+Explorer Makes Block Available
+
+10.2 Block Requirements
+
+Each published block should contain:
+
+- Block Number.
+- Block Hash.
+- Previous Block Hash.
+- Session Number.
+- Session Close Time UTC.
+- Backend Digital Signature.
+- Block Publishing Time UTC.
+- Associated transaction records.
+
+Blocks must have unique identifiers and hash-linked history.
+
+10.3 Public Transaction Information
+
+The Explorer may display:
+
+- Transaction ID.
+- User ID.
+- Transaction Amount in SAC.
+- Transaction Purpose.
+- Session Confirmation.
+- Total Balance where permitted by the approved public data policy.
+
+The public User ID consists of a username and unique generated number.
 
 Example:
 
-{
-  "success": true,
-  "data": {},
-  "message": "Request completed successfully"
-}
-
-Error responses should provide safe, meaningful error codes and messages.
-
-Internal database details, secrets, and stack traces must not be exposed to users.
-
-7. DATABASE ARCHITECTURE
-
-The system requires persistent database storage.
-
-The final database engine will be selected in the Database Schema document.
-
-The database architecture must support:
-
-- Relational data integrity.
-- Transactions.
-- Unique constraints.
-- Foreign keys where appropriate.
-- Indexing.
-- Backup and recovery.
-- Migration management.
-- Audit records.
-
-7.1 Logical Database Domains
-
-Database
-   |
-   +---- Identity
-   |       +---- Users
-   |       +---- Authentication Records
-   |       +---- Verification Records
-   |
-   +---- Mining
-   |       +---- Mining Sessions
-   |       +---- Mining Status
-   |
-   +---- Rewards
-   |       +---- Reward Ledger
-   |       +---- Reward Budget
-   |
-   +---- Referral
-   |       +---- Referral Codes
-   |       +---- Referral Relationships
-   |
-   +---- Community
-   |       +---- Community Verification
-   |
-   +---- System
-           +---- Notifications
-           +---- Audit Logs
-           +---- Configuration
-
-7.2 Data Integrity
-
-Important operations must use database transactions where necessary.
-
-Examples:
-
-- Session completion and reward ledger creation.
-- Referral validity and bonus eligibility updates.
-- Account cancellation and reward balance reconciliation.
-- Reward budget reservation and allocation.
-
-The system must prevent duplicate reward entries.
-
-Reward ledger entries must be traceable and auditable.
-
-8. MINING SESSION ARCHITECTURE
-
-The mining system is a virtual session and reward-processing system.
-
-It is not a CPU/GPU mining process.
-
-8.1 Session Activation
-
-User
- |
- v
-Mobile App
- |
- v
-Mining API
- |
- v
-Eligibility Validation
- |
- v
-Daily Limit Validation
- |
- v
-Active Session Check
- |
- v
-Database Transaction
- |
- v
-Create Session
- |
- v
-Return Session Details
+Username: Emon
+User Number: 00001258
 
-The backend must:
+The Explorer must not expose:
 
-1. Verify authentication.
-2. Check account eligibility.
-3. Check community requirements.
-4. Check daily activation limits.
-5. Check for an existing active session.
-6. Reserve or validate the required session state.
-7. Create the session record.
-8. Return authoritative timestamps.
+- Passwords.
+- Authentication tokens.
+- Private keys.
+- Recovery codes.
+- KYC documents.
+- Personal identity documents.
+- Private contact information.
+- Other confidential user data.
 
-8.2 Session Completion
+10.4 Verification
 
-The backend must evaluate the session using server-controlled timestamps.
+The Explorer must publish the applicable public verification key.
 
-Proposed flow:
+Users should be able to verify:
 
-Session Created
-      |
-      v
-Server Start Timestamp
-      |
-      v
-8-Hour Duration
-      |
-      v
-Completion Evaluation
-      |
-      v
-Validate Session
-      |
-      v
-Calculate Reward
-      |
-      v
-Create Reward Ledger Entry
-      |
-      v
-Mark Session Completed
+- Block hashes.
+- Previous block references.
+- Digital signatures.
+- Transaction references.
 
-The exact ordering and atomic database transaction must be defined in the implementation.
+Historical public keys must remain available to verify older blocks.
 
-The session must not be marked completed if reward processing fails.
+10.5 Corrections
 
-Repeated completion processing must not create duplicate rewards.
+Existing public blocks must remain immutable.
 
-8.3 Daily Limit Enforcement
+A correction must:
 
-The backend must enforce the maximum of 3 session activations per official day.
+1. Be submitted as a correction request.
+2. Be validated by the backend.
+3. Receive Main Admin approval.
+4. Create a new Correction Block.
+5. Reference the original block or transaction.
+6. Include the correction reason.
+7. Preserve the original record.
+8. Appear in the Explorer and Audit Log.
 
-The official timezone and daily boundary must be defined in the Backend Specification.
+11. ADMIN ARCHITECTURE
 
-Multiple devices and repeated requests must not bypass this limit.
+Admin operations must be separated from normal user operations.
 
-9. REWARD ARCHITECTURE
+Admin access must use a protected administrative interface and backend authorization.
 
-The reward system must maintain a virtual reward ledger.
+11.1 Admin Roles
 
-The ledger records reward events rather than relying only on a mutable displayed balance.
+Main Admin
 
-Each reward entry should include:
+Responsibilities:
 
-- User identifier.
-- Related session identifier.
-- Reward category.
-- Reward amount.
-- Mining Power information.
-- Creation timestamp.
-- Processing status.
-- Reference information.
+- Final approval or rejection.
+- Review security events.
+- Review reward correction requests.
+- Review account suspension evidence.
+- Approve recovery operations.
+- Manage Sub-Admins.
+- Review audit logs.
+- Review backup and system reports.
 
-The displayed balance should be derived from valid ledger entries or maintained through a safely reconciled balance system.
+Sub-Admin
 
-9.1 Reward Categories
+Responsibilities:
 
-Proposed categories:
+- Verify submitted information.
+- Review evidence.
+- Prepare reports.
+- Forward requests to Main Admin.
 
-- Regular Mining Reward.
-- Referral Mining Power Bonus.
-- Reward Adjustment.
-- Reward Reversal.
+Sub-Admins must not have final approval or rejection authority.
 
-The final category definitions and calculations must follow the Mining Reward Specification.
+11.2 Approval Flow
 
-9.2 Reward Budget
+Request Received
+       |
+       v
+Sub-Admin Verification
+       |
+       v
+Main Admin Review
+       |
+       v
+Approve / Reject
+       |
+       v
+Backend Validates Decision
+       |
+       v
+Backend Executes Approved Action
+       |
+       v
+Audit Log Updated
 
-The separate App Mining allocation is 5,000,000 SAC.
+The backend must validate administrative authority before executing any protected operation.
 
-The provisional daily budget is:
+12. SECURITY ARCHITECTURE
 
-- Regular mining: 4,500 SAC.
-- Referral bonus: 1,000 SAC.
-- Safety reserve: 500 SAC.
+Security must be enforced at the backend and infrastructure layers.
 
-Total provisional daily budget: 6,000 SAC.
+Mandatory controls include:
 
-These figures are not final until approved in the Mining Reward Specification.
-
-The backend must prevent total reward processing from exceeding the remaining approved allocation.
-
-Unused daily budget must not automatically increase the next day's maximum budget unless a revised policy explicitly permits it.
-
-10. REFERRAL ARCHITECTURE
-
-The referral system must operate through backend-controlled relationships.
-
-Proposed flow:
-
-Referrer
-   |
-   v
-Referral Code
-   |
-   v
-New User Registration
-   |
-   v
-Backend Code Validation
-   |
-   v
-Referral Relationship Created
-   |
-   v
-21 Successful Sessions
-   |
-   v
-Referral Validity Confirmed
-   |
-   v
-Bonus Eligibility
-
-The backend must enforce:
-
-- Maximum 10 accepted referrals per referrer.
-- No self-referral.
-- 21 successful sessions for referred account validity.
-- Independent bonus eligibility for each participant.
-- Bonus application only during the relevant participant's active session.
-- No banking of missed inactive-session bonuses.
-
-The bonus percentage and formula remain subject to final approval.
-
-11. ACCOUNT INACTIVITY ARCHITECTURE
-
-The proposed inactivity policy cancels an account after 90 consecutive 8-hour session windows without a mining session activation.
-
-This is equivalent to 720 hours or 30 continuous days.
-
-The exact time anchor and evaluation method remain to be finalized.
-
-The backend must:
-
-1. Track the last qualifying session activation.
-2. Evaluate inactivity.
-3. Update account status.
-4. Revoke applicable reward eligibility.
-5. Reconcile unused virtual rewards with the Main Reward Pool.
-6. Revoke applicable referral eligibility.
-7. Record the cancellation event.
-
-Account cancellation must be performed through a controlled backend process.
-
-12. ADMINISTRATIVE ARCHITECTURE
-
-Administrative functions must be isolated from normal user functionality.
-
-The admin system should support:
-
-- Secure administrator login.
-- Role-based access control.
-- Account status review.
-- Referral monitoring.
-- Reward monitoring.
-- Reward budget monitoring.
-- Community verification review.
-- System announcements.
-- Audit history.
-
-Sensitive operations must require appropriate authorization.
-
-All important administrative changes must be logged.
-
-The system must not allow ordinary administrators to create arbitrary reward balances outside the approved reward policy.
-
-13. EXTERNAL INTEGRATION ARCHITECTURE
-
-External services may include:
-
-- Advertisement providers.
-- Email delivery providers.
-- Push notification services.
-- Community platform verification integrations.
-
-Each integration must use a dedicated adapter or service module.
-
-External providers must not directly control:
-
-- Account validity.
-- Mining session completion.
-- Reward calculations.
-- Reward balances.
-- Referral eligibility.
-
-Integration failures must be handled safely.
-
-No provider integration should be treated as guaranteed until its technical and policy requirements are verified.
-
-14. SECURITY ARCHITECTURE
-
-Security must exist at every system layer.
-
-14.1 Mobile Security
-
-- Secure token storage.
-- No hardcoded secrets.
-- No sensitive data in logs.
-- Input validation.
-- Safe application configuration.
-
-14.2 API Security
-
-- HTTPS.
-- Authentication middleware.
-- Authorization checks.
-- Request validation.
-- Rate limiting.
-- Safe error responses.
-- Duplicate request protection.
-
-14.3 Backend Security
-
+- HTTPS for communication.
 - Secure password hashing.
-- Environment-based secrets.
-- Restricted administrative access.
-- Database access controls.
+- Secure token handling.
+- Role-based authorization.
+- Input validation.
+- Rate limiting.
+- Protection against duplicate requests.
+- Encrypted backups.
+- Secure secret management.
 - Audit logging.
-- Dependency review.
+- Protection of signing keys.
+- Restricted administrative endpoints.
 
-14.4 Reward Security
+Admin authentication requires password and Authenticator App OTP.
 
-- Server-side calculations.
-- Atomic ledger processing.
-- Duplicate reward prevention.
-- Allocation limits.
-- Reconciliation.
-- Auditability.
+Email OTP recovery and Main Admin recovery must follow the approved Security Specification.
 
-Detailed security controls will be defined in the Security Specification.
+The mobile application must never contain server-side secrets, private signing keys or administrative credentials.
 
-15. DEPLOYMENT ARCHITECTURE
+13. BACKUP AND RECOVERY ARCHITECTURE
 
-The initial development environment should allow the backend to run on the developer's own computer.
+The backup system must preserve application and ledger consistency.
 
-Proposed environments:
+Backups must:
 
-Development
-    |
-    +---- Android Emulator
-    |
-    +---- Physical Android Device
-    |
-    +---- Local Backend
-    |
-    +---- Development Database
+- Run after every Mining Session.
+- Be encrypted.
+- Include integrity verification.
+- Preserve the history of all 2,160 effective sessions.
+- Record backup status.
+- Alert Admin when backup fails.
 
-Future production architecture:
+Approved backup destinations:
 
-Android Application
-        |
-        v
-HTTPS
-        |
-        v
-Self-Controlled Server
-        |
-        +---- Backend API
-        |
-        +---- Background Jobs
-        |
-        +---- Database
-        |
-        +---- Backup System
+1. Laptop backup.
+2. SAECOIN Google Drive backup.
+3. Manual Pen Drive backup through the Admin Panel.
 
-The production server may be deployed separately when the project is ready.
+Monthly recovery tests must verify restoration from the available backup sources.
 
-Development and production environments must remain isolated.
+The detailed encryption and recovery process belongs in "10-Security-Specification.md" and "06-Backend-Specification.md".
 
-16. BACKUP AND RECOVERY ARCHITECTURE
+14. ERROR HANDLING AND RECOVERY
 
-The backend must support database backup and recovery.
+The system must handle failures without corrupting balances or transaction history.
 
-Requirements:
+Important failure scenarios include:
 
-- Scheduled backups.
-- Protected backup storage.
-- Documented recovery procedures.
-- Backup integrity verification.
-- Restricted backup access.
-- Recovery testing.
+- Mobile network interruption.
+- API timeout.
+- Backend downtime.
+- Database failure.
+- Mining session processing failure.
+- Reward processing failure.
+- Duplicate request.
+- Public ledger publishing failure.
+- Backup failure.
+- Admin service failure.
 
-Reward ledger records and mining session records require particular protection.
+14.1 Retry Requirements
 
-The project must define backup frequency and retention periods before production launch.
+Retryable operations must use unique operation identifiers or idempotency keys.
 
-17. MONITORING AND AUDIT ARCHITECTURE
+Retries must not create:
 
-The backend should record important operational events.
+- Duplicate activations.
+- Duplicate successful sessions.
+- Duplicate reward credits.
+- Duplicate ledger transactions.
+- Duplicate public blocks.
 
-Monitoring should cover:
+14.2 Pending Operations
 
-- API availability.
-- API errors.
-- Authentication failures.
-- Mining activation failures.
-- Session completion failures.
-- Reward processing failures.
-- Database failures.
-- Referral processing errors.
-- Administrative actions.
+If a session or reward operation cannot complete:
 
-Logs must not expose passwords, authentication tokens, private keys, or other sensitive data.
+- Preserve its processing state.
+- Do not mark it successful without validation.
+- Do not silently discard it.
+- Allow safe retry or reconciliation.
+- Record the final result.
+- Notify the relevant Admin when manual review is required.
 
-Audit records should be protected from unauthorized modification.
+14.3 Maintenance Mode
 
-18. FUTURE BLOCKCHAIN INTEGRATION
+During critical maintenance:
 
-The App Architecture should allow future integration with the SAECOIN blockchain distribution system.
+- Display an Under Maintenance state.
+- Stop new activations when required.
+- Stop reward processing when required.
+- Preserve all balances and records.
+- Prevent transfers or withdrawals if those features are later introduced and are affected.
+- Resume only after backend validation.
+- Record maintenance start and end times.
 
-Future functionality may include:
+15. SCALABILITY AND DEPLOYMENT
 
-- Wallet address association.
-- Reward eligibility review.
-- Approved distribution requests.
-- Distribution transaction references.
-- On-chain confirmation status.
+The architecture should allow future growth without changing the core business rules.
 
-However:
+Potential scaling measures include:
 
-1. The mobile application does not implement blockchain consensus.
-2. The mobile application does not perform Proof-of-Work mining.
-3. Virtual reward entries are not on-chain SAC.
-4. The future blockchain distribution process must be separately approved.
-5. Distribution must reconcile with the 5,000,000 SAC App Mining allocation.
+- Horizontal API scaling.
+- Database indexing.
+- Background job processing.
+- Queue-based event processing.
+- Read-only Explorer services.
+- Caching of non-sensitive public data.
+- Separate backup workers.
+- Monitoring and alerting.
 
-The future blockchain node remains a separate project component.
+These are implementation options, not mandatory separate services from the beginning.
 
-19. ARCHITECTURAL DECISIONS TO FINALIZE
+The first implementation should remain manageable and avoid unnecessary infrastructure complexity.
 
-The following implementation decisions remain open:
+16. ARCHITECTURAL BOUNDARIES
 
-Item| Current Direction| Finalization
-Mobile framework| React Native + Expo| Selected
-Mobile language| TypeScript| Selected
-Primary IDE| Android Studio| Selected
-Backend framework| Self-hosted backend| Pending
-Backend language| To be selected| Pending
-Database engine| Persistent relational database| Pending
-API style| REST| Selected
-API versioning| "/api/v1"| Proposed
-Authentication strategy| Secure token-based authentication| Pending
-Background job system| Backend-controlled| Pending
-Hosting| Self-controlled server| Later
-Admin interface| Separate administrative interface| Pending
+The following boundaries are mandatory:
 
-Final technology choices must be documented before implementation.
+1. Mobile clients cannot approve rewards.
+2. Mobile clients cannot change account status.
+3. Mobile clients cannot directly modify balances.
+4. Admin UI cannot bypass backend approval rules.
+5. Explorer cannot modify ledger records.
+6. Public ledger publication cannot become the source of truth over the backend database.
+7. Notification deletion cannot delete financial records.
+8. A user cannot activate a missed session.
+9. A user cannot obtain duplicate rewards through repeated requests.
+10. No CPU/GPU Proof-of-Work mining is performed by the mobile application.
+11. The current app-operated ledger must not be described as decentralized.
+12. Future independent blockchain development must remain separate from this app architecture.
 
-20. FINAL ARCHITECTURE POLICY
+17. FUTURE EXTENSIBILITY
 
-The SAECOIN App must use a modular architecture with clear separation between the mobile application, backend services, and database.
+The architecture may later support:
 
-All authoritative mining, reward, referral, and account operations must be controlled by the backend.
+- Additional mobile features.
+- A web-based Explorer.
+- Improved Admin Panel.
+- Additional monitoring services.
+- Independent blockchain integration.
+- External wallet integration.
+- Additional verification tools.
 
-The database must preserve the integrity and traceability of all important records.
+Any future independent blockchain must have its own protocol, consensus, node, security and deployment specifications.
 
-The architecture must support future expansion while keeping the current App Mining application independent from the future blockchain node.
+It must not be treated as an existing feature of the current SAECOIN App.
 
-Any significant architectural change must be documented and reviewed before implementation.
+18. IMPLEMENTATION REQUIREMENTS
+
+Implementation must follow these documents:
+
+- "01-App-PRD.md"
+- "02-UI-UX-Design.md"
+- "03-App-Flow-Specification.md"
+- "04-Technical-Requirements.md"
+- "06-Backend-Specification.md"
+- "07-Database-Schema.md"
+- "08-Mining-Reward-Specification.md"
+- "09-Referral-Specification.md"
+- "10-Security-Specification.md"
+- "11-Testing-Strategy.md"
+- "12-Release-and-Launch-Plan.md"
+
+If a conflict is found between documents, implementation must pause for clarification rather than silently choosing a different rule.
+
+19. FINAL ARCHITECTURE POLICY
+
+The SAECOIN App will use a centralized client–server architecture with React Native, Expo and TypeScript for the mobile application.
+
+The backend remains the authoritative system for all account, session, reward, referral, balance, administrative and ledger operations.
+
+The public ledger is an app-operated, append-only and cryptographically verifiable record system. It is not a decentralized blockchain.
+
+Security, consistency, auditability and recoverability take priority over unnecessary technical complexity.
+
+Any significant architectural change must be documented, reviewed and approved before implementation.
 
 ---
 
