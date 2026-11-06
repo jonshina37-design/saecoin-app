@@ -1,585 +1,718 @@
-SAECOIN — MINING REWARD SPECIFICATION
+SAECOIN — MINING & REWARD SPECIFICATION
 
-Version: 1.0
+Version: 1.1
 Project: SAECOIN App
 Ticker: SAC (Provisional)
-Status: Draft
-Document Type: Reward Economics Specification
+Mining Type: Virtual Mining Reward Distribution
+Total Supply: 31,000,000 SAC
+Effective Sessions: 2,160
+Status: Draft — Updated for Approved Requirements
 
 ---
 
 1. PURPOSE
 
-This document defines the proposed virtual reward distribution system for SAECOIN App Mining.
+This document defines the mining session and reward distribution rules for the SAECOIN application.
 
-It establishes the rules for:
+SAECOIN App uses a virtual mining reward distribution system.
 
-- App Mining allocation.
-- Daily reward budget.
-- Regular mining rewards.
-- Mining Power.
-- Referral bonuses.
-- Safety reserve.
-- Reward calculations.
-- Reward ledger processing.
-- Reward pool accounting.
-- Reward limits.
-- Reward adjustments.
-- Future distribution considerations.
+It does not perform actual Proof-of-Work mining.
 
-The purpose is to create a transparent, auditable, and controlled reward system.
+The mobile application does not use CPU or GPU resources to mine cryptocurrency.
 
-2. IMPORTANT DISTINCTION
+All session validation, reward calculation, eligibility checks and reward credits are controlled by the backend.
 
-SAECOIN App Mining is a virtual reward distribution system.
+This specification defines:
 
-It is not Proof-of-Work blockchain mining.
+- Mining session schedule.
+- Session activation.
+- Session validation.
+- Effective session counting.
+- Regular Mining Reward.
+- Referral Bonus.
+- Reward allocation.
+- Fixed supply protection.
+- Reward calculation requirements.
+- Duplicate prevention.
+- Reward processing failures.
+- Ledger integration.
+- Reconciliation and audit requirements.
 
-The mobile application does not perform:
+2. MINING MODEL
 
-- CPU mining.
-- GPU mining.
-- Hash-based Proof-of-Work.
-- Blockchain consensus.
-- On-chain transaction validation.
+SAECOIN uses a centralized virtual mining model.
 
-The app records eligible mining activity and calculates virtual SAC rewards through the backend.
+Users activate a scheduled mining session through the mobile application.
 
-Virtual SAC rewards are not automatically cryptocurrency, transferable tokens, or on-chain assets.
+After the scheduled session ends, the backend validates eligible activations and processes the applicable rewards.
 
-3. APP MINING ALLOCATION
+The backend is the sole authority for:
 
-The proposed total App Mining allocation is:
+- Session eligibility.
+- Successful session confirmation.
+- Reward calculation.
+- Referral eligibility.
+- Reward allocation.
+- Balance updates.
+- Ledger transactions.
 
-5,000,000 SAC
+The mobile application only requests activation and displays backend-confirmed results.
 
-This allocation is reserved for the SAECOIN App Mining reward program.
+3. FIXED TOKENOMICS
 
-It is separate from:
+3.1 Total Supply
 
-- Future blockchain mining allocation.
-- Future ecosystem allocation.
-- Other future project allocations.
+The total SAECOIN supply is fixed at:
 
-The backend must prevent the total amount of App Mining rewards from exceeding the approved allocation.
+31,000,000 SAC
 
-The allocation must be tracked independently from future blockchain balances.
+The approved allocation is:
 
-4. PROVISIONAL DAILY REWARD BUDGET
+Allocation| Amount
+Regular Mining| 12,960,000 SAC
+Referral Bonus| 4,320,000 SAC
+Initial App Reserve| 1,000,000 SAC
+Unused App Mining Allocation transferred to App Reserve| 720,000 SAC
+Total App Reserve| 1,720,000 SAC
+Founder/Personal Reserve| 12,000,000 SAC
+Node Mining| 0 SAC
+Total Supply| 31,000,000 SAC
 
-The current proposed daily budget is:
+3.2 App Mining Distribution
 
-Category| Daily Budget
-Regular Mining Rewards| 4,500 SAC
-Referral Bonus Rewards| 1,000 SAC
-Safety Reserve| 500 SAC
-Total| 6,000 SAC
+The total App Mining Distribution is:
 
-These figures are provisional and require final approval before production launch.
+17,280,000 SAC
 
-4.1 Regular Mining Budget
+It consists of:
 
-The regular mining budget is reserved for eligible users who complete valid mining sessions.
+- Regular Mining: 12,960,000 SAC.
+- Referral Bonus: 4,320,000 SAC.
 
-Daily allocation:
+The App Reserve and Founder/Personal Reserve are separate allocations.
 
-"4,500 SAC"
+The Founder/Personal Reserve must not be treated as part of the App Reserve.
 
-4.2 Referral Bonus Budget
+3.3 Node Mining
 
-The referral bonus budget is reserved for eligible referral-related Mining Power rewards.
+Node Mining allocation is zero in the current application.
 
-Daily allocation:
+No node mining reward may be created under this specification.
 
-"1,000 SAC"
+4. MINING SESSION SCHEDULE
 
-4.3 Safety Reserve
+4.1 Daily Schedule
 
-The safety reserve is intended to protect the reward system against unexpected accounting requirements and approved operational adjustments.
+The backend must maintain three fixed eight-hour UTC sessions every day.
 
-Daily allocation:
+Session| Start UTC| End UTC
+Session 1| 04:00| 12:00
+Session 2| 12:00| 20:00
+Session 3| 20:00| 04:00 next day
 
-"500 SAC"
+The backend clock is authoritative.
 
-The safety reserve must not automatically become an additional user reward.
+The mobile device's local clock must not determine session eligibility.
 
-Its use requires an approved policy and an auditable backend operation.
+4.2 Activation Window
 
-5. ALLOCATION ACCOUNTING
+A user may activate a session at any time within its complete eight-hour scheduled window.
 
-The backend must maintain separate accounting for:
+Examples:
 
-- Total App Mining allocation.
-- Cumulative regular mining rewards.
-- Cumulative referral bonuses.
-- Remaining regular mining budget.
-- Remaining referral budget.
-- Safety reserve.
-- Total distributed virtual rewards.
-- Remaining App Mining allocation.
+- Activation at 04:01 is accepted if all conditions pass.
+- Activation at 08:30 is accepted if all conditions pass.
+- Activation at 11:59 is accepted if all conditions pass.
+- Activation after the session closes is rejected.
 
-The system must never allocate more rewards than the approved limits.
+An accepted activation counts for the full scheduled session.
 
-A reward operation must check both:
+The backend must not calculate a reduced session duration based on activation time.
 
-1. The applicable daily category budget.
-2. The remaining total App Mining allocation.
-
-Both checks must occur within a protected transaction.
-
-6. DAILY BUDGET RULES
-
-The daily reward budget is controlled by the backend.
-
-Current proposed limits:
-
-- Regular Mining: 4,500 SAC per day.
-- Referral Bonus: 1,000 SAC per day.
-- Safety Reserve: 500 SAC per day.
-
-Rules:
-
-1. Each category must have its own budget accounting.
-2. One category must not consume another category's budget without an approved policy change.
-3. Unused daily budget does not automatically roll over.
-4. Daily budget limits must be enforced server-side.
-5. The project timezone and daily reset boundary must be finalized.
-6. The backend must prevent concurrent processing from exceeding the daily budget.
-7. All budget changes must be authorized and audited.
-
-7. MINING SESSION REQUIREMENTS
-
-The current App Mining session rules are:
-
-- Each session lasts 8 hours.
-- A user may activate a maximum of 3 sessions per project-defined day.
-- Each session must be activated manually.
-- A session remains active if the application is closed.
-- A session is successful only after 8 hours and backend validation.
-- Device time cannot determine session validity.
-- Duplicate session activation must be prevented.
-
-Only successfully validated sessions qualify for normal mining rewards.
-
-8. MINING POWER
-
-Mining Power is the measurement used to calculate a user's share of the regular mining reward budget.
-
-The backend must maintain the authoritative Mining Power value.
-
-Mining Power may be influenced by approved factors such as:
-
-- Base Mining Power.
-- Referral bonus.
-- Other future approved bonuses.
-
-Unapproved bonuses must not affect reward calculations.
-
-8.1 Base Mining Power
-
-Every eligible user must have a defined Base Mining Power.
-
-The exact Base Mining Power value remains TBD.
-
-The value must be finalized before production reward calculations are enabled.
-
-8.2 Mining Power Snapshot
-
-The backend must record a Mining Power snapshot for every eligible mining session.
-
-The snapshot ensures that historical reward calculations remain reproducible.
-
-Changes to a user's current Mining Power must not silently change previously recorded session values.
-
-9. REGULAR MINING REWARD FORMULA
-
-The proposed regular reward model uses proportional distribution.
-
-The daily regular mining budget is distributed according to the eligible Mining Power recorded for successful sessions.
-
-Let:
-
-- "R" = Daily regular mining budget.
-- "Pᵢ" = Eligible Mining Power of a user's successful session.
-- "Pₜ" = Total eligible Mining Power for all successful sessions in the same reward accounting period.
-- "Wᵢ" = User's regular reward share.
-
-The proposed calculation is:
-
-"Wᵢ = R × (Pᵢ / Pₜ)"
-
-Where:
-
-- "R" is limited to 4,500 SAC per day.
-- "Pᵢ" is the user's eligible session Mining Power.
-- "Pₜ" is the total eligible Mining Power for the same period.
-
-9.1 Important Calculation Conditions
-
-1. Only successfully validated sessions are included.
-2. Failed or cancelled sessions are excluded.
-3. Each successful session must be counted once.
-4. Duplicate reward processing must be prevented.
-5. The total regular reward distribution must not exceed the daily regular budget.
-6. Exact SAC precision and rounding rules must be finalized.
-7. All calculations must use deterministic numeric operations.
-
-9.2 Reward Settlement
-
-The proportional model requires a clearly defined accounting period.
-
-The final implementation must specify:
-
-- Which project-defined day receives a session's reward.
-- When the daily eligible Mining Power total is finalized.
-- When rewards become available in user balances.
-- How late session completion is handled.
-- How failed or delayed background processing is handled.
-
-These settlement details remain open decisions until the reward implementation is approved.
-
-10. REFERRAL REWARD SYSTEM
-
-Referral rewards are based on Mining Power bonuses, not a fixed direct SAC payment for each referral.
-
-Current referral rules:
-
-1. A referrer may have up to 10 accepted referrals.
-2. A referred user must complete 21 successful mining sessions to become valid.
-3. Once the referred user becomes valid, both parties may qualify for referral Mining Power bonuses.
-4. Each participant must independently be actively mining for their own bonus to apply.
-5. An inactive participant does not receive a banked or deferred bonus.
-6. One participant's eligibility does not depend on the other participant being active.
-
-10.1 Referral Bonus Percentage
-
-The referral bonus percentage is TBD.
-
-A 5% bonus has been discussed as a possible proposal but has not been approved.
-
-It must not be treated as a final protocol rule.
-
-The final percentage must be approved before implementation.
-
-10.2 Referral Bonus Calculation
-
-The proposed model is:
-
-"Referral Bonus Mining Power = Base Mining Power × Approved Referral Bonus Percentage"
-
-"Total Mining Power = Base Mining Power + Eligible Referral Bonus Mining Power"
-
-The exact formula must be finalized in accordance with the approved referral policy.
-
-10.3 Independent Eligibility
-
-The backend must evaluate each participant separately.
-
-Example:
-
-- Referrer has an active successful mining session.
-- Referred user is not mining.
-
-Result:
-
-- The referrer may receive their eligible referral Mining Power bonus.
-- The referred user receives no referral bonus for that inactive session.
-- No inactive bonus is stored for later use.
-
-The reverse situation must follow the same rule.
-
-11. REFERRAL BUDGET CONTROL
-
-The daily referral bonus budget is:
-
-"1,000 SAC"
+4.3 Activation Rules
 
 The backend must:
 
-- Track referral reward usage separately.
-- Prevent the referral budget from being exceeded.
-- Apply the approved referral formula.
-- Prevent duplicate referral bonuses.
-- Record each beneficiary independently.
-- Preserve the related referral and session references.
+1. Authenticate the user.
+2. Identify the current scheduled session.
+3. Verify the activation window.
+4. Check account status.
+5. Check duplicate activation.
+6. Save the activation record.
+7. Return the activation result.
 
-If eligible referral rewards exceed the available referral budget, the backend must follow an approved distribution or limiting policy.
+Rules:
 
-The exact handling of excess demand is an open decision.
+- One activation per user per scheduled session.
+- A missed session cannot be activated retrospectively.
+- Duplicate requests must not create duplicate activations.
+- Activation alone does not guarantee a successful session.
+- Only backend-accepted activation records are eligible for session validation.
 
-The system must not silently exceed the referral budget.
+5. EFFECTIVE SESSION PROGRAM
 
-12. MINING POWER AND REWARD CALCULATION EXAMPLE
+The application has a total of:
 
-The following example is illustrative only.
+2,160 effective sessions
 
-Assume:
+At three scheduled sessions per day, this represents 720 effective operating days.
 
-- Daily regular budget: 4,500 SAC.
-- User A eligible Mining Power: 10.
-- User B eligible Mining Power: 20.
-- User C eligible Mining Power: 30.
-- Total eligible Mining Power: 60.
+The total session count is a network-wide program requirement, not an individual guaranteed reward count.
 
-The proportional shares would be:
+5.1 Effective Session Counting
 
-User| Mining Power| Share| Illustrative Reward
-User A| 10| 16.67%| 750 SAC
-User B| 20| 33.33%| 1,500 SAC
-User C| 30| 50%| 2,250 SAC
-Total| 60| 100%| 4,500 SAC
+The backend must maintain a unique effective session number.
 
-This example demonstrates the proposed proportional model.
+Every effective session must have:
 
-It does not establish the final Base Mining Power or guarantee any particular reward amount.
+- Unique Session ID.
+- Unique Session Number.
+- Scheduled Start Time UTC.
+- Scheduled End Time UTC.
+- Processing Status.
+- Completion Record.
 
-13. SAC PRECISION AND ROUNDING
+5.2 Backend Downtime
 
-Reward accounting must use deterministic numeric calculations.
+If the backend mining system is unavailable:
 
-Floating-point arithmetic must not be used for authoritative reward balances.
+- Effective session progression pauses.
+- The affected session must not be silently skipped.
+- Incomplete processing must remain traceable.
+- Processing resumes from the correct state after recovery.
+
+The system must not create extra effective sessions because of retry attempts.
+
+5.3 Session Completion
+
+A session becomes successful only after:
+
+1. The scheduled slot ends.
+2. The backend retrieves accepted activations.
+3. The backend validates eligibility.
+4. The result is saved.
+5. The session processing is completed.
+
+App closure, device shutdown or internet disconnection after an accepted activation must not automatically cancel that activation.
+
+6. NETWORK-WIDE REWARD POOLS
+
+Each effective session has two separate network-wide reward pools.
+
+Reward Type| Per Session
+Regular Mining| 6,000 SAC
+Referral Bonus| 2,000 SAC
+Total| 8,000 SAC
+
+These amounts are network-wide maximum distribution pools for each effective session.
+
+They are not fixed individual rewards.
+
+The amount received by an individual user depends on the approved eligibility and allocation rules.
+
+6.1 Total Distribution Calculation
+
+Across 2,160 effective sessions:
+
+Reward Type| Per Session| Total
+Regular Mining| 6,000 SAC| 12,960,000 SAC
+Referral Bonus| 2,000 SAC| 4,320,000 SAC
+Total| 8,000 SAC| 17,280,000 SAC
+
+The backend must never exceed these approved allocations.
+
+6.2 Unused Session Pool
+
+If a session pool is not fully distributed:
+
+- The unused amount must not be automatically redistributed to another reward category.
+- The unused amount must remain accounted for.
+- Final treatment must follow the approved allocation and reserve policy.
+
+Unused App Mining allocation transferred to App Reserve is limited to the approved 720,000 SAC allocation.
+
+The backend must not independently invent additional supply or reserve allocations.
+
+7. REGULAR MINING REWARD
+
+7.1 Eligibility
+
+A user may receive Regular Mining Reward when:
+
+- The account is eligible under the approved account rules.
+- The user has an accepted activation for the session.
+- The session is successfully validated.
+- No duplicate reward exists.
+- Sufficient Regular Mining allocation remains.
+
+Regular Mining Reward is available during the first 21 successful sessions.
+
+It continues during the 21-session validity rebuild after a successful referral group change.
+
+7.2 First 21 Successful Sessions
+
+A new user must complete 21 successful sessions to become VALID.
+
+During these first 21 successful sessions:
+
+- Regular Mining Reward is paid according to the approved allocation formula.
+- Referral Bonus is not available.
+- Failed sessions do not increase the successful session count.
+- Activation alone does not increase the successful session count.
+
+After the 21st successful session is validated, the backend may change the account status to VALID.
+
+7.3 After Validity
+
+After becoming VALID, the user remains eligible for Regular Mining Reward for successful sessions, subject to the normal account, session and budget rules.
+
+7.4 Rebuild After Referral Group Change
+
+After a successful referral group change:
+
+- Validity progress resets.
+- Account status returns to pending validity.
+- Regular Mining Reward continues.
+- Referral Bonus is disabled until validity is regained.
+- Existing balance is unchanged.
+
+The user must complete another 21 successful sessions to become VALID.
+
+8. REFERRAL BONUS
+
+8.1 Referral Pool
+
+The Referral Bonus pool is:
+
+2,000 SAC per effective session network-wide.
+
+The total Referral Bonus allocation is:
+
+4,320,000 SAC.
+
+8.2 Eligibility Requirements
+
+A user must:
+
+- Have a VALID account.
+- Successfully activate the applicable session.
+- Complete the session successfully.
+- Belong to an eligible referral group.
+- Pass backend referral validation.
+
+A referrer must:
+
+- Be active in the same session.
+- Have at least three active direct referrals in that same session.
+
+8.3 Eligible Group
+
+When a referrer qualifies:
+
+- The referrer participates.
+- All active direct referrals participate.
+- Every participating user must independently satisfy applicable account and session eligibility.
+- The backend calculates the eligible group before distributing the referral pool.
+
+If a parent referral group is not eligible, a child group may still qualify independently.
+
+8.4 Duplicate Participation Prevention
+
+One unique user may receive at most one Referral Bonus share per session.
+
+The backend must prevent a user from receiving multiple shares because of overlapping referral-group calculations.
+
+8.5 Group Change Effect
+
+After a successful referral group change:
+
+- The new relationship becomes effective from the next new session.
+- The old relationship remains applicable to the currently active session.
+- Referral Bonus remains disabled while the user rebuilds 21 successful sessions.
+- Referral eligibility is restored only after the user becomes VALID again.
+
+8.6 Referral Formula
+
+The exact individual Referral Bonus allocation formula must be finalized in the Referral Specification and implemented consistently by the backend.
+
+The formula must:
+
+- Use only eligible participants.
+- Respect the 2,000 SAC network-wide session pool.
+- Prevent duplicate user shares.
+- Use deterministic calculations.
+- Prevent distribution above the referral allocation.
+- Record the calculation version and eligible participant set.
+
+No individual referral amount is guaranteed by this document.
+
+9. ACCOUNT VALIDITY AND INACTIVITY
+
+9.1 Initial Validity
+
+A new account begins with pending validity.
+
+The backend tracks successful sessions.
+
+After 21 successful sessions, the account becomes VALID.
+
+Only successful sessions count.
+
+9.2 Inactivity Rule
+
+After becoming VALID, the user must complete at least one successful session within every rolling window of 90 scheduled session slots.
+
+A successful session resets the inactivity counter.
+
+Activation alone does not reset it.
+
+If no successful session occurs within the next 90 scheduled slots:
+
+- Account status becomes CANCELLED.
+- Cancellation is permanent.
+- Future activation is blocked.
+- Future reward eligibility is removed.
+- Remaining balance is forfeited to App Reserve according to the approved rules.
+
+The inactivity rule applies only to VALID users.
+
+The 21-session rebuild after a group change is exempt until validity is regained.
+
+10. REWARD CALCULATION REQUIREMENTS
+
+10.1 Deterministic Calculation
+
+All reward calculations must be deterministic.
+
+The same validated inputs and calculation version must produce the same results.
+
+The backend must record:
+
+- Session ID.
+- Reward pool.
+- Eligible participant set or protected reference to it.
+- Calculation version.
+- Individual calculated amounts.
+- Rounding result.
+- Remaining pool.
+- Processing timestamp.
+
+10.2 Exact Numeric Representation
+
+SAC amounts must not use floating-point arithmetic.
+
+The implementation must use an exact representation, such as integer smallest units or an approved fixed-precision decimal representation.
+
+The smallest supported SAC unit must be finalized before production.
+
+10.3 Rounding
 
 The final implementation must define:
 
-- SAC decimal precision.
-- Smallest accounting unit.
-- Rounding mode.
-- Residual allocation policy.
-- Maximum supported amount.
+- Calculation precision.
+- Rounding method.
+- Remainder treatment.
+- Deterministic tie-breaking.
+- Handling of amounts smaller than the smallest supported SAC unit.
 
-The rounding method must ensure that the sum of distributed rewards never exceeds the applicable budget.
+If a largest-remainder method is selected, ties must be resolved using a stable, documented identifier so that the result is reproducible.
 
-14. REWARD LEDGER
+The same calculation version must not produce different results when retried.
 
-Every accepted reward must create an auditable ledger entry.
+10.4 Allocation Formula Approval
 
-Supported transaction types:
+The individual Regular Mining allocation formula and exact Referral Bonus allocation formula must be approved before production.
 
-- "MINING_REWARD"
-- "REFERRAL_BONUS"
-- "REWARD_ADJUSTMENT"
-- "REWARD_REVERSAL"
-- "ACCOUNT_CANCELLATION_RETURN"
+Until then:
 
-Each record must contain:
+- The network-wide pools remain fixed.
+- Individual reward amounts must not be treated as finalized.
+- The backend must not invent or silently change a formula.
+- Formula changes must be versioned and documented.
 
-- Unique transaction ID.
+11. REWARD PROCESSING FLOW
+
+Scheduled Session Ends
+          |
+          v
+Backend Retrieves Activations
+          |
+          v
+Validate User Eligibility
+          |
+          v
+Validate Session Results
+          |
+          v
+Determine Regular Mining Participants
+          |
+          v
+Determine Referral Bonus Participants
+          |
+          v
+Calculate Reward Allocations
+          |
+          v
+Check Remaining Budgets
+          |
+          v
+Create Reward Records
+          |
+          v
+Create Ledger Transactions
+          |
+          v
+Update Balance Summaries
+          |
+          v
+Confirm Reward Credits
+          |
+          v
+Publish Public Ledger Records
+
+All financial operations must be handled through atomic or safely recoverable backend transactions.
+
+12. REWARD CREDIT TIMING
+
+Under normal operating conditions, reward credit should complete within five minutes after the scheduled session ends.
+
+The backend must not mark a reward as credited before the ledger transaction and balance update are successfully completed.
+
+If processing cannot complete:
+
+- Mark the operation as pending or retryable.
+- Preserve the calculation and processing references.
+- Retry safely.
+- Prevent duplicate credits.
+- Reconcile the result.
+- Alert Admin when manual review is necessary.
+
+13. DUPLICATE PREVENTION
+
+The backend must prevent:
+
+- Duplicate session activation.
+- Duplicate successful session results.
+- Duplicate Regular Mining Reward.
+- Duplicate Referral Bonus.
+- Duplicate ledger transactions.
+- Duplicate balance updates.
+- Duplicate public ledger records.
+
+Each operation must use unique identifiers and suitable database constraints.
+
+Repeated API requests must return the existing operation result where appropriate instead of creating a second reward.
+
+14. REWARD BUDGET PROTECTION
+
+The backend must enforce the following hard limits:
+
+Budget| Maximum
+Regular Mining| 12,960,000 SAC
+Referral Bonus| 4,320,000 SAC
+Total App Mining Distribution| 17,280,000 SAC
+Total SAECOIN Supply| 31,000,000 SAC
+
+Before confirming any reward:
+
+1. Check the applicable remaining allocation.
+2. Check the session pool.
+3. Check the user's eligibility.
+4. Check for duplicate reward records.
+5. Validate the calculated amount.
+6. Verify that the operation will not exceed any budget.
+
+If a calculation exceeds an approved limit, the backend must reject it and create an operational alert.
+
+The system must never create additional SAC to cover a calculation error.
+
+15. APP RESERVE ACCOUNTING
+
+The App Reserve allocation is:
+
+1,720,000 SAC
+
+It consists of:
+
+- Initial App Reserve: 1,000,000 SAC.
+- Unused App Mining allocation transferred to App Reserve: 720,000 SAC.
+
+The App Reserve is separate from the Founder/Personal Reserve.
+
+The backend must record reserve-related accounting operations.
+
+The exact App Reserve distribution and usage policy remains subject to separate approval.
+
+Cancelled-user balance forfeiture must be accounted for according to the approved reserve policy.
+
+No reserve operation may increase total supply beyond 31,000,000 SAC.
+
+16. LEDGER INTEGRATION
+
+Every confirmed reward must create a corresponding ledger transaction.
+
+A reward transaction must contain:
+
+- Unique Transaction ID.
 - User ID.
-- Transaction type.
-- Exact SAC amount.
-- Related session ID, if applicable.
-- Related referral ID, if applicable.
-- Processing reference.
-- Creation timestamp.
+- Session ID.
+- Reward ID.
+- Reward Type.
+- Amount in SAC.
+- Transaction Purpose.
+- Timestamp UTC.
+- Transaction Status.
 
-Ledger entries must not be silently modified or deleted.
+The ledger must preserve the original record.
 
-Corrections must use separate adjustment or reversal transactions.
+A correction must create a new approved transaction referencing the original entry.
 
-15. VIRTUAL REWARD BALANCE
+Existing confirmed reward records must not be silently deleted or overwritten.
 
-The app may display a user's accumulated virtual SAC reward balance.
+17. PUBLIC LEDGER PUBLICATION
 
-This balance:
+After session validation and reward processing:
 
-- Is maintained by the backend.
-- Must be supported by ledger records.
-- Is not an on-chain balance.
-- Is not proof of cryptocurrency ownership.
-- Does not guarantee market value.
-- Cannot be treated as a confirmed withdrawal balance.
+1. The backend prepares public transaction records.
+2. The Public Ledger Publisher creates a block.
+3. The block is hashed.
+4. The block is linked to the previous block.
+5. The backend signing key signs the block.
+6. The block is published to the Explorer.
 
-A cached balance may be used for performance, but the ledger remains authoritative.
+If publication fails:
 
-16. MAIN REWARD POOL
+- Keep the block in PENDING status.
+- Retry safely.
+- Prevent duplicate publication.
+- Record every attempt.
+- Alert Main Admin if failure continues.
 
-The Main Reward Pool represents the remaining unallocated App Mining reward reserve.
+The public ledger is app-operated, not decentralized.
 
-The proposed initial allocation is:
+18. FAILURE AND RECOVERY
 
-"5,000,000 SAC"
+18.1 Reward Processing Failure
 
-The backend must track:
+If reward processing fails:
 
-- Initial allocation.
-- Total regular rewards.
-- Total referral rewards.
-- Approved adjustments.
-- Returned virtual rewards.
-- Remaining allocation.
+- Preserve the session result.
+- Preserve the calculated reward data.
+- Do not create an unverified balance update.
+- Mark the operation pending or failed as appropriate.
+- Retry using the same operation identity.
+- Reconcile the final result.
 
-The Main Reward Pool must not be confused with a blockchain wallet or on-chain treasury.
+18.2 Database Failure
 
-17. ACCOUNT CANCELLATION AND REWARD RETURN
+If a database failure occurs during reward credit:
 
-The current proposed inactivity policy may cancel an account after 90 consecutive 8-hour session windows without activating a mining session.
+- Do not leave an inconsistent partial transaction.
+- Use database transaction rollback where possible.
+- Reconcile after database recovery.
+- Prevent duplicate credit during retry.
 
-This represents 720 hours or 30 continuous days.
+18.3 Backend Downtime
 
-The exact inactivity time anchor remains subject to final approval.
+During backend mining downtime:
 
-Under the current proposed policy:
+- Effective session progression pauses.
+- Incomplete session operations remain pending.
+- No unvalidated reward is credited.
+- Processing resumes from the last verified state.
 
-- The account loses normal login access.
-- Mining eligibility is revoked.
-- Applicable referral eligibility is revoked.
-- Unused virtual reward balances return to the Main Reward Pool.
-- Historical reward records are preserved.
+18.4 Administrative Recovery
 
-Any returned reward must be recorded using an auditable "ACCOUNT_CANCELLATION_RETURN" ledger entry.
+If recovery requires manual review:
 
-The backend must not silently delete or erase the original reward history.
+1. Backend prepares the recovery request.
+2. Backend validates relevant User ID, Session ID and Reward ID.
+3. Admin reviews the evidence.
+4. Main Admin approves or rejects.
+5. Backend executes only an approved action.
+6. Audit Log records the decision and result.
 
-18. SAFETY RESERVE POLICY
+19. REWARD CORRECTIONS
 
-The proposed daily safety reserve is:
+A reward correction must not modify an existing confirmed ledger entry directly.
 
-"500 SAC"
+The correction process must:
 
-The reserve is not automatically distributed.
+1. Create a correction request.
+2. Identify the User ID.
+3. Identify the Session ID.
+4. Identify the Reward ID.
+5. Reference the original transaction.
+6. Validate the proposed amount.
+7. Include the correction reason.
+8. Receive Main Admin approval.
+9. Create a new correction transaction.
+10. Update the verified balance.
+11. Record the action in the Audit Log.
 
-Potential approved uses may include:
+The original transaction remains visible in historical records.
 
-- Accounting corrections.
-- Authorized reward adjustments.
-- Approved operational contingencies.
+20. TESTING REQUIREMENTS
 
-Every reserve usage must:
+The reward system must include tests for:
 
-1. Have an approved reason.
-2. Be authorized.
-3. Be recorded in the reward ledger or reserve accounting.
-4. Create an audit record.
-5. Remain within the total App Mining allocation.
+- Session activation boundaries.
+- Duplicate activation.
+- Missed session activation.
+- Successful session validation.
+- Failed session validation.
+- First 21 successful sessions.
+- Transition to VALID.
+- Referral Bonus eligibility.
+- Three-active-direct-referral requirement.
+- Maximum 10 direct referrals.
+- Referral group change.
+- 90-slot inactivity.
+- Permanent cancellation.
+- Reward pool exhaustion.
+- Allocation rounding.
+- Remainder handling.
+- Duplicate reward prevention.
+- Duplicate ledger transaction prevention.
+- Database transaction rollback.
+- Backend downtime recovery.
+- Reward reconciliation.
+- Public block publication failure.
+- Total supply enforcement.
 
-The final reserve policy must be approved separately.
+All tests must be reproducible.
 
-19. REWARD PROCESSING WORKFLOW
+21. UNDECIDED ITEMS REQUIRING APPROVAL
 
-The backend must follow this general workflow:
+The following must be finalized before production:
 
-MINING SESSION COMPLETED
-          │
-          ▼
-SESSION VALIDATION
-          │
-          ▼
-ACCOUNT ELIGIBILITY CHECK
-          │
-          ▼
-MINING POWER SNAPSHOT CHECK
-          │
-          ▼
-DAILY BUDGET CHECK
-          │
-          ▼
-REGULAR REWARD CALCULATION
-          │
-          ▼
-REFERRAL ELIGIBILITY CHECK
-          │
-          ▼
-REFERRAL REWARD CALCULATION
-          │
-          ▼
-ALLOCATION LIMIT CHECK
-          │
-          ▼
-LEDGER TRANSACTION
-          │
-          ▼
-VIRTUAL BALANCE UPDATE
-          │
-          ▼
-PROCESSING COMPLETED
+1. Individual Regular Mining allocation formula.
+2. Exact individual Referral Bonus allocation formula.
+3. Smallest supported SAC unit.
+4. Rounding method.
+5. Remainder allocation method.
+6. Deterministic tie-breaking rule.
+7. Treatment of unused per-session pools.
+8. Exact App Reserve usage policy.
+9. Exact accounting treatment of forfeited cancelled-user balances.
+10. Reward calculation versioning and migration policy.
 
-The operation must be transaction-safe and protected against duplicate execution.
+These items must not be silently decided during implementation.
 
-20. REWARD SECURITY RULES
+22. FINAL MINING AND REWARD POLICY
 
-Mandatory requirements:
+SAECOIN uses a centralized virtual mining reward distribution system.
 
-- Only the backend may calculate authoritative rewards.
-- Users cannot modify their Mining Power.
-- Users cannot create ledger entries.
-- Users cannot modify daily budgets.
-- Users cannot approve their own adjustments.
-- Duplicate session rewards must be prevented.
-- Duplicate referral bonuses must be prevented.
-- Budget limits must be enforced transactionally.
-- All administrative adjustments must be audited.
-- Reward processing must be reproducible.
+The network-wide reward pools are fixed at 6,000 SAC for Regular Mining and 2,000 SAC for Referral Bonus per effective session.
 
-21. REWARD HISTORY AND TRANSPARENCY
+The total App Mining Distribution is limited to 17,280,000 SAC across 2,160 effective sessions.
 
-Users should be able to view:
+All individual reward calculations must be deterministic, budget-safe, auditable and controlled by the backend.
 
-- Total virtual SAC balance.
-- Regular mining rewards.
-- Referral bonuses.
-- Reward adjustments.
-- Reward reversals.
-- Mining session history.
-- Relevant reward processing status.
+No individual reward, market value, financial return, exchange listing or withdrawal is guaranteed by this specification.
 
-The application must clearly distinguish pending, approved, and reversed rewards where applicable.
-
-22. TESTING REQUIREMENTS
-
-The reward system must include automated tests for:
-
-- Daily budget limits.
-- Total allocation limits.
-- Proportional reward calculation.
-- Mining Power snapshots.
-- Referral bonus eligibility.
-- Independent referral activity.
-- Duplicate reward processing.
-- Rounding behavior.
-- Reward ledger integrity.
-- Reward reversals.
-- Account cancellation returns.
-- Concurrent reward processing.
-- Background job retries.
-- Daily budget reset behavior.
-
-Tests must use deterministic input data and expected outputs.
-
-23. OPEN DECISIONS
-
-The following items require approval before production implementation:
-
-1. Base Mining Power.
-2. Referral bonus percentage.
-3. Final referral Mining Power formula.
-4. Exact reward accounting period.
-5. Daily reward settlement time.
-6. Project timezone.
-7. Daily budget reset boundary.
-8. SAC decimal precision.
-9. Rounding and residual allocation method.
-10. Excess referral budget handling.
-11. Safety reserve usage policy.
-12. Exact inactivity time anchor.
-13. Reward adjustment approval process.
-14. Final virtual reward distribution policy.
-
-No unresolved item should be silently converted into a final production rule.
-
-24. FINAL REWARD POLICY
-
-The SAECOIN App Mining reward system must remain controlled, transparent, and auditable.
-
-The proposed App Mining allocation is 5,000,000 SAC.
-
-The proposed daily budget is 6,000 SAC, divided into regular mining rewards, referral bonuses, and a safety reserve.
-
-The backend must enforce all reward limits and preserve a complete accounting history.
-
-All reward formulas and unresolved parameters must be approved before production launch.
-
-Virtual App Mining rewards must remain clearly distinguished from future on-chain SAC.
+The total SAECOIN supply must never exceed 31,000,000 SAC.
 
 ---
 
-END OF DOCUMENT
+END OF DOCUMENTDOCUMENT
