@@ -1,3 +1,5 @@
+> **v1.2 NOTICE (draft):** This document belongs to the v1.1 set. Specification v1.2 ([00-Spec-v1.2-Decision-Record.md](00-Spec-v1.2-Decision-Record.md)) changes tokenomics, reward calculation, referral rules and other items. Where the two conflict, the v1.2 record prevails once approved.
+
 SAECOIN — MINING & REWARD SPECIFICATION
 
 Version: 1.1
@@ -715,4 +717,4 @@ The total SAECOIN supply must never exceed 31,000,000 SAC.
 
 ---
 
-END OF DOCUMENTDOCUMENT
+END OF DOCUMENT
