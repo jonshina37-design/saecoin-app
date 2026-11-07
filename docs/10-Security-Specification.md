@@ -1,869 +1,813 @@
 SAECOIN — SECURITY SPECIFICATION
 
-Document ID: SAECOIN-SEC-010
-Version: 1.0
+Document: 10-Security-Specification.md
+Version: 1.1
 Project: SAECOIN App
 Ticker: SAC (Provisional)
-Status: Draft
-Scope: Android App, Backend, Database, APIs, Rewards and Administration
+Status: Draft — Pending Approval
 
 ---
 
 1. PURPOSE
 
-This document defines the security requirements and protection mechanisms for the SAECOIN App.
+This document defines the security requirements and controls for the SAECOIN App.
 
-The objective is to protect:
+The objectives are to protect:
 
 - User accounts.
 - Authentication credentials.
-- Personal information.
-- Mining sessions.
-- Virtual SAC rewards.
+- User profile information.
 - Referral relationships.
-- Reward ledger records.
+- Mining session records.
+- SAC reward balances.
+- Reward ledger entries.
+- KYC information.
+- Administrative accounts.
 - Backend services.
 - Database records.
-- Administrative operations.
-- Application infrastructure.
+- Backup files.
+- Public ledger signing keys.
+- Recovery credentials.
 
-Security must be considered throughout development, testing, deployment, and maintenance.
+SAECOIN is a centralized client-server application. The backend is the authoritative system for account status, session validation, referral eligibility, reward calculations, balances, and administrative actions.
+
+Security controls must reflect this architecture.
 
 2. SECURITY PRINCIPLES
 
 The project must follow these principles:
 
-1. Security by design.
-2. Least privilege.
-3. Defense in depth.
-4. Secure defaults.
-5. Backend-authoritative validation.
-6. Data minimization.
-7. Separation of responsibilities.
-8. Secure error handling.
-9. Auditable administrative operations.
-10. Regular security testing.
+1. Backend authority: security-critical decisions must be made by the backend.
+2. Least privilege: users and administrators receive only the permissions required for their roles.
+3. Defense in depth: sensitive operations must have multiple appropriate security controls.
+4. Data minimization: collect and retain only necessary personal information.
+5. Secure defaults: new accounts and services must start with restrictive permissions.
+6. Auditability: sensitive actions must be recorded.
+7. Integrity: reward and ledger records must not be silently altered.
+8. Confidentiality: credentials, personal information, and private keys must remain protected.
+9. Recoverability: backups and recovery procedures must be tested.
+10. Fail safely: security failures must not result in unauthorized reward credit or data modification.
 
-The application must never rely exclusively on client-side security controls.
+3. THREAT MODEL
 
-3. SECURITY SCOPE
+The system must consider threats including:
 
-Security requirements apply to:
-
-Component| Security Responsibility
-Android App| Protect local data and communicate securely.
-Backend| Authenticate users and enforce application rules.
-Database| Protect user, mining, referral and reward records.
-API| Validate requests and enforce authorization.
-Admin Panel| Restrict administrative access and operations.
-Infrastructure| Protect servers, configuration and secrets.
-CI/CD| Protect source code and release processes.
-
-4. TRUST BOUNDARIES
-
-The Android application must be treated as an untrusted client.
-
-Users or attackers may:
-
-- Modify application files.
-- Inspect application requests.
-- Change local application data.
-- Modify device time.
-- Replay API requests.
-- Use modified application versions.
-- Attempt unauthorized API access.
-- Automate registration or mining requests.
-
-Therefore:
-
-1. The backend must verify every sensitive operation.
-2. The backend must not trust client-provided account status.
-3. The backend must not trust client-provided Mining Power.
-4. The backend must not trust client-provided reward amounts.
-5. The backend must not trust client-provided session completion status.
-6. The backend must independently validate referral eligibility.
-7. The database must enforce appropriate integrity constraints.
-
-5. AUTHENTICATION SECURITY
-
-Authentication must be implemented and verified by the backend.
-
-Required protections:
-
-- Secure registration.
-- Secure login.
-- Secure password handling.
-- Account verification where required.
-- Credential recovery.
-- Login attempt protection.
-- Session management.
-- Logout and session revocation.
-
-The exact authentication framework and verification method remain TBD.
-
-5.1 Password Security
-
-If password-based authentication is used:
-
-- Passwords must never be stored in plaintext.
-- Passwords must be hashed using a recognized password-hashing algorithm.
-- Use a unique salt for each password.
-- Use an appropriately configured password-hashing work factor.
-- Do not create custom password-hashing algorithms.
-- Do not log passwords.
-- Do not return passwords in API responses.
-- Do not store user passwords in ordinary app storage.
-
-The final password policy must be documented before implementation.
-
-5.2 Login Protection
-
-The backend must protect login endpoints against:
-
-- Brute-force attempts.
+- Unauthorized account access.
+- Password theft.
+- OTP theft or replay.
 - Credential stuffing.
-- Automated login attempts.
-- Excessive verification requests.
+- Brute-force login attempts.
 - Account enumeration.
-
-Possible controls include:
-
-- Rate limiting.
-- Temporary request throttling.
-- Suspicious activity detection.
-- Secure verification challenges where appropriate.
-
-Account lockout behavior must avoid creating an easy denial-of-service mechanism against legitimate users.
-
-5.3 Account Recovery
-
-Account recovery must:
-
-- Verify account ownership.
-- Use short-lived recovery tokens or codes.
-- Prevent reuse of expired recovery tokens.
-- Limit recovery attempts.
-- Avoid revealing whether an account exists unnecessarily.
-- Revoke affected sessions after a successful credential reset when appropriate.
-
-The exact recovery method is TBD.
-
-6. SESSION SECURITY
-
-Authentication sessions must be controlled by the backend.
-
-Requirements:
-
-1. Generate unpredictable session identifiers or secure tokens.
-2. Use HTTPS for authentication and session communication.
-3. Set appropriate token expiration.
-4. Support server-side session revocation.
-5. Revoke sessions after logout.
-6. Protect against token replay.
-7. Avoid exposing tokens in logs.
-8. Support logout from other devices where applicable.
-9. Handle expired sessions safely.
-10. Do not accept revoked sessions.
-
-The final session architecture is TBD.
-
-6.1 Token Storage
-
-If token-based authentication is selected:
-
-- Store sensitive tokens using appropriate Android secure-storage facilities.
-- Do not store authentication tokens in ordinary unprotected preferences.
-- Do not hardcode signing secrets in the application.
-- Do not embed server-side private keys in the Android package.
-- Clear local authentication data after logout.
-- Handle token expiration and revocation.
-
-6.2 Sensitive Operations
-
-Sensitive operations may require additional authentication or verification.
-
-Examples:
-
-- Password changes.
-- Account recovery.
-- Sensitive profile changes.
-- Account cancellation.
-- Administrative actions.
-
-The exact step-up authentication policy is TBD.
-
-7. AUTHORIZATION SECURITY
-
-Authentication confirms who the user is.
-
-Authorization determines what that user is allowed to do.
-
-The backend must enforce authorization on every protected endpoint.
-
-Required controls:
-
-- Users may access only their own protected information.
-- Users must not modify another user's mining sessions.
-- Users must not modify another user's reward records.
-- Users must not change referral ownership.
-- Ordinary users must not access administrative functions.
-- Suspended accounts must not perform prohibited operations.
-- Cancelled accounts must not regain eligibility through client manipulation.
-
-The backend must not rely on hidden buttons or disabled frontend controls as authorization.
-
-8. ANDROID APPLICATION SECURITY
-
-The Android application must follow secure development practices.
-
-Requirements:
-
-- Request only necessary permissions.
-- Protect locally stored sensitive data.
-- Avoid unnecessary external components.
-- Validate deep links.
-- Protect exported components.
-- Avoid leaking sensitive information through logs.
-- Avoid insecure WebView configurations.
-- Use trusted dependencies.
-- Protect release signing credentials.
-- Review application permissions before release.
-
-8.1 Local Data Protection
-
-Sensitive information must not be stored in ordinary unprotected files.
-
-Examples of sensitive information:
-
-- Authentication tokens.
-- Personal account information.
-- Recovery data.
-- Private configuration values.
-
-Use appropriate Android platform security features.
-
-Do not store:
-
-- User passwords in plaintext.
-- Server private keys.
-- Database credentials.
-- Production API secrets.
-- Administrative credentials.
-
-8.2 Application Integrity
-
-The project should consider protection against:
-
-- Modified application packages.
-- Debugging in production builds.
-- Runtime tampering.
-- Unauthorized code modification.
-- Malicious application overlays where relevant.
-
-Integrity checks may provide additional risk signals, but they must not replace backend authorization and validation.
-
-9. NETWORK SECURITY
-
-All production communication between the Android application and backend must use HTTPS.
-
-Requirements:
-
-1. Do not use production HTTP endpoints.
-2. Validate server certificates.
-3. Do not disable TLS certificate validation.
-4. Protect authentication tokens in transit.
-5. Avoid sending sensitive information through URL query parameters.
-6. Do not expose secrets in network error messages.
-7. Apply appropriate request timeouts.
-8. Validate responses before processing them.
-
-Development environments may use local HTTP where necessary, but such settings must not be included in production builds.
-
-Certificate pinning may be evaluated separately. It must not be implemented without a certificate rotation and recovery plan.
-
-10. API SECURITY
-
-Every API endpoint must validate its input.
-
-Security requirements:
-
-- Authentication for protected operations.
-- Authorization for protected resources.
-- Input validation.
-- Output validation.
-- Request size limits.
-- Rate limiting.
-- Consistent error handling.
-- Safe serialization.
-- API version control.
-- Protection against replay and duplicate requests where necessary.
-
-The backend must not expose stack traces, database errors, internal paths, secrets, or private configuration details to users.
-
-10.1 API Abuse Protection
-
-Apply appropriate limits to:
-
-- Login requests.
-- Registration requests.
-- Verification requests.
-- Referral validation.
-- Mining session activation.
-- Mining session completion.
-- Reward-related requests.
-- Administrative endpoints.
-
-Rate limits must be configurable and enforced server-side.
-
-10.2 Idempotency
-
-Sensitive operations must prevent duplicate processing.
-
-Examples:
-
-- Mining session activation.
-- Session completion.
-- Reward settlement.
-- Referral bonus processing.
-- Account cancellation.
-
-Use appropriate unique operation identifiers, database constraints, or idempotency mechanisms.
-
-Repeated requests must not create duplicate rewards or duplicate sessions.
-
-11. MINING SESSION SECURITY
-
-Mining sessions are virtual App Mining activities.
-
-They are not real blockchain Proof-of-Work mining.
-
-The backend must be authoritative for all mining session decisions.
-
-Mandatory protections:
-
-1. The backend records the official session start time.
-2. The backend determines session completion.
-3. The backend validates the required eight-hour duration.
-4. The backend enforces the maximum three sessions per project-defined day.
-5. The backend prevents duplicate session activation.
-6. The backend rejects unauthorized session completion.
-7. The backend validates account eligibility.
-8. The backend prevents client-side session manipulation.
-9. The backend maintains session history.
-10. The backend records relevant security events.
-
-11.1 Device Clock Manipulation
-
-The device clock must never determine whether a mining session is valid.
-
-Changing the phone's date or time must not:
-
-- Complete a session early.
-- Create additional sessions.
-- Bypass the daily limit.
-- Change reward eligibility.
-- Modify the official session duration.
-
-Use backend timestamps as the authoritative time source.
-
-11.2 Session Replay Protection
-
-The backend must reject:
-
-- Repeated activation requests that create duplicate sessions.
-- Repeated completion requests that create duplicate rewards.
-- Requests referencing another user's session.
-- Requests using invalid session identifiers.
-- Requests for already-finalized sessions.
-
-11.3 Session State Protection
-
-Only approved state transitions are allowed.
-
-The client must not directly set a session to SUCCESSFUL or COMPLETED.
-
-The backend must validate the session before changing its authoritative status.
-
-12. REWARD SECURITY
-
-Virtual SAC rewards are sensitive application records.
-
-The backend must control:
-
-- Reward eligibility.
-- Mining Power calculations.
-- Daily reward budgets.
-- Reward settlement.
-- Reward adjustments.
-- Reward history.
-- Main Reward Pool accounting.
-
-12.1 Reward Calculation Protection
-
-The client must never be authoritative for reward calculations.
+- Fake or duplicate registrations.
+- Referral manipulation.
+- Session activation manipulation.
+- Client-side reward modification.
+- API abuse.
+- Replay attacks.
+- Duplicate reward credit.
+- Unauthorized database access.
+- Malicious administrator activity.
+- Backup theft.
+- Signing key compromise.
+- Device compromise.
+- Malware on user or administrator devices.
+- Denial-of-service attacks.
+- Data leakage.
+- Unauthorized application updates.
+- Supply-chain and dependency vulnerabilities.
+
+The threat model must be reviewed as the system evolves.
+
+4. ACCOUNT SECURITY
+
+4.1 Registration
+
+Registration must be processed and validated by the backend.
 
 The backend must:
 
-1. Validate successful mining sessions.
-2. Calculate eligible Mining Power.
-3. Apply approved reward formulas.
-4. Enforce daily reward budgets.
-5. Enforce the total App Mining allocation.
-6. Apply approved rounding rules.
-7. Record reward results.
-8. Prevent duplicate settlement.
+- Validate all required fields.
+- Enforce unique usernames.
+- Validate referral codes.
+- Reject self-referral.
+- Apply registration abuse controls.
+- Avoid exposing sensitive account information.
+- Create account records atomically.
 
-12.2 Reward Ledger Security
+Client-side validation may improve usability but must never replace backend validation.
 
-The reward ledger must be treated as an authoritative financial-style audit record, even though SAC is a virtual application reward.
+4.2 Password Security
 
-Requirements:
+Passwords must never be stored in plaintext.
 
-- Preserve historical entries.
-- Prevent unauthorized edits.
-- Prevent silent deletion.
-- Record adjustments as separate entries.
-- Maintain transaction integrity.
-- Prevent duplicate reward entries.
-- Restrict administrative access.
-- Reconcile cached balances against the ledger.
-
-A displayed balance must not be treated as more authoritative than the reward ledger.
-
-12.3 Reward Budget Protection
-
-The backend must prevent:
-
-- Exceeding the approved daily regular mining budget.
-- Exceeding the approved daily referral budget.
-- Exceeding the total daily budget.
-- Exceeding the approved App Mining allocation.
-- Concurrent settlement from exceeding available limits.
-
-Budget checks and reward recording must be performed safely under concurrent requests.
-
-The provisional allocation remains subject to the Mining Reward Specification.
-
-13. REFERRAL SECURITY
-
-The referral system must prevent:
-
-- Self-referral.
-- Duplicate referral relationships.
-- Referral limit bypass.
-- Unauthorized referral changes.
-- Fake account creation.
-- Referral bonus manipulation.
-- Duplicate referral reward processing.
-
-The backend must verify:
-
-- Referral code ownership.
-- Referral relationship validity.
-- The 10 accepted referral limit.
-- The referred user's 21 successful sessions.
-- Each participant's active mining eligibility.
-- Referral bonus budget availability.
-
-Referral bonus eligibility must remain independent for the referrer and referred user.
-
-The exact referral bonus percentage remains TBD.
-
-14. ACCOUNT STATUS AND CANCELLATION SECURITY
-
-The backend must control account status.
-
-The client must not be able to change:
-
-- Account validity.
-- Account suspension.
-- Mining eligibility.
-- Referral eligibility.
-- Cancellation status.
-
-Account cancellation must follow an approved workflow.
-
-If an account is cancelled:
-
-- Normal login access must be restricted according to policy.
-- Mining eligibility must be revoked.
-- Referral eligibility must be revoked.
-- Reward handling must follow the approved reward policy.
-- Historical ledger records must be preserved.
-- Relevant actions must be audited.
-
-The proposed 90-consecutive-day inactivity policy remains subject to final approval.
-
-15. DATABASE SECURITY
-
-The database must be protected against unauthorized access and modification.
+The backend must use a dedicated password-hashing algorithm designed for password storage, such as Argon2id, with appropriately configured parameters.
 
 Requirements:
 
-- Use restricted database accounts.
-- Apply least-privilege permissions.
-- Do not expose database ports publicly without an approved secure design.
-- Protect database credentials.
-- Use encrypted connections where supported and appropriate.
-- Validate database inputs through safe parameterized queries.
-- Maintain appropriate constraints and indexes.
-- Protect backups.
-- Monitor database access.
-- Test recovery procedures.
+- Use a unique salt for each password.
+- Store only password hashes and required hashing metadata.
+- Never log passwords.
+- Never include passwords in API responses.
+- Protect password reset operations.
+- Apply login attempt controls.
+- Review hashing parameters as security recommendations evolve.
 
-15.1 Database Credentials
+A general-purpose fast hash such as SHA-256 must not be used alone for password storage.
 
-Database credentials must:
+4.3 Login Protection
 
-- Never be committed to GitHub.
-- Never be embedded in mobile application code.
-- Never be exposed through public APIs.
-- Be supplied through protected server configuration.
-- Be rotated when compromise is suspected.
+Login endpoints must implement appropriate controls against:
 
-15.2 Data Integrity
+- Brute-force attempts.
+- Credential stuffing.
+- Automated abuse.
+- Account enumeration.
 
-Important operations must use appropriate database transactions.
+Controls should include:
 
-Examples:
+- Rate limiting.
+- Progressive delays or temporary restrictions.
+- Generic authentication error messages where appropriate.
+- Security event logging.
+- Session revocation after suspected compromise.
 
-- Referral acceptance.
-- Mining session creation.
-- Session completion.
-- Reward settlement.
-- Reward adjustments.
-- Account cancellation.
+Permanent account cancellation must not be triggered automatically by ordinary failed login attempts.
 
-The database must prevent duplicate records and inconsistent reward states.
+4.4 Password Reset
 
-16. SECRET MANAGEMENT
-
-The following are considered secrets:
-
-- Database passwords.
-- Authentication signing keys.
-- API credentials.
-- Email provider credentials.
-- Admin credentials.
-- Encryption keys.
-- Production environment secrets.
-
-Mandatory rules:
-
-1. Never commit secrets to the repository.
-2. Never place secrets in Android source code.
-3. Never include secrets in application assets.
-4. Never print secrets in logs.
-5. Restrict access to production secrets.
-6. Rotate compromised credentials.
-7. Separate development and production configuration.
-8. Use an approved secret-management approach.
-
-The final secret-management implementation is TBD.
-
-17. ADMINISTRATIVE SECURITY
-
-Administrative functions require stronger protection than ordinary user functions.
+Password reset must require a verified recovery method.
 
 Requirements:
 
-- Separate admin authentication.
-- Role-based authorization.
-- Least-privilege permissions.
-- Strong credential policy.
-- Additional authentication for sensitive actions where appropriate.
-- Administrative activity logging.
+- Use short-lived, single-use reset tokens or OTPs.
+- Do not expose whether an arbitrary username or email belongs to an account.
+- Expire reset credentials after use or timeout.
+- Revoke existing sessions when required by the security policy.
+- Notify the user after a successful password reset.
+- Record the event in the security audit log.
+
+The final email or OTP provider remains subject to implementation approval.
+
+5. AUTHENTICATION AND SESSION SECURITY
+
+5.1 Authentication Tokens
+
+Authentication tokens must be generated and validated by the backend.
+
+Requirements:
+
+- Use cryptographically secure random values or appropriately secured signed tokens.
+- Set expiration times.
+- Validate issuer, audience, signature, and other required claims when signed tokens are used.
+- Never accept expired or invalid tokens.
+- Revoke sessions when required.
+- Avoid placing credentials in URLs.
+
+5.2 Refresh Tokens
+
+If refresh tokens are implemented:
+
+- Store them securely.
+- Rotate them according to the approved session design.
+- Detect reuse of revoked or previously rotated tokens.
+- Revoke the relevant token family when compromise is suspected.
+- Never expose refresh tokens in ordinary application logs.
+
+5.3 Session Management
+
+The backend must support:
+
+- Session creation.
 - Session expiration.
-- Protection against unauthorized privilege escalation.
+- Session revocation.
+- Logout.
+- Logout from all devices where supported.
+- Security event tracking.
 
-17.1 Administrative Actions
+Sensitive account changes may require re-authentication.
 
-Sensitive actions include:
+6. ADMINISTRATOR SECURITY
 
-- Suspending accounts.
-- Cancelling accounts.
-- Revoking referrals.
-- Adjusting rewards.
-- Changing reward budgets.
-- Modifying mining rules.
-- Changing system configuration.
-- Managing administrator accounts.
+Administrative accounts have access to sensitive operational information and must receive stronger protection than ordinary accounts.
 
-Every sensitive action must record:
+6.1 Administrator Roles
 
-- Administrator identity.
-- Action type.
-- Target record.
-- Timestamp.
+The initial administrative structure consists of:
+
+- One Main Admin.
+- Optional Sub-Admins.
+
+The Main Admin has final approval authority.
+
+Sub-Admins may:
+
+- Verify information.
+- Review submitted evidence.
+- View permitted reports.
+- Prepare investigation records.
+- Submit recommendations.
+
+Sub-Admins must not have final approval or rejection authority for restricted administrative workflows.
+
+6.2 Admin Login
+
+Admin login requires:
+
+1. Password.
+2. Authenticator App OTP.
+
+OTP requirements:
+
+- OTP must expire after its configured validity period.
+- Expired OTPs must be rejected.
+- Reused OTPs must be rejected where the selected authentication method supports replay prevention.
+- Repeated failed attempts must trigger security controls.
+- The OTP secret must be encrypted at rest.
+
+Email OTP recovery is also available under the approved recovery workflow. The email provider and delivery configuration remain implementation decisions.
+
+6.3 Main Admin Recovery
+
+Main Admin recovery requires:
+
+- Recovery Email.
+- Email OTP.
+- Backup Recovery Code.
+
+The recovery process must:
+
+1. Verify the recovery email.
+2. Validate the OTP.
+3. Validate the one-time Backup Recovery Code.
+4. Securely reset the password.
+5. Revoke existing sessions.
+6. Record the recovery event.
+7. Notify the Main Admin through the recovery channel.
+
+Sub-Admins must not be allowed to recover the Main Admin account.
+
+The Backup Recovery Code must be stored and handled securely. It must not be stored in plaintext in the application database.
+
+6.4 Administrative Action Restrictions
+
+Admins must not directly:
+
+- Delete user accounts.
+- Permanently cancel user accounts.
+- Directly modify user balances.
+- Delete reward ledger entries.
+- Secretly alter historical transactions.
+- Bypass backend validation.
+
+Administrative requests must follow the documented backend validation and approval workflow.
+
+7. ACCOUNT SUSPENSION AND CANCELLATION
+
+7.1 Automatic Security Suspension
+
+The backend may automatically suspend an account when suspicious activity or a security threat is detected.
+
+Every automatic suspension must record:
+
+- User ID.
+- Triggering event.
 - Reason.
-- Relevant before-and-after values where appropriate.
+- Detection timestamp.
+- Relevant evidence or references.
+- Backend action.
+- Current account status.
 
-17.2 Separation of Duties
+The user must be able to submit evidence through the approved review process.
 
-Where practical, high-risk operations should require an additional review or approval.
+7.2 Admin Review
 
-The exact approval policy is TBD.
+The review workflow is:
 
-Administrators must not use ordinary user endpoints to bypass administrative controls.
+1. Request Received.
+2. Sub-Admin Verification.
+3. Main Admin Review.
+4. Approve or Reject.
+5. Backend Action.
+6. Audit Log Entry.
 
-18. AUDIT LOGGING AND MONITORING
+Main Admin approval reactivates the account.
 
-The backend must record important security events.
+If the Main Admin rejects the request, the account remains suspended.
+
+7.3 Account Cancellation
+
+Account cancellation is separate from security suspension.
+
+A VALID user's inactivity-based permanent cancellation follows the Mining & Reward Specification.
+
+The system must not provide a user-facing Account Delete option under the current product requirements.
+
+Data retention, privacy rights, and any legally required deletion or anonymization process must be reviewed before public launch.
+
+8. API SECURITY
+
+All backend APIs must enforce security controls.
+
+Requirements:
+
+- Require authentication for protected endpoints.
+- Enforce role-based authorization.
+- Validate request bodies, query parameters, and headers.
+- Apply rate limits.
+- Use consistent error responses.
+- Avoid exposing internal stack traces.
+- Prevent unauthorized object access.
+- Enforce ownership checks for user-specific resources.
+- Use pagination limits.
+- Reject unexpected or oversized input.
+- Validate content types.
+- Apply appropriate CORS policies to web-facing endpoints.
+- Protect administrative endpoints separately.
+
+The backend must never trust client-submitted:
+
+- Account status.
+- Session success.
+- Reward amount.
+- User balance.
+- Referral eligibility.
+- Referral group eligibility.
+- KYC verification status.
+- Administrative approval.
+
+These values must be determined or verified by the authoritative backend.
+
+9. REPLAY AND DUPLICATE REQUEST PROTECTION
+
+Sensitive operations must be protected against replay and duplicate processing.
+
+Examples include:
+
+- Session activation.
+- Session completion.
+- Reward credit.
+- Referral bonus credit.
+- Group change.
+- KYC submission.
+- Administrative approval.
+- Reward correction.
+- Recovery operations.
+
+Requirements:
+
+- Use unique operation identifiers.
+- Use idempotency keys where appropriate.
+- Validate operation ownership.
+- Reject expired or already-used authorization tokens.
+- Use database constraints and transactions to prevent duplicate records.
+- Preserve processing results for safe retries.
+
+A repeated request must not generate duplicate SAC rewards or duplicate financial ledger entries.
+
+10. MINING SESSION SECURITY
+
+Mining sessions represent scheduled virtual reward participation. They are not actual Proof-of-Work mining.
+
+The backend must:
+
+- Use its authoritative clock.
+- Validate scheduled session windows.
+- Enforce one activation per user per scheduled session.
+- Reject retrospective activation.
+- Validate session completion.
+- Distinguish activation from successful completion.
+- Prevent duplicate session success records.
+- Prevent client-side manipulation of session time.
+- Preserve session identifiers and validation history.
+
+The mobile device clock must never determine authoritative session eligibility.
+
+App closure, network interruption, or device shutdown after accepted activation must not independently invalidate the session.
+
+11. REWARD AND BALANCE SECURITY
+
+The backend is the sole authority for SAC reward calculations and balances.
+
+Security requirements:
+
+1. Reward calculations must follow the approved Mining & Reward Specification.
+2. All reward amounts must be validated against the approved allocation.
+3. The backend must prevent negative or unauthorized balances.
+4. Integer arithmetic must be used for token amounts.
+5. Floating-point arithmetic must not be used for authoritative SAC calculations.
+6. Duplicate reward credit must be prevented.
+7. Every balance-affecting operation must have a corresponding ledger record.
+8. Ledger records must not be silently deleted or overwritten.
+9. Reward corrections must follow the approved correction workflow.
+10. Every administrative correction must be auditable.
+
+11.1 Allocation Limits
+
+The approved project allocation is:
+
+Allocation| SAC
+Regular Mining| 12,960,000
+Referral Bonus| 4,320,000
+Total App Mining Distribution| 17,280,000
+Initial App Reserve| 1,000,000
+Unused App Mining Allocation transferred to App Reserve| 720,000
+Total App Reserve| 1,720,000
+Founder/Personal Reserve| 12,000,000
+Node Mining| 0
+Total Supply| 31,000,000
+
+The network-wide session pools are:
+
+- Regular Mining: 6,000 SAC.
+- Referral Bonus: 2,000 SAC.
+- Total: 8,000 SAC.
+
+These are network-wide pools, not guaranteed individual rewards.
+
+The backend must enforce all approved limits and must never exceed the total supply.
+
+12. DATABASE SECURITY
+
+Database security must include:
+
+- Restricted database network access.
+- Separate application and administrative credentials where practical.
+- Least-privilege database accounts.
+- Encrypted backups.
+- Secure secret management.
+- Parameterized database queries.
+- Transactional updates for critical operations.
+- Database integrity checks.
+- Audit logging.
+- Regular dependency and database security reviews.
+
+Production database credentials must never be committed to source control.
+
+Database backups must not be publicly accessible.
+
+13. ENCRYPTION AND DATA PROTECTION
+
+13.1 Data in Transit
+
+All production communication involving authentication, personal information, administrative operations, or reward data must use HTTPS with modern TLS configuration.
+
+Plain HTTP may be used only for controlled local development environments.
+
+13.2 Data at Rest
+
+Sensitive information must be encrypted at rest where appropriate.
+
+This includes:
+
+- Backup files.
+- KYC documents.
+- Recovery credentials.
+- Authenticator secrets.
+- Private signing keys.
+- Sensitive configuration values.
+
+Encryption keys must be managed separately from the encrypted data.
+
+13.3 Sensitive Data Handling
+
+The system must not expose:
+
+- Passwords.
+- Password hashes.
+- OTP values.
+- OTP secrets.
+- Recovery codes.
+- Private signing keys.
+- API secrets.
+- KYC documents.
+- Private personal information.
+
+Sensitive information must not appear in ordinary application logs, public explorer records, or error messages.
+
+14. KYC SECURITY
+
+KYC is required only after the user completes all 2,160 effective mining sessions, according to the product requirements.
+
+KYC must not be required at registration or during the initial 21 successful sessions.
+
+Security requirements:
+
+- KYC documents must be accessible only to authorized services and personnel.
+- Documents must be encrypted at rest.
+- Access must be logged.
+- Uploads must be validated.
+- File size and file type restrictions must be enforced.
+- Malware scanning should be applied where practical.
+- Documents must not be published in the public explorer.
+- KYC data must not be exposed through ordinary user APIs.
+
+The KYC provider, document types, retention period, and data protection process remain subject to approval.
+
+15. PUBLIC LEDGER SECURITY
+
+The public ledger is an app-operated, publicly inspectable and cryptographically verifiable record system.
+
+It is not a decentralized or trustless blockchain.
+
+Security requirements:
+
+- Each block must have a unique identifier.
+- Each block must have a cryptographic hash.
+- Each block must reference the previous block hash.
+- Blocks must be digitally signed by the backend.
+- Block timestamps must be recorded in UTC.
+- Public verification keys must be available through the Explorer.
+- Old public verification keys must remain available for historical verification.
+- Historical blocks must remain immutable.
+
+15.1 Signing Key Protection
+
+Private signing keys must be stored securely and must never be published.
+
+Access must be restricted to the authorized backend signing process.
+
+If a signing key is lost or compromised:
+
+1. Main Admin approval is required for replacement.
+2. A new signing key must be generated securely.
+3. The new public key must be published.
+4. The old public key must remain available.
+5. Historical blocks must continue to be verified using the old public key.
+6. New blocks must use the new signing key.
+7. The replacement must be recorded in the Audit Log.
+
+15.2 Ledger Corrections
+
+Historical blocks must not be secretly modified.
+
+A correction must:
+
+- Be submitted as a Backend Correction Request.
+- Pass backend validation.
+- Receive Main Admin approval.
+- Publish a new Correction Block.
+- Reference the original block or transaction.
+- Include the correction reason.
+- Preserve the original block.
+- Appear in the Explorer as a correction relationship.
+
+16. BACKUP AND RECOVERY SECURITY
+
+Backups must be encrypted and integrity-verified.
+
+The backup system must support:
+
+- Encrypted laptop database backups.
+- Automatic upload to the designated SAECOIN Google Drive.
+- Manual backup download to a Pen Drive through the Admin Panel.
+- Backup history for all 2,160 effective sessions.
+- Backup failure alerts.
+- Monthly recovery testing.
+
+16.1 Backup Encryption
+
+Backup encryption must use:
+
+- A strong encryption algorithm.
+- A securely generated encryption key.
+- A password and a separate encryption key.
+- Secure storage of recovery material.
+
+The password and encryption key must not be stored together in the same unprotected location.
+
+16.2 Recovery Key
+
+The Recovery Key must be stored offline and separately from the normal backup files.
+
+If the laptop is lost, restoration requires:
+
+- Recovery Key.
+- Main Admin approval.
+
+The approved recovery design allows the Recovery Key to recover or recreate the required encryption key.
+
+If both the required Recovery Key and other valid recovery material are lost, the encrypted backup may become permanently unrecoverable.
+
+This limitation must be clearly communicated to the Main Admin.
+
+16.3 Recovery Testing
+
+A recovery test must be performed monthly using available backup sources:
+
+- Laptop backup.
+- Pen Drive backup.
+- Google Drive backup.
+
+The test must verify:
+
+- Backup integrity.
+- Decryption.
+- Database restoration.
+- Session history.
+- Reward ledger consistency.
+- Referral records.
+- Public ledger references.
+
+Test results must be recorded.
+
+17. SECURITY LOGGING AND AUDIT
+
+Security-relevant events must be logged.
 
 Examples:
 
-- Login success and failure.
-- Account recovery.
+- Successful and failed logins.
 - Password changes.
+- Password resets.
+- OTP failures.
 - Session creation and revocation.
-- Suspicious mining activity.
+- Suspicious API activity.
 - Referral changes.
-- Reward processing.
-- Reward adjustments.
-- Account suspension and cancellation.
-- Administrative actions.
-- Configuration changes.
+- Reward processing failures.
+- Duplicate reward prevention.
+- Account suspension.
+- Account reactivation.
+- KYC access.
+- Admin approvals and rejections.
+- Backup failures.
+- Recovery operations.
+- Signing key replacement.
+- Ledger correction.
+- Permission changes.
 
-Audit records must be protected from unauthorized modification.
+Logs must:
 
-Logs must not contain:
+- Include timestamps in UTC.
+- Identify the responsible account or service.
+- Include the relevant operation or event identifier.
+- Avoid storing secrets or unnecessary personal data.
+- Be protected against unauthorized modification.
+- Be retained according to the approved retention policy.
 
-- Plaintext passwords.
-- Authentication tokens.
-- Private keys.
-- Recovery secrets.
-- Unnecessary sensitive personal information.
+18. DEPENDENCY AND SUPPLY-CHAIN SECURITY
 
-Monitoring and alert thresholds are TBD.
+All third-party dependencies must be reviewed before production use.
 
-19. PRIVACY AND PERSONAL DATA
+The review should consider:
 
-The project must collect only information necessary for application functionality, security, and approved operations.
-
-Requirements:
-
-- Explain why personal data is collected.
-- Limit access to personal data.
-- Avoid unnecessary data retention.
-- Protect personal information in transit and at rest.
-- Avoid exposing user information through referral endpoints.
-- Avoid collecting private social media credentials.
-- Do not scrape private contact lists without explicit consent and approved design.
-- Provide an appropriate account and data-request process.
-
-The final privacy policy and retention periods must be approved before public launch.
-
-Applicable Malaysian privacy requirements must be reviewed before production deployment.
-
-20. THIRD-PARTY DEPENDENCY SECURITY
-
-All external libraries and services must be reviewed before use.
-
-Review:
-
-- Maintenance status.
+- Maintainer reputation.
+- Maintenance activity.
 - Known vulnerabilities.
-- License.
-- Package source.
-- Required permissions.
-- Security update history.
-- Data access requirements.
+- License compatibility.
+- Dependency size and complexity.
+- Transitive dependencies.
+- Update history.
 
-Do not install untrusted packages or execute unreviewed installation scripts.
+The project should use:
 
-Remove unused dependencies.
+- Dependency lockfiles.
+- Automated vulnerability scanning.
+- Secret scanning.
+- Code review.
+- Reproducible build practices where practical.
 
-Maintain dependency lock files where supported.
+Untrusted installation scripts and packages must not be executed without review.
 
-21. ADVERTISEMENT AND EXTERNAL SERVICE SECURITY
+19. MOBILE APPLICATION SECURITY
 
-Any advertisement or external service integration must follow its provider's official security and privacy requirements.
-
-Rules:
-
-- Do not expose user credentials to advertisement providers.
-- Do not send unnecessary personal information.
-- Validate external callbacks.
-- Do not trust client-reported ad completion without approved verification.
-- Do not award rewards based solely on an unverified client event.
-- Protect external service credentials.
-- Document third-party data sharing.
-
-The final advertisement provider and reward verification method are TBD.
-
-22. BACKUP AND RECOVERY SECURITY
-
-The backend must maintain a documented backup and recovery process.
+The React Native + Expo mobile application must follow secure development practices.
 
 Requirements:
 
-- Protect backup files.
-- Restrict backup access.
-- Encrypt sensitive backups where appropriate.
-- Keep production credentials separate from backups.
-- Test restoration procedures.
-- Preserve reward ledger integrity.
-- Document recovery responsibilities.
-- Monitor backup failures.
+- Do not embed production secrets in the application.
+- Do not store passwords in plaintext.
+- Do not store private signing keys in the application.
+- Use secure platform storage for sensitive local session credentials.
+- Validate all API responses.
+- Do not trust local reward or balance values.
+- Avoid logging sensitive user information.
+- Protect sensitive screens where appropriate.
+- Keep dependencies updated.
+- Use official, verified application distribution channels.
 
-Backup frequency, retention period, recovery time objective, and recovery point objective are TBD.
+The mobile application is an untrusted client from the backend's perspective.
 
-23. SECURITY INCIDENT RESPONSE
+Obfuscation or client-side checks must not be treated as substitutes for backend security.
 
-The project must establish an incident response process.
+20. SECURITY INCIDENT RESPONSE
 
-Potential incidents include:
+The project must maintain an incident response process.
 
-- Account compromise.
-- Credential exposure.
-- Database compromise.
-- Unauthorized reward modification.
-- Mining session manipulation.
-- Referral fraud.
-- Server compromise.
-- Leaked API credentials.
-- Malicious application release.
+When a security incident is detected:
 
-The response process should include:
-
-1. Detect and report.
-2. Assess severity.
-3. Contain the incident.
-4. Revoke affected credentials or sessions.
+1. Record the incident.
+2. Determine the affected service or data.
+3. Assess the potential impact.
+4. Contain the incident.
 5. Preserve relevant evidence.
-6. Investigate the cause.
-7. Restore secure operation.
-8. Notify affected parties where required.
-9. Document corrective actions.
+6. Stop affected operations if necessary.
+7. Investigate the root cause.
+8. Apply and verify the fix.
+9. Restore operations safely.
+10. Document the incident and response.
 
-The final incident response contacts and reporting channels are TBD.
+For critical vulnerabilities or reward-integrity threats, the backend may stop affected operations or place the application into maintenance mode.
 
-24. SECURITY TESTING REQUIREMENTS
+The system must preserve existing balances and historical records during incident response.
 
-Security testing must be performed during development and before production release.
+21. MAINTENANCE AND OUTAGE SECURITY
 
-Required testing categories:
+During planned or emergency maintenance:
+
+- New session activations may be stopped.
+- Reward processing may be paused.
+- Existing records must remain intact.
+- Balances must not be deleted.
+- Pending operations must be reconciled.
+- The app must show an appropriate maintenance status.
+- Maintenance start and end times must be recorded.
+- The Main Admin must receive relevant operational alerts.
+
+After restoration, the backend must validate pending sessions and reward operations before processing them.
+
+22. MONTHLY ADMIN SECURITY TESTING
+
+Monthly Admin Security Testing is mandatory under the project operations policy.
+
+The review should cover:
+
+- Admin authentication.
+- OTP and recovery procedures.
+- Admin role permissions.
+- Login abuse protection.
+- API authorization.
+- Backup integrity.
+- Recovery procedures.
+- Signing key access.
+- Audit log integrity.
+- Dependency vulnerabilities.
+- Security configuration.
+
+Findings must be documented with:
+
+- Test date.
+- Test scope.
+- Findings.
+- Severity.
+- Corrective actions.
+- Responsible person.
+- Resolution status.
+
+23. SECURITY TESTING REQUIREMENTS
+
+Before public launch, the project must complete appropriate security testing.
+
+Required categories include:
 
 - Authentication testing.
 - Authorization testing.
-- Session management testing.
 - API security testing.
 - Input validation testing.
-- Database security testing.
-- Android local storage testing.
-- Network security testing.
-- Mining session manipulation testing.
+- Session security testing.
+- Replay and duplicate request testing.
 - Reward integrity testing.
 - Referral abuse testing.
-- Admin privilege testing.
-- Dependency vulnerability scanning.
+- Database security testing.
 - Backup and recovery testing.
+- Public ledger signature verification.
+- Administrator permission testing.
+- Dependency vulnerability scanning.
 
-Security testing should use the OWASP Mobile Application Security Verification Standard and the relevant Mobile Application Security Testing Guide as references.
+Critical security findings must block public launch until resolved and verified.
 
-The backend API should also be assessed against an appropriate server-side security verification standard.
+24. UNRESOLVED SECURITY DECISIONS
 
-25. SECURITY ACCEPTANCE CRITERIA
+The following details require formal approval before production deployment:
 
-The application must not be considered production-ready until:
+1. Final authentication token design.
+2. Access and refresh token expiration policies.
+3. Password hashing parameters.
+4. OTP validity period and attempt limits.
+5. Email delivery provider.
+6. KYC provider and retention policy.
+7. Production secret management system.
+8. Encryption algorithm and key-management implementation.
+9. Backup encryption implementation.
+10. Signing key storage and rotation implementation.
+11. Security log retention period.
+12. Incident notification process.
+13. Rate-limit thresholds.
+14. Production hosting security configuration.
 
-- Authentication is enforced server-side.
-- Authorization checks protect all sensitive endpoints.
-- Session revocation works.
-- Production network communication uses HTTPS.
-- Secrets are not exposed in source code or application packages.
-- Database access is restricted.
-- Mining session validation is backend-authoritative.
-- Duplicate reward processing is prevented.
-- Reward budgets cannot be bypassed through concurrent requests.
-- Referral abuse protections are implemented.
-- Administrative permissions are tested.
-- Audit logging is operational.
-- Backup restoration has been tested.
-- Critical and high-severity security findings have been resolved or formally accepted by the responsible project owner.
+These items must not be replaced with undocumented assumptions.
 
-26. DEVELOPMENT AND RELEASE SECURITY
+25. FINAL SECURITY POLICY
 
-Development and production environments must be separated.
+Security is mandatory throughout SAECOIN development and operation.
 
-Production release requirements:
+The backend must remain authoritative for all security-critical account, session, referral, reward, balance, and administrative operations.
 
-- Review application permissions.
-- Review dependencies.
-- Protect release signing keys.
-- Use production HTTPS endpoints.
-- Remove development-only configurations.
-- Disable unnecessary debugging features.
-- Verify secret scanning.
-- Run required security tests.
-- Review administrative access.
-- Prepare a rollback and recovery plan.
+No client-side interface or administrator must be able to bypass the approved backend validation and audit process.
 
-Production credentials must never be included in public repository files.
+Historical reward and public ledger records must remain traceable and must never be secretly altered.
 
-27. OPEN SECURITY DECISIONS
-
-The following decisions must be finalized before implementation or production release:
-
-1. Authentication method.
-2. Account verification method.
-3. Password policy.
-4. Session architecture.
-5. Access token and refresh token policy, if applicable.
-6. Token expiration and revocation rules.
-7. Sensitive-operation re-authentication policy.
-8. Account recovery method.
-9. Admin multi-factor authentication policy.
-10. Secret-management implementation.
-11. Database encryption and connection policy.
-12. Backup frequency and retention.
-13. Log retention period.
-14. Incident response contacts.
-15. Privacy and personal-data retention policy.
-16. Advertisement provider security requirements.
-17. Production infrastructure security configuration.
-
-No developer may silently treat these open decisions as finalized.
-
-28. CROSS-DOCUMENT CONSISTENCY
-
-This document must remain consistent with:
-
-- "01-App-PRD.md"
-- "03-App-Flow-Specification.md"
-- "04-Technical-Requirements.md"
-- "05-App-Architecture.md"
-- "06-Backend-Specification.md"
-- "07-Database-Schema.md"
-- "08-Mining-Reward-Specification.md"
-- "09-Referral-Specification.md"
-- "11-Testing-Strategy.md"
-- "12-Release-and-Launch-Plan.md"
-
-Important shared rules:
-
-- The Android application is an untrusted client.
-- Backend validation is authoritative.
-- Device time cannot determine mining session validity.
-- Mining sessions require backend verification.
-- Reward calculations must be protected.
-- Reward ledger history must be preserved.
-- Referral eligibility must be independently verified.
-- Account cancellation must follow an approved policy.
-- Virtual SAC must not be represented as guaranteed monetary value or on-chain cryptocurrency.
-
-29. FINAL SECURITY POLICY
-
-Security is a mandatory requirement for every SAECOIN App component.
-
-No user, administrator, or application client may bypass backend security controls.
-
-Sensitive account, mining, referral, and reward operations must be authenticated, authorized, validated, and auditable.
-
-Security issues must be resolved before production release according to their severity and risk.
-
-The project must continuously review and improve its security controls as the application evolves.
+The application must not launch publicly until critical security requirements have been implemented, tested, and reviewed.
 
 ---
 
-END OF DOCUMENT
+END OF DOCUMENTDOCUMENT
