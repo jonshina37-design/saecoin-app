@@ -1,3 +1,5 @@
+> **v1.2 NOTICE (draft):** This document belongs to the v1.1 set. Specification v1.2 ([00-Spec-v1.2-Decision-Record.md](00-Spec-v1.2-Decision-Record.md)) changes tokenomics, reward calculation, referral rules and other items. Where the two conflict, the v1.2 record prevails once approved.
+
 SAECOIN — UI/UX DESIGN SPECIFICATION
 
 Document ID: SAECOIN-APP-UI-002
@@ -747,4 +749,4 @@ The application must clearly distinguish virtual application rewards from actual
 
 END OF DOCUMENT
 
-Next Document: 03 — App Flow SpecificationSpecification
+Next Document: 03 — App Flow Specification

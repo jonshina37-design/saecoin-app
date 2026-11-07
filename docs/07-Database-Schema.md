@@ -1,3 +1,5 @@
+> **v1.2 NOTICE (draft):** This document belongs to the v1.1 set. Specification v1.2 ([00-Spec-v1.2-Decision-Record.md](00-Spec-v1.2-Decision-Record.md)) changes tokenomics, reward calculation, referral rules and other items. Where the two conflict, the v1.2 record prevails once approved.
+
 SAECOIN — DATABASE SCHEMA SPECIFICATION
 
 Version: 1.1
@@ -750,6 +752,10 @@ Financial records must use exact numeric representations, and duplicate processi
 The database must support complete auditability, encrypted backup, recovery and reconciliation.
 
 The database is part of a centralized application architecture. It does not independently establish a decentralized blockchain.
+
+30. V1.2 SCHEMA ADDITIONS (DRAFT)
+
+Schema additions and changes proposed for v1.2 are listed in section 11 of [00-Spec-v1.2-Decision-Record.md](00-Spec-v1.2-Decision-Record.md). They add account and double-entry ledger tables, reward calculation records, signing keys, phone and public-ID columns, slot status, and correction-block fields. They also change the activation table so that only accepted activations are stored, because the v1.1 combination of a REJECTED status and a unique (user_id, session_id) constraint is contradictory.
 
 ---
 

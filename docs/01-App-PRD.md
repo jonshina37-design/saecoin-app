@@ -1,3 +1,5 @@
+> **v1.2 NOTICE (draft):** This document belongs to the v1.1 set. Specification v1.2 ([00-Spec-v1.2-Decision-Record.md](00-Spec-v1.2-Decision-Record.md)) changes tokenomics, reward calculation, referral rules and other items. Where the two conflict, the v1.2 record prevails once approved.
+
 SAECOIN — PRODUCT REQUIREMENTS DOCUMENT (PRD)
 
 Document ID: SAECOIN-APP-PRD-001
@@ -872,5 +874,5 @@ The SAECOIN App must:
 
 END OF DOCUMENT
 
-Document Status: Draft — Updated for User Review
-Next Document: 02 — UI/UX Design SpecificationSpecification
+Document Status: Draft — Updated for Approved Requirements
+Next Document: 02 — UI/UX Design Specification

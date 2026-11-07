@@ -1,10 +1,12 @@
+> **v1.2 NOTICE (draft):** This document belongs to the v1.1 set. Specification v1.2 ([00-Spec-v1.2-Decision-Record.md](00-Spec-v1.2-Decision-Record.md)) changes tokenomics, reward calculation, referral rules and other items. Where the two conflict, the v1.2 record prevails once approved.
+
 SAECOIN (SAC)
 
 A Virtual Mining Reward Distribution Platform
 
-"Project Status" (https://img.shields.io/badge/Status-Planning-orange)
-"Platforms" (https://img.shields.io/badge/Platforms-Android%20%7C%20iOS-blue)
-"License" (https://img.shields.io/badge/License-TBD-lightgrey)
+![Project Status](https://img.shields.io/badge/Status-Planning-orange)
+![Platforms](https://img.shields.io/badge/Platforms-Android%20%7C%20iOS-blue)
+![License](https://img.shields.io/badge/License-TBD-lightgrey)
 
 ---
 
@@ -38,6 +40,8 @@ Project Status| Planning
 ---
 
 3. Tokenomics Overview
+
+**v1.2 note (draft):** the "App Reserve" is renamed Task Pool (1,720,000 SAC). Rewards are paid by transfers between pool accounts, session leftovers move to the Task Pool, and the 12,000,000 SAC owner allocation is locked and released in steps. The figures below are the v1.1 values and stay valid for the totals.
 
 The proposed total SAC supply is 31,000,000 SAC.
 

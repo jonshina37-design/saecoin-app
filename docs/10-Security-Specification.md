@@ -1,3 +1,5 @@
+> **v1.2 NOTICE (draft):** This document belongs to the v1.1 set. Specification v1.2 ([00-Spec-v1.2-Decision-Record.md](00-Spec-v1.2-Decision-Record.md)) changes tokenomics, reward calculation, referral rules and other items. Where the two conflict, the v1.2 record prevails once approved.
+
 SAECOIN — SECURITY SPECIFICATION
 
 Document: 10-Security-Specification.md
@@ -810,4 +812,4 @@ The application must not launch publicly until critical security requirements ha
 
 ---
 
-END OF DOCUMENTDOCUMENT
+END OF DOCUMENT
