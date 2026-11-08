@@ -374,8 +374,8 @@ This record is not legal advice. Before public launch, obtain legal review of:
 
 ## 15. Next steps
 
-1. Owner reviews this record and answers the OPEN items that block implementation (O-01, O-02, O-04, O-05 first).
-2. Apply the approved items to documents 01–12 and convert the documents to proper Markdown (headings, table separators, fenced diagrams).
+1. Owner confirms the PROPOSED items (O-15) and answers the OPEN items that still block implementation (O-04 task and ad program, O-05 move to the future blockchain, O-06 SMS provider, O-07 KYC provider, then the rest). Done so far: documents converted to Markdown; O-01, O-02 (age, countries), O-14 and O-16 decided.
+2. Rewrite documents 01–12 as v1.2 once the OPEN items are decided. Until then this record prevails over them.
 3. Build the reward engine as a pure function with test vectors taken from section 4.5, then the backend, then the app.
 4. Run a closed beta of about 100 users before public launch.
 
