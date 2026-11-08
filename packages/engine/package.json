@@ -1,0 +1,16 @@
+{
+  "name": "@saecoin/engine",
+  "version": "0.1.0",
+  "private": true,
+  "description": "SAECOIN reward engine: pure functions, integer units only (spec v1.2, section 4)",
+  "type": "module",
+  "main": "dist/src/index.js",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "tsc -p tsconfig.json && node --test dist/test/*.test.js"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.6.0"
+  }
+}
