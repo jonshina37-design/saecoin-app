@@ -13,6 +13,7 @@ Status: planning stage. The specs in `docs/` are the source of truth.
 - The reward engine is a pure function (inputs → transfers), with no I/O, so it can be unit tested against the worked examples in the decision record.
 - Session close order: validate activations → calculate rewards → atomic ledger + balance transfer → sign and publish block.
 - Leftovers and dust go to TASK_POOL as SESSION_LEFTOVER; never carry over to the next session's pool.
+- Founder allocation (12M) is locked 12 months from Genesis Block 0, then 1,000,000 SAC per month for 12 months (D-11), via `FOUNDER_RELEASE` ledger transfers only.
 - The backend is the only authority; the client never decides rewards.
 - Public wording: "verifiable public ledger", not "blockchain".
 

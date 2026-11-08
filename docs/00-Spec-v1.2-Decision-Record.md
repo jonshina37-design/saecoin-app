@@ -28,7 +28,7 @@ Every item carries one of three labels.
 |---|---|---|
 | D-01 | Regular Mining reward is **10 SAC per successful user per session**, reduced to *pool ÷ users* when the session pool would otherwise be exceeded. | DECIDED |
 | D-02 | Referral Bonus is **3 SAC per eligible participant per session**, reduced to *pool ÷ eligible participants* when the pool would otherwise be exceeded. | DECIDED |
-| D-03 | The **12,000,000 SAC owner allocation is locked and released in steps**. The release schedule is not yet fixed (see O-01). | DECIDED |
+| D-03 | The **12,000,000 SAC owner allocation is locked and released in steps**. Release schedule: **fully locked for the first 12 months**, then **1,000,000 SAC released per month** (12 releases, see D-11). | DECIDED |
 | D-04 | Balances forfeited by cancelled accounts go to the **Task Pool**. | DECIDED |
 | D-05 | Whatever remains in the Task Pool after the 2,160th session **stays locked** and is not spent without a public announcement. | DECIDED |
 | D-06 | The smallest SAC unit has **8 decimal places**: 1 SAC = 100,000,000 units. | DECIDED |
@@ -36,6 +36,7 @@ Every item carries one of three labels.
 | D-08 | Registration uses **phone OTP, one account per phone number**. | DECIDED |
 | D-09 | Minimum user age and supported countries: see O-02. | OPEN |
 | D-10 | After the 2,160 sessions end, the owner will launch **a separate blockchain of their own**. | DECIDED |
+| D-11 | **Founder release schedule:** the 12,000,000 SAC stay fully locked for 12 months counted from Genesis Block 0. After that, 1,000,000 SAC are released on the same calendar day each month, 12 times (months 12 to 23 after genesis), so the allocation is fully released about 24 months after genesis. Each release is a public `FOUNDER_RELEASE` transfer from the locked founder account to the owner's available account. Releases cannot be skipped ahead, enlarged or reversed by the backend. | DECIDED |
 
 Further statements by the owner that this record builds on:
 
@@ -338,7 +339,7 @@ User ID: v1.1 defines it three ways (PRD, architecture, schema). v1.2 uses `user
 
 | ID | Decision needed |
 |---|---|
-| O-01 | Release schedule for the locked 12,000,000 SAC (start date, step size, interval). |
+| O-01 | ~~Release schedule for the locked 12,000,000 SAC~~ Decided as D-11. Remaining detail: confirm that the 12 months are counted from Genesis Block 0 (public launch). |
 | O-02 | Minimum user age and the list of supported countries. |
 | O-03 | Production server timing. The owner plans a separate server after user growth. The drafting recommendation is a rented server from public launch, with the laptop used only for development and internal testing, because a laptop is exposed to power loss, sleep and home-network risk while handling user rewards. |
 | O-04 | Task and advertisement program: types, limits per user, payout rules, ad networks. |
