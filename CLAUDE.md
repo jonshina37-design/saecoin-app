@@ -15,6 +15,7 @@ Status: planning stage. The specs in `docs/` are the source of truth.
 - Leftovers and dust go to TASK_POOL as SESSION_LEFTOVER; never carry over to the next session's pool.
 - Founder allocation (12M) is locked 12 months from Genesis Block 0, then 1,000,000 SAC per month for 12 months (D-11), via `FOUNDER_RELEASE` ledger transfers only.
 - Supported countries are config, not hard-coded: every country has its own on/off switch by phone country code, changeable without a release (all enabled by default, per D-09; sanctioned countries are off by default, D-13). Users must be 18+.
+- Client: Telegram Mini App first (React + TypeScript), native Expo app later, both on the same backend (D-14). Always verify Telegram initData signature on the backend; never trust the client.
 - The backend is the only authority; the client never decides rewards.
 - Public wording: "verifiable public ledger", not "blockchain".
 

@@ -39,6 +39,7 @@ Every item carries one of three labels.
 | D-11 | **Founder release schedule:** the 12,000,000 SAC stay fully locked for 12 months counted from Genesis Block 0. After that, 1,000,000 SAC are released on the same calendar day each month, 12 times (months 12 to 23 after genesis), so the allocation is fully released about 24 months after genesis. Each release is a public `FOUNDER_RELEASE` transfer from the locked founder account to the owner's available account. Releases cannot be skipped ahead, enlarged or reversed by the backend. | DECIDED |
 | D-12 | **Backend stack:** TypeScript (Node.js) with PostgreSQL, so types and the reward engine can be shared with the Expo app. | DECIDED |
 | D-13 | **Sanctioned countries are switched off by default** (for example those on the US OFAC list), using the per-country switch from D-09. The owner can review the list with legal advice. | DECIDED |
+| D-14 | **Client platform:** launch first as a **web app running inside Telegram (Mini App)**, built with React and TypeScript on the same backend and reward engine. A native Android/iOS app (Expo) follows later on the same backend. Sign-in uses the Telegram account; the user shares their phone number through Telegram, and the backend keeps **one account per verified phone number** (D-08 stays, but the phone is verified by Telegram instead of an SMS code). Telegram login data is always verified on the backend (signature check). Device attestation (Play Integrity / App Attest) applies only to the later native app; for the Mini App, multi-account control relies on phone uniqueness, rate limits and pattern detection (section 7). | DECIDED |
 
 Further statements by the owner that this record builds on:
 
@@ -357,6 +358,7 @@ User ID: v1.1 defines it three ways (PRD, architecture, schema). v1.2 uses `user
 | O-14 | ~~Backend language and database~~ Decided as D-12. Remaining: framework choice (for example Fastify or NestJS). |
 | O-15 | Confirm the PROPOSED items in this record, especially section 6.3 and section 9. |
 | O-16 | ~~Sanctioned countries~~ Decided as D-13. Remaining: the exact country list, reviewed with legal advice. |
+| O-17 | Telegram Mini App details: bot name and username, check Telegram's current Mini App rules for reward and token-like apps, and how session reminders are sent (bot messages). |
 
 ---
 
