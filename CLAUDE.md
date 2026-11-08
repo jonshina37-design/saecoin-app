@@ -14,7 +14,7 @@ Status: planning stage. The specs in `docs/` are the source of truth.
 - Session close order: validate activations → calculate rewards → atomic ledger + balance transfer → sign and publish block.
 - Leftovers and dust go to TASK_POOL as SESSION_LEFTOVER; never carry over to the next session's pool.
 - Founder allocation (12M) is locked 12 months from Genesis Block 0, then 1,000,000 SAC per month for 12 months (D-11), via `FOUNDER_RELEASE` ledger transfers only.
-- Supported countries (BD, IN, PK, NP) are config, not hard-coded: one on/off switch per phone country code, changeable without a release. Users must be 18+.
+- Supported countries are config, not hard-coded: every country has its own on/off switch by phone country code, changeable without a release (all enabled by default, per D-09; sanctioned-country default is O-16, ask the owner). Users must be 18+.
 - The backend is the only authority; the client never decides rewards.
 - Public wording: "verifiable public ledger", not "blockchain".
 
