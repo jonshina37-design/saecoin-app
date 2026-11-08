@@ -1,18 +1,18 @@
 > **v1.2 NOTICE (draft):** This document belongs to the v1.1 set. Specification v1.2 ([00-Spec-v1.2-Decision-Record.md](00-Spec-v1.2-Decision-Record.md)) changes tokenomics, reward calculation, referral rules and other items. Where the two conflict, the v1.2 record prevails once approved.
 
-SAECOIN — UI/UX DESIGN SPECIFICATION
+# SAECOIN — UI/UX DESIGN SPECIFICATION
 
-Document ID: SAECOIN-APP-UI-002
-Version: 1.1
-Project: SAECOIN App
-Status: Draft — Updated for Approved Requirements
-Platforms: Android and iOS
-Framework: React Native + Expo
-Language: TypeScript
+- **Document ID:** SAECOIN-APP-UI-002
+- **Version:** 1.1
+- **Project:** SAECOIN App
+- **Status:** Draft — Updated for Approved Requirements
+- **Platforms:** Android and iOS
+- **Framework:** React Native + Expo
+- **Language:** TypeScript
 
 ---
 
-1. PURPOSE
+## 1. PURPOSE
 
 This document defines the user interface and user experience requirements for the SAECOIN mobile application.
 
@@ -22,7 +22,7 @@ The UI must clearly communicate that SAECOIN App Mining is a virtual reward dist
 
 The interface must not misrepresent virtual mining as actual Proof-of-Work cryptocurrency mining.
 
-2. DESIGN PRINCIPLES
+## 2. DESIGN PRINCIPLES
 
 The application design must follow these principles:
 
@@ -39,7 +39,7 @@ The application design must follow these principles:
 
 The interface should prioritize clarity over unnecessary animations or visual effects.
 
-3. PLATFORM REQUIREMENTS
+## 3. PLATFORM REQUIREMENTS
 
 The application must support:
 
@@ -61,32 +61,33 @@ Requirements:
 - Respect operating-system notification permissions.
 - Maintain consistent application branding.
 
-4. DESIGN SYSTEM
+## 4. DESIGN SYSTEM
 
-4.1 Color System
+### 4.1 Color System
 
 The final color palette must be maintained centrally.
 
 Suggested semantic color tokens:
 
-Token| Purpose
-Primary| Main brand color
-Primary Variant| Secondary brand emphasis
-Background| Main application background
-Surface| Cards and panels
-Text Primary| Main text
-Text Secondary| Supporting text
-Success| Successful operations
-Warning| Warnings and pending states
-Error| Failed operations
-Border| Dividers and outlines
-Disabled| Disabled controls
+| Token | Purpose |
+| --- | --- |
+| Primary | Main brand color |
+| Primary Variant | Secondary brand emphasis |
+| Background | Main application background |
+| Surface | Cards and panels |
+| Text Primary | Main text |
+| Text Secondary | Supporting text |
+| Success | Successful operations |
+| Warning | Warnings and pending states |
+| Error | Failed operations |
+| Border | Dividers and outlines |
+| Disabled | Disabled controls |
 
 Exact hexadecimal color values must follow the approved SAECOIN branding.
 
 Do not introduce unrelated colors independently in individual screens.
 
-4.2 Typography
+### 4.2 Typography
 
 The application must use a consistent typography system.
 
@@ -102,7 +103,7 @@ Suggested text hierarchy:
 
 Typography must remain readable on smaller devices.
 
-4.3 Spacing
+### 4.3 Spacing
 
 Use a consistent spacing scale throughout the application.
 
@@ -118,7 +119,7 @@ Suggested spacing values:
 
 Spacing values must be centralized where practical.
 
-4.4 Components
+### 4.4 Components
 
 Reusable components should include:
 
@@ -139,18 +140,19 @@ Reusable components should include:
 - Empty State.
 - Maintenance Banner.
 
-5. APPLICATION NAVIGATION
+## 5. APPLICATION NAVIGATION
 
 The primary navigation should use a bottom navigation bar.
 
 Suggested navigation:
 
-Tab| Purpose
-Home| Dashboard and mining session
-Mining| Session details and history
-Referral| Referral code and group
-Explorer| Public ledger and transaction search
-Profile| Account information and settings
+| Tab | Purpose |
+| --- | --- |
+| Home | Dashboard and mining session |
+| Mining | Session details and history |
+| Referral | Referral code and group |
+| Explorer | Public ledger and transaction search |
+| Profile | Account information and settings |
 
 The navigation must:
 
@@ -162,9 +164,9 @@ The navigation must:
 
 Authentication screens must remain separate from the authenticated navigation structure.
 
-6. SCREEN SPECIFICATIONS
+## 6. SCREEN SPECIFICATIONS
 
-6.1 Splash Screen
+### 6.1 Splash Screen
 
 Purpose:
 
@@ -180,7 +182,7 @@ Elements:
 
 The splash screen must not display unverified balances or session information.
 
-6.2 Onboarding Screen
+### 6.2 Onboarding Screen
 
 Purpose:
 
@@ -198,7 +200,7 @@ The onboarding must clearly state that the application does not perform actual C
 
 Users should be able to continue, skip where permitted, and revisit help information later.
 
-6.3 Registration Screen
+### 6.3 Registration Screen
 
 Elements:
 
@@ -220,7 +222,7 @@ Requirements:
 - Prevent duplicate submission.
 - Never display passwords in plain text by default.
 
-6.4 Login Screen
+### 6.4 Login Screen
 
 Elements:
 
@@ -237,7 +239,7 @@ Requirements:
 - Provide password visibility control.
 - Support secure authentication and session handling.
 
-6.5 Account Recovery Screen
+### 6.5 Account Recovery Screen
 
 Elements:
 
@@ -250,7 +252,7 @@ Elements:
 
 The interface must never reveal whether a private account identifier exists in a way that enables account enumeration.
 
-6.6 Home Dashboard
+### 6.6 Home Dashboard
 
 The Home Dashboard is the primary application screen.
 
@@ -297,7 +299,7 @@ All displayed balances and account states must come from backend responses.
 
 The dashboard must not calculate authoritative rewards locally.
 
-6.7 Mining Screen
+### 6.7 Mining Screen
 
 Purpose:
 
@@ -316,15 +318,16 @@ Elements:
 
 Session States
 
-State| UI Presentation
-UPCOMING| Session not started
-AVAILABLE| Activation permitted
-ACTIVATED| Activation recorded
-PROCESSING| Backend validation pending
-SUCCESSFUL| Session validated
-FAILED| Session unsuccessful
-MISSED| Session was not activated
-MAINTENANCE| Session operations paused
+| State | UI Presentation |
+| --- | --- |
+| UPCOMING | Session not started |
+| AVAILABLE | Activation permitted |
+| ACTIVATED | Activation recorded |
+| PROCESSING | Backend validation pending |
+| SUCCESSFUL | Session validated |
+| FAILED | Session unsuccessful |
+| MISSED | Session was not activated |
+| MAINTENANCE | Session operations paused |
 
 Only backend-confirmed status may be presented as final.
 
@@ -348,7 +351,7 @@ After session completion:
 
 The application must not assume that activation alone guarantees a reward.
 
-6.8 Session Countdown
+### 6.8 Session Countdown
 
 The countdown must use backend-provided time information.
 
@@ -358,7 +361,7 @@ The UI should clearly display UTC session boundaries.
 
 A localized time display may be added as supporting information, but UTC remains the authoritative reference.
 
-6.9 Reward History Screen
+### 6.9 Reward History Screen
 
 Purpose:
 
@@ -389,7 +392,7 @@ Suggested status labels:
 
 Users must not be able to edit or delete reward records.
 
-6.10 Referral Screen
+### 6.10 Referral Screen
 
 Elements:
 
@@ -408,7 +411,7 @@ The UI must clearly explain that referral rewards depend on backend eligibility 
 
 The application must not promise a guaranteed referral reward.
 
-6.11 Referral Group Screen
+### 6.11 Referral Group Screen
 
 Elements:
 
@@ -427,7 +430,7 @@ The interface must clearly display:
 
 A successful group change must show that the user's 21-session validity progress has restarted.
 
-6.12 Profile Screen
+### 6.12 Profile Screen
 
 Elements:
 
@@ -443,7 +446,7 @@ Elements:
 
 Private information must not be exposed unnecessarily.
 
-6.13 Notification Screen
+### 6.13 Notification Screen
 
 The notification screen must display:
 
@@ -465,7 +468,7 @@ Requirements:
 
 Push notifications must follow Android and iOS permission requirements.
 
-6.14 KYC Screen
+### 6.14 KYC Screen
 
 KYC must only become available after all 2,160 effective sessions are completed.
 
@@ -483,7 +486,7 @@ Provider and document requirements remain subject to separate approval.
 
 If KYC is pending, the interface must clearly explain that the eligible balance is temporarily locked rather than forfeited.
 
-6.15 Explorer Screen
+### 6.15 Explorer Screen
 
 The Explorer provides access to the public application-operated ledger.
 
@@ -513,7 +516,7 @@ The Explorer should provide a verification interface for public block hashes and
 
 It must clearly explain that the current ledger is operated by the SAECOIN application backend and is not a decentralized blockchain.
 
-6.16 Transaction Details Screen
+### 6.16 Transaction Details Screen
 
 Display:
 
@@ -529,7 +532,7 @@ Display:
 
 Sensitive personal information must never be displayed.
 
-6.17 Maintenance Screen
+### 6.17 Maintenance Screen
 
 During maintenance, show:
 
@@ -543,7 +546,7 @@ Do not display an estimated completion time unless the backend provides one.
 
 The interface must not allow users to activate new sessions while the backend has disabled session operations.
 
-6.18 Account Status Screen
+### 6.18 Account Status Screen
 
 The screen must distinguish:
 
@@ -561,17 +564,17 @@ Display:
 
 The application must clearly distinguish temporary suspension from permanent cancellation.
 
-7. GLOBAL UI STATES
+## 7. GLOBAL UI STATES
 
 Every screen that loads backend data must support appropriate states.
 
-7.1 Loading State
+### 7.1 Loading State
 
 - Show a loading indicator.
 - Prevent duplicate submissions.
 - Avoid showing stale information as newly confirmed.
 
-7.2 Empty State
+### 7.2 Empty State
 
 Show an explanatory message when no data is available.
 
@@ -582,7 +585,7 @@ Examples:
 - No notifications.
 - No matching transaction.
 
-7.3 Error State
+### 7.3 Error State
 
 Show:
 
@@ -592,7 +595,7 @@ Show:
 
 Never expose internal server errors, stack traces, secrets, or database details.
 
-7.4 Offline State
+### 7.4 Offline State
 
 When internet connectivity is unavailable:
 
@@ -601,7 +604,7 @@ When internet connectivity is unavailable:
 - Preserve safe locally available information.
 - Retry server requests according to the approved network strategy.
 
-7.5 Maintenance State
+### 7.5 Maintenance State
 
 When the backend reports maintenance:
 
@@ -610,7 +613,7 @@ When the backend reports maintenance:
 - Preserve locally displayed historical information where safe.
 - Do not invent session success or reward confirmation.
 
-8. INTERACTION REQUIREMENTS
+## 8. INTERACTION REQUIREMENTS
 
 All interactive controls must provide clear feedback.
 
@@ -627,7 +630,7 @@ Actions that may create irreversible changes must require appropriate confirmati
 
 The interface must prevent accidental repeated activation and duplicate form submission.
 
-9. ACCESSIBILITY
+## 9. ACCESSIBILITY
 
 The application must support:
 
@@ -644,7 +647,7 @@ Status must not be communicated through color alone.
 
 Use text labels and suitable icons in addition to colors.
 
-10. RESPONSIVE DESIGN
+## 10. RESPONSIVE DESIGN
 
 The application must support:
 
@@ -659,7 +662,7 @@ Avoid fixed-width designs that cause content clipping.
 
 The application must respect device safe areas and operating-system UI elements.
 
-11. SECURITY AND PRIVACY IN THE UI
+## 11. SECURITY AND PRIVACY IN THE UI
 
 The UI must:
 
@@ -673,7 +676,7 @@ The UI must:
 
 The public Explorer must not expose KYC documents, personal contact details, authentication data, or recovery information.
 
-12. DESIGN IMPLEMENTATION RULES
+## 12. DESIGN IMPLEMENTATION RULES
 
 The UI implementation must follow these rules:
 
@@ -688,7 +691,7 @@ The UI implementation must follow these rules:
 9. Test all interactive screens on both platforms.
 10. Follow the approved UI design system.
 
-13. UI TESTING REQUIREMENTS
+## 13. UI TESTING REQUIREMENTS
 
 Test the following:
 
@@ -728,7 +731,7 @@ Tests must include:
 
 Android and iOS must be tested independently.
 
-14. FINAL DESIGN POLICY
+## 14. FINAL DESIGN POLICY
 
 The SAECOIN application interface must remain consistent, understandable, secure, and accessible.
 

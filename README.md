@@ -1,16 +1,16 @@
 > **v1.2 NOTICE (draft):** This document belongs to the v1.1 set. Specification v1.2 ([00-Spec-v1.2-Decision-Record.md](docs/00-Spec-v1.2-Decision-Record.md)) changes tokenomics, reward calculation, referral rules and other items. Where the two conflict, the v1.2 record prevails once approved.
 
-SAECOIN (SAC)
+# SAECOIN (SAC)
 
 A Virtual Mining Reward Distribution Platform
 
-![Project Status](https://img.shields.io/badge/Status-Planning-orange)
-![Platforms](https://img.shields.io/badge/Platforms-Android%20%7C%20iOS-blue)
+![Project Status](https://img.shields.io/badge/Status-Planning-orange)  
+![Platforms](https://img.shields.io/badge/Platforms-Android%20%7C%20iOS-blue)  
 ![License](https://img.shields.io/badge/License-TBD-lightgrey)
 
 ---
 
-1. About SAECOIN
+## 1. About SAECOIN
 
 SAECOIN is a mobile-based virtual mining reward distribution platform designed to distribute SAC rewards through scheduled user participation sessions and a referral-based reward system.
 
@@ -24,35 +24,37 @@ The current platform is a centralized, backend-controlled reward distribution sy
 
 ---
 
-2. Project Information
+## 2. Project Information
 
-Item| Details
-Project Name| SAECOIN
-Token Symbol| SAC (Provisional)
-Project Type| Virtual Mining Reward Distribution Platform
-Mobile Platforms| Android and iOS
-Mobile Technology| React Native + Expo + TypeScript
-Architecture| Centralized Client-Server
-Backend Authority| SAECOIN Backend
-Total Token Supply| 31,000,000 SAC
-Project Status| Planning
+| Item | Details |
+| --- | --- |
+| Project Name | SAECOIN |
+| Token Symbol | SAC (Provisional) |
+| Project Type | Virtual Mining Reward Distribution Platform |
+| Mobile Platforms | Android and iOS |
+| Mobile Technology | React Native + Expo + TypeScript |
+| Architecture | Centralized Client-Server |
+| Backend Authority | SAECOIN Backend |
+| Total Token Supply | 31,000,000 SAC |
+| Project Status | Planning |
 
 ---
 
-3. Tokenomics Overview
+## 3. Tokenomics Overview
 
 **v1.2 note (draft):** the "App Reserve" is renamed Task Pool (1,720,000 SAC). Rewards are paid by transfers between pool accounts, session leftovers move to the Task Pool, and the 12,000,000 SAC owner allocation is locked and released in steps. The figures below are the v1.1 values and stay valid for the totals.
 
 The proposed total SAC supply is 31,000,000 SAC.
 
-Allocation| Amount
-Regular Mining Allocation| 12,960,000 SAC
-Referral Bonus Allocation| 4,320,000 SAC
-Initial App Reserve| 1,000,000 SAC
-Unused App Mining Allocation transferred to App Reserve| 720,000 SAC
-Founder/Personal Reserve| 12,000,000 SAC
-Node Mining Allocation| 0 SAC
-Total Supply| 31,000,000 SAC
+| Allocation | Amount |
+| --- | --- |
+| Regular Mining Allocation | 12,960,000 SAC |
+| Referral Bonus Allocation | 4,320,000 SAC |
+| Initial App Reserve | 1,000,000 SAC |
+| Unused App Mining Allocation transferred to App Reserve | 720,000 SAC |
+| Founder/Personal Reserve | 12,000,000 SAC |
+| Node Mining Allocation | 0 SAC |
+| Total Supply | 31,000,000 SAC |
 
 App Mining Distribution
 
@@ -65,10 +67,11 @@ Session Reward Pools
 
 Each effective network-wide session has the following proposed reward pools:
 
-Reward Category| Network-Wide Pool
-Regular Mining| 6,000 SAC
-Referral Bonus| 2,000 SAC
-Total| 8,000 SAC
+| Reward Category | Network-Wide Pool |
+| --- | --- |
+| Regular Mining | 6,000 SAC |
+| Referral Bonus | 2,000 SAC |
+| Total | 8,000 SAC |
 
 The planned distribution consists of 2,160 effective sessions.
 
@@ -78,14 +81,15 @@ Individual reward calculation, rounding, smallest SAC unit, and remainder-handli
 
 ---
 
-4. Virtual Mining System
+## 4. Virtual Mining System
 
 SAECOIN uses three scheduled sessions per day.
 
-Session| UTC Schedule
-Session 1| 04:00–12:00
-Session 2| 12:00–20:00
-Session 3| 20:00–04:00 (Next Day)
+| Session | UTC Schedule |
+| --- | --- |
+| Session 1 | 04:00–12:00 |
+| Session 2 | 12:00–20:00 |
+| Session 3 | 20:00–04:00 (Next Day) |
 
 Session Rules
 
@@ -102,7 +106,7 @@ The backend is responsible for validating participation and calculating rewards.
 
 ---
 
-5. Account and Referral System
+## 5. Account and Referral System
 
 SAECOIN includes a referral-based participation system.
 
@@ -123,7 +127,7 @@ Exact individual referral reward allocation rules remain subject to final approv
 
 ---
 
-6. Account Validity and Inactivity
+## 6. Account Validity and Inactivity
 
 After becoming VALID, an account must maintain participation.
 
@@ -137,7 +141,7 @@ The inactivity policy applies to VALID users. The rebuild period following an ap
 
 ---
 
-7. KYC Verification
+## 7. KYC Verification
 
 KYC verification is required only after all 2,160 effective sessions have been completed.
 
@@ -150,7 +154,7 @@ The final KYC provider, verification process, and supported documents will be de
 
 ---
 
-8. Public Ledger and Explorer
+## 8. Public Ledger and Explorer
 
 SAECOIN plans to provide an application-operated public ledger.
 
@@ -174,7 +178,7 @@ Important: This public ledger is operated by SAECOIN's backend. It is not a dece
 
 ---
 
-9. Technology Stack
+## 9. Technology Stack
 
 Mobile Application
 
@@ -205,7 +209,7 @@ Final database technology and deployment configuration are defined in the techni
 
 ---
 
-10. Security
+## 10. Security
 
 Security is a core requirement of SAECOIN.
 
@@ -227,33 +231,34 @@ Administrative reward corrections and recovery operations must follow the docume
 
 ---
 
-11. Documentation
+## 11. Documentation
 
 Project documentation is maintained in the repository.
 
-No.| Document
-01| App PRD
-02| UI/UX Design
-03| App Flow Specification
-04| Technical Requirements
-05| App Architecture
-06| Backend Specification
-07| Database Schema
-08| Mining & Reward Specification
-09| Referral Specification
-10| Security Specification
-11| Testing Strategy
-12| Release & Launch Plan
+| No. | Document |
+| --- | --- |
+| 01 | App PRD |
+| 02 | UI/UX Design |
+| 03 | App Flow Specification |
+| 04 | Technical Requirements |
+| 05 | App Architecture |
+| 06 | Backend Specification |
+| 07 | Database Schema |
+| 08 | Mining & Reward Specification |
+| 09 | Referral Specification |
+| 10 | Security Specification |
+| 11 | Testing Strategy |
+| 12 | Release & Launch Plan |
 
 Documentation location:
 
-"docs/"
+`docs/`
 
 The documentation is the primary reference for project requirements and implementation decisions.
 
 ---
 
-12. Project Status
+## 12. Project Status
 
 Current Status: Planning
 
@@ -267,7 +272,7 @@ Critical unresolved issues must be addressed before production release.
 
 ---
 
-13. Development Principles
+## 13. Development Principles
 
 SAECOIN development follows these principles:
 
@@ -283,7 +288,7 @@ SAECOIN development follows these principles:
 
 ---
 
-14. Future Development
+## 14. Future Development
 
 Possible future development areas include:
 
@@ -297,7 +302,7 @@ These are future possibilities and are not part of the current application's con
 
 ---
 
-15. Disclaimer
+## 15. Disclaimer
 
 SAC is a proposed project token with no guaranteed market value, exchange listing, financial return, or withdrawal availability.
 
@@ -307,7 +312,7 @@ All token distribution and account operations are subject to the finalized proje
 
 ---
 
-16. License
+## 16. License
 
 License: To Be Determined (TBD).
 

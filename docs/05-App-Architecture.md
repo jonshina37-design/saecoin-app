@@ -1,18 +1,18 @@
 > **v1.2 NOTICE (draft):** This document belongs to the v1.1 set. Specification v1.2 ([00-Spec-v1.2-Decision-Record.md](00-Spec-v1.2-Decision-Record.md)) changes tokenomics, reward calculation, referral rules and other items. Where the two conflict, the v1.2 record prevails once approved.
 
-SAECOIN — APP ARCHITECTURE SPECIFICATION
+# SAECOIN — APP ARCHITECTURE SPECIFICATION
 
-Version: 1.1
-Project: SAECOIN App
-Ticker: SAC (Provisional)
-Platforms: Android and iOS
-Mobile Technology: React Native + Expo + TypeScript
-Architecture: Client–Server
-Status: Draft — Updated for Approved Requirements
+- **Version:** 1.1
+- **Project:** SAECOIN App
+- **Ticker:** SAC (Provisional)
+- **Platforms:** Android and iOS
+- **Mobile Technology:** React Native + Expo + TypeScript
+- **Architecture:** Client–Server
+- **Status:** Draft — Updated for Approved Requirements
 
 ---
 
-1. PURPOSE
+## 1. PURPOSE
 
 This document defines the software architecture of the SAECOIN mobile application and its supporting backend systems.
 
@@ -35,7 +35,7 @@ This document describes the current SAECOIN App architecture only.
 
 It does not define or implement a decentralized blockchain network.
 
-2. ARCHITECTURE OVERVIEW
+## 2. ARCHITECTURE OVERVIEW
 
 SAECOIN will use a centralized client–server architecture.
 
@@ -43,8 +43,9 @@ The mobile application will provide the user interface and communicate with the 
 
 The backend will remain authoritative for all important application operations.
 
-2.1 High-Level Architecture
+### 2.1 High-Level Architecture
 
+```text
                  SAECOIN MOBILE APP
               Android / iOS
        React Native + Expo + TypeScript
@@ -81,10 +82,11 @@ The backend will remain authoritative for all important application operations.
              |
              v
           EXPLORER
+```
 
 This diagram represents logical responsibilities. It does not require every component to run as a separate server or process.
 
-3. CORE ARCHITECTURAL PRINCIPLES
+## 3. CORE ARCHITECTURAL PRINCIPLES
 
 The following principles are mandatory:
 
@@ -99,9 +101,9 @@ The following principles are mandatory:
 9. Platform consistency: Android and iOS must follow the same backend rules.
 10. Specification consistency: implementation must follow the approved project specifications.
 
-4. MOBILE APPLICATION ARCHITECTURE
+## 4. MOBILE APPLICATION ARCHITECTURE
 
-4.1 Technology
+### 4.1 Technology
 
 The mobile application will use:
 
@@ -114,8 +116,9 @@ The mobile application will use:
 
 The project must not switch to Kotlin/Jetpack Compose or another mobile framework without an approved architecture change.
 
-4.2 Mobile Application Layers
+### 4.2 Mobile Application Layers
 
+```text
 Mobile Application
 │
 ├── Presentation Layer
@@ -141,8 +144,9 @@ Mobile Application
     ├── Secure Storage
     ├── Push Notifications
     └── OS Permissions
+```
 
-4.3 Presentation Layer
+### 4.3 Presentation Layer
 
 Responsibilities:
 
@@ -157,7 +161,7 @@ Responsibilities:
 
 The presentation layer must not implement authoritative reward or eligibility rules.
 
-4.4 Application Layer
+### 4.4 Application Layer
 
 Responsibilities:
 
@@ -170,7 +174,7 @@ Responsibilities:
 
 Client-side validation is for usability only. The backend must validate every important operation independently.
 
-4.5 Data Layer
+### 4.5 Data Layer
 
 Responsibilities:
 
@@ -183,7 +187,7 @@ Responsibilities:
 
 The local cache must never become the authoritative source of account balances or mining rewards.
 
-4.6 Platform Integration
+### 4.6 Platform Integration
 
 Platform-specific integrations may include:
 
@@ -195,7 +199,7 @@ Platform-specific integrations may include:
 
 Sensitive data must not be stored in ordinary unencrypted application storage.
 
-5. BACKEND ARCHITECTURE
+## 5. BACKEND ARCHITECTURE
 
 The backend is the authoritative system for SAECOIN.
 
@@ -215,8 +219,9 @@ It controls:
 - Ledger records.
 - Public ledger publication.
 
-5.1 Logical Backend Modules
+### 5.1 Logical Backend Modules
 
+```text
 Backend
 │
 ├── API Gateway / HTTP Layer
@@ -234,10 +239,11 @@ Backend
 ├── Audit Module
 ├── Backup Module
 └── Public Ledger Publisher
+```
 
 These are logical modules. Their final deployment arrangement may be a modular monolith or another approved implementation that preserves the same responsibilities and security boundaries.
 
-5.2 API Layer
+### 5.2 API Layer
 
 Responsibilities:
 
@@ -251,7 +257,7 @@ Responsibilities:
 
 The API layer must not bypass business rules or directly modify balances without the required service and ledger operations.
 
-5.3 Authentication Module
+### 5.3 Authentication Module
 
 Responsibilities:
 
@@ -265,7 +271,7 @@ Responsibilities:
 
 The backend must determine whether an account is active, pending, suspended or cancelled.
 
-5.4 User Account Module
+### 5.4 User Account Module
 
 Responsibilities:
 
@@ -282,7 +288,7 @@ The username is the permanent referral code.
 
 The unique User ID must remain stable even if display information changes.
 
-5.5 Mining Session Module
+### 5.5 Mining Session Module
 
 Responsibilities:
 
@@ -299,10 +305,11 @@ The backend clock is authoritative.
 
 The three daily session slots are:
 
-Session| UTC Start| UTC End
-1| 04:00| 12:00
-2| 12:00| 20:00
-3| 20:00| 04:00 next day
+| Session | UTC Start | UTC End |
+| --- | --- | --- |
+| 1 | 04:00 | 12:00 |
+| 2 | 12:00 | 20:00 |
+| 3 | 20:00 | 04:00 next day |
 
 Activation at any time within the scheduled slot counts for that full session if accepted by the backend.
 
@@ -310,7 +317,7 @@ Activation alone does not make a session successful.
 
 A session becomes successful only after the scheduled slot ends and backend validation is completed.
 
-5.6 Reward Calculation Module
+### 5.6 Reward Calculation Module
 
 Responsibilities:
 
@@ -323,13 +330,14 @@ Responsibilities:
 
 The backend must use the approved tokenomics:
 
-Allocation| SAC
-Regular Mining| 12,960,000
-Referral Bonus| 4,320,000
-App Reserve| 1,720,000
-Founder/Personal Reserve| 12,000,000
-Node Mining| 0
-Total Supply| 31,000,000
+| Allocation | SAC |
+| --- | --- |
+| Regular Mining | 12,960,000 |
+| Referral Bonus | 4,320,000 |
+| App Reserve | 1,720,000 |
+| Founder/Personal Reserve | 12,000,000 |
+| Node Mining | 0 |
+| Total Supply | 31,000,000 |
 
 The network-wide reward pools per effective session are:
 
@@ -341,7 +349,7 @@ These are network-wide pools, not guaranteed individual rewards.
 
 The backend must ensure that actual distribution never exceeds the approved allocation.
 
-5.7 Referral Module
+### 5.7 Referral Module
 
 Responsibilities:
 
@@ -359,7 +367,7 @@ A referrer must have at least three active direct referrals in the same session 
 
 The referral module must follow the approved Referral Specification.
 
-5.8 Balance Module
+### 5.8 Balance Module
 
 Responsibilities:
 
@@ -374,7 +382,7 @@ A balance must be derived from valid ledger transactions or maintained through a
 
 The mobile application must not be able to directly set a balance.
 
-5.9 Ledger Module
+### 5.9 Ledger Module
 
 Responsibilities:
 
@@ -387,7 +395,7 @@ Responsibilities:
 
 Existing ledger entries must never be secretly overwritten or deleted.
 
-5.10 Notification Module
+### 5.10 Notification Module
 
 Responsibilities:
 
@@ -410,7 +418,7 @@ Notification events include:
 
 Deleting a notification from a user's notification history must not delete its underlying transaction or system record.
 
-6. DATABASE ARCHITECTURE
+## 6. DATABASE ARCHITECTURE
 
 The database will be the persistent storage layer for application data.
 
@@ -418,6 +426,7 @@ The final database engine and deployment configuration must be confirmed in the 
 
 Logical data domains include:
 
+```text
 Database
 │
 ├── Users
@@ -437,6 +446,7 @@ Database
 ├── Audit Logs
 ├── Backup Records
 └── Public Ledger Blocks
+```
 
 Database requirements:
 
@@ -450,13 +460,13 @@ Database requirements:
 - Record timestamps in UTC.
 - Document schema migrations.
 
-The detailed schema belongs in "07-Database-Schema.md".
+The detailed schema belongs in `07-Database-Schema.md`.
 
-7. API COMMUNICATION ARCHITECTURE
+## 7. API COMMUNICATION ARCHITECTURE
 
 The mobile application will communicate with the backend through HTTPS REST APIs.
 
-7.1 Communication Format
+### 7.1 Communication Format
 
 - Protocol: HTTPS.
 - API style: REST.
@@ -465,10 +475,11 @@ The mobile application will communicate with the backend through HTTPS REST APIs
 - Time standard: UTC.
 - API versioning: required for public API evolution.
 
-7.2 Example API Groups
+### 7.2 Example API Groups
 
 Illustrative endpoint groups:
 
+```text
 /api/v1/auth
 /api/v1/users
 /api/v1/mining
@@ -479,10 +490,11 @@ Illustrative endpoint groups:
 /api/v1/notifications
 /api/v1/kyc
 /api/v1/explorer
+```
 
 Exact endpoint names and request/response structures must be defined in the API and Backend Specifications.
 
-7.3 API Response Requirements
+### 7.3 API Response Requirements
 
 Responses should use consistent structures.
 
@@ -500,10 +512,11 @@ Error responses should provide:
 
 Internal server errors, secrets and sensitive implementation details must not be exposed to clients.
 
-8. MINING SESSION PROCESSING FLOW
+## 8. MINING SESSION PROCESSING FLOW
 
 The following flow describes the logical session lifecycle.
 
+```text
 Scheduled Session Opens
           |
           v
@@ -548,10 +561,11 @@ Activation Accepted?
                         |
                         v
                  Publish Public Record
+```
 
 The flow is logical and may be implemented through background jobs, queues or database transactions.
 
-8.1 Session Rules
+### 8.1 Session Rules
 
 - One activation per user per scheduled session.
 - Missed sessions cannot be activated retrospectively.
@@ -563,7 +577,7 @@ The flow is logical and may be implemented through background jobs, queues or da
 - Reward credit should complete within five minutes after session end under normal operation.
 - If processing fails, the operation must remain pending for safe retry or reconciliation.
 
-8.2 Effective Session Counter
+### 8.2 Effective Session Counter
 
 The system has 2,160 effective sessions.
 
@@ -571,7 +585,7 @@ If the backend mining system is unavailable, effective session progression must 
 
 After recovery, processing must resume from the correct session state without skipping or duplicating effective sessions.
 
-9. ACCOUNT STATUS ARCHITECTURE
+## 9. ACCOUNT STATUS ARCHITECTURE
 
 The backend controls account status.
 
@@ -584,7 +598,7 @@ Expected statuses include:
 - SUSPENDED.
 - CANCELLED.
 
-9.1 Initial Validity
+### 9.1 Initial Validity
 
 A new user must complete 21 successful sessions to become VALID.
 
@@ -592,7 +606,7 @@ Regular Mining Reward is available during the first 21 successful sessions.
 
 Referral Bonus is available only when the user is VALID and meets the applicable referral rules.
 
-9.2 Inactivity
+### 9.2 Inactivity
 
 After becoming VALID, the user must complete at least one successful session within every rolling window of 90 scheduled session slots.
 
@@ -606,7 +620,7 @@ A CANCELLED account cannot be reactivated.
 
 The cancelled user's remaining balance is forfeited to App Reserve according to the approved rules.
 
-9.3 Referral Group Change
+### 9.3 Referral Group Change
 
 A user may change their referral group once during their lifetime, after initial validity.
 
@@ -622,7 +636,7 @@ A successful group change:
 
 The backend must enforce these rules.
 
-10. PUBLIC LEDGER AND EXPLORER ARCHITECTURE
+## 10. PUBLIC LEDGER AND EXPLORER ARCHITECTURE
 
 SAECOIN will provide an app-operated public ledger and Explorer.
 
@@ -630,8 +644,9 @@ This ledger is not a decentralized blockchain.
 
 It is a publicly inspectable, cryptographically verifiable record system operated by the SAECOIN backend.
 
-10.1 Publishing Flow
+### 10.1 Publishing Flow
 
+```text
 Session Ends
      |
      v
@@ -657,8 +672,9 @@ Public Ledger Publisher
      |
      v
 Explorer Makes Block Available
+```
 
-10.2 Block Requirements
+### 10.2 Block Requirements
 
 Each published block should contain:
 
@@ -673,7 +689,7 @@ Each published block should contain:
 
 Blocks must have unique identifiers and hash-linked history.
 
-10.3 Public Transaction Information
+### 10.3 Public Transaction Information
 
 The Explorer may display:
 
@@ -688,7 +704,7 @@ The public User ID consists of a username and unique generated number.
 
 Example:
 
-Username: Emon
+Username: Emon  
 User Number: 00001258
 
 The Explorer must not expose:
@@ -702,7 +718,7 @@ The Explorer must not expose:
 - Private contact information.
 - Other confidential user data.
 
-10.4 Verification
+### 10.4 Verification
 
 The Explorer must publish the applicable public verification key.
 
@@ -715,7 +731,7 @@ Users should be able to verify:
 
 Historical public keys must remain available to verify older blocks.
 
-10.5 Corrections
+### 10.5 Corrections
 
 Existing public blocks must remain immutable.
 
@@ -730,13 +746,13 @@ A correction must:
 7. Preserve the original record.
 8. Appear in the Explorer and Audit Log.
 
-11. ADMIN ARCHITECTURE
+## 11. ADMIN ARCHITECTURE
 
 Admin operations must be separated from normal user operations.
 
 Admin access must use a protected administrative interface and backend authorization.
 
-11.1 Admin Roles
+### 11.1 Admin Roles
 
 Main Admin
 
@@ -762,8 +778,9 @@ Responsibilities:
 
 Sub-Admins must not have final approval or rejection authority.
 
-11.2 Approval Flow
+### 11.2 Approval Flow
 
+```text
 Request Received
        |
        v
@@ -783,10 +800,11 @@ Backend Executes Approved Action
        |
        v
 Audit Log Updated
+```
 
 The backend must validate administrative authority before executing any protected operation.
 
-12. SECURITY ARCHITECTURE
+## 12. SECURITY ARCHITECTURE
 
 Security must be enforced at the backend and infrastructure layers.
 
@@ -811,7 +829,7 @@ Email OTP recovery and Main Admin recovery must follow the approved Security Spe
 
 The mobile application must never contain server-side secrets, private signing keys or administrative credentials.
 
-13. BACKUP AND RECOVERY ARCHITECTURE
+## 13. BACKUP AND RECOVERY ARCHITECTURE
 
 The backup system must preserve application and ledger consistency.
 
@@ -832,9 +850,9 @@ Approved backup destinations:
 
 Monthly recovery tests must verify restoration from the available backup sources.
 
-The detailed encryption and recovery process belongs in "10-Security-Specification.md" and "06-Backend-Specification.md".
+The detailed encryption and recovery process belongs in `10-Security-Specification.md` and `06-Backend-Specification.md`.
 
-14. ERROR HANDLING AND RECOVERY
+## 14. ERROR HANDLING AND RECOVERY
 
 The system must handle failures without corrupting balances or transaction history.
 
@@ -851,7 +869,7 @@ Important failure scenarios include:
 - Backup failure.
 - Admin service failure.
 
-14.1 Retry Requirements
+### 14.1 Retry Requirements
 
 Retryable operations must use unique operation identifiers or idempotency keys.
 
@@ -863,7 +881,7 @@ Retries must not create:
 - Duplicate ledger transactions.
 - Duplicate public blocks.
 
-14.2 Pending Operations
+### 14.2 Pending Operations
 
 If a session or reward operation cannot complete:
 
@@ -874,7 +892,7 @@ If a session or reward operation cannot complete:
 - Record the final result.
 - Notify the relevant Admin when manual review is required.
 
-14.3 Maintenance Mode
+### 14.3 Maintenance Mode
 
 During critical maintenance:
 
@@ -886,7 +904,7 @@ During critical maintenance:
 - Resume only after backend validation.
 - Record maintenance start and end times.
 
-15. SCALABILITY AND DEPLOYMENT
+## 15. SCALABILITY AND DEPLOYMENT
 
 The architecture should allow future growth without changing the core business rules.
 
@@ -905,7 +923,7 @@ These are implementation options, not mandatory separate services from the begin
 
 The first implementation should remain manageable and avoid unnecessary infrastructure complexity.
 
-16. ARCHITECTURAL BOUNDARIES
+## 16. ARCHITECTURAL BOUNDARIES
 
 The following boundaries are mandatory:
 
@@ -922,7 +940,7 @@ The following boundaries are mandatory:
 11. The current app-operated ledger must not be described as decentralized.
 12. Future independent blockchain development must remain separate from this app architecture.
 
-17. FUTURE EXTENSIBILITY
+## 17. FUTURE EXTENSIBILITY
 
 The architecture may later support:
 
@@ -938,25 +956,25 @@ Any future independent blockchain must have its own protocol, consensus, node, s
 
 It must not be treated as an existing feature of the current SAECOIN App.
 
-18. IMPLEMENTATION REQUIREMENTS
+## 18. IMPLEMENTATION REQUIREMENTS
 
 Implementation must follow these documents:
 
-- "01-App-PRD.md"
-- "02-UI-UX-Design.md"
-- "03-App-Flow-Specification.md"
-- "04-Technical-Requirements.md"
-- "06-Backend-Specification.md"
-- "07-Database-Schema.md"
-- "08-Mining-Reward-Specification.md"
-- "09-Referral-Specification.md"
-- "10-Security-Specification.md"
-- "11-Testing-Strategy.md"
-- "12-Release-and-Launch-Plan.md"
+- `01-App-PRD.md`
+- `02-UI-UX-Design.md`
+- `03-App-Flow-Specification.md`
+- `04-Technical-Requirements.md`
+- `06-Backend-Specification.md`
+- `07-Database-Schema.md`
+- `08-Mining-Reward-Specification.md`
+- `09-Referral-Specification.md`
+- `10-Security-Specification.md`
+- `11-Testing-Strategy.md`
+- `12-Release-and-Launch-Plan.md`
 
 If a conflict is found between documents, implementation must pause for clarification rather than silently choosing a different rule.
 
-19. FINAL ARCHITECTURE POLICY
+## 19. FINAL ARCHITECTURE POLICY
 
 The SAECOIN App will use a centralized client–server architecture with React Native, Expo and TypeScript for the mobile application.
 

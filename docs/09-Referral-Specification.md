@@ -1,16 +1,16 @@
 > **v1.2 NOTICE (draft):** This document belongs to the v1.1 set. Specification v1.2 ([00-Spec-v1.2-Decision-Record.md](00-Spec-v1.2-Decision-Record.md)) changes tokenomics, reward calculation, referral rules and other items. Where the two conflict, the v1.2 record prevails once approved.
 
-SAECOIN — REFERRAL SPECIFICATION
+# SAECOIN — REFERRAL SPECIFICATION
 
-Document: 09-Referral-Specification.md
-Version: 1.1
-Project: SAECOIN App
-Ticker: SAC (Provisional)
-Status: Draft — Pending Approval
+- **Document:** 09-Referral-Specification.md
+- **Version:** 1.1
+- **Project:** SAECOIN App
+- **Ticker:** SAC (Provisional)
+- **Status:** Draft — Pending Approval
 
 ---
 
-1. PURPOSE
+## 1. PURPOSE
 
 This document defines the referral system for the SAECOIN App.
 
@@ -31,7 +31,7 @@ The referral system is part of the centralized SAECOIN App reward distribution s
 
 It does not represent blockchain mining or decentralized consensus.
 
-2. CORE PRINCIPLES
+## 2. CORE PRINCIPLES
 
 The referral system must follow these principles:
 
@@ -46,9 +46,9 @@ The referral system must follow these principles:
 9. Referral group changes must not alter the user's existing SAC balance.
 10. All referral-related changes and reward calculations must be recorded and auditable.
 
-3. REFERRAL CODE
+## 3. REFERRAL CODE
 
-3.1 Username as Referral Code
+### 3.1 Username as Referral Code
 
 Each registered user receives a unique username.
 
@@ -69,7 +69,7 @@ The referral code must be:
 
 The exact username character rules and case-sensitivity policy must be finalized in the registration specification.
 
-3.2 Referral Code Entry
+### 3.2 Referral Code Entry
 
 During registration, a new user may enter an existing user's username as their referral code.
 
@@ -81,7 +81,7 @@ The backend must verify that:
 - The new user is not attempting self-referral.
 - The requested relationship does not violate the one-current-referrer rule.
 
-3.3 Invalid Referral Code
+### 3.3 Invalid Referral Code
 
 If the entered referral code is invalid:
 
@@ -92,15 +92,15 @@ If the entered referral code is invalid:
 
 An invalid code must never be silently accepted.
 
-4. REFERRAL RELATIONSHIPS
+## 4. REFERRAL RELATIONSHIPS
 
-4.1 One Current Referrer
+### 4.1 One Current Referrer
 
 A user may have only one current referrer at a time.
 
 The backend must maintain one authoritative current referral relationship for each referred user.
 
-4.2 Direct Referrals
+### 4.2 Direct Referrals
 
 A referrer may have a maximum of 10 direct referrals.
 
@@ -112,13 +112,13 @@ Once the limit is reached:
 
 The limit applies to current direct referrals.
 
-4.3 Self-Referral Prevention
+### 4.3 Self-Referral Prevention
 
 A user cannot use their own username as their referral code.
 
 The backend must reject self-referral attempts even if the app interface is bypassed.
 
-4.4 Referral Group
+### 4.4 Referral Group
 
 A referral group consists of:
 
@@ -129,9 +129,9 @@ The group is evaluated for each scheduled mining session according to the eligib
 
 The referral group must not be treated as a permanently eligible reward group. Eligibility can change from one session to another.
 
-5. REFERRAL GROUP ELIGIBILITY
+## 5. REFERRAL GROUP ELIGIBILITY
 
-5.1 Basic Eligibility
+### 5.1 Basic Eligibility
 
 A referral group can qualify for referral bonus participation only when:
 
@@ -142,7 +142,7 @@ A referral group can qualify for referral bonus participation only when:
 
 The minimum of 3 active direct referrals is required in addition to the referrer.
 
-5.2 Active Direct Referral
+### 5.2 Active Direct Referral
 
 A direct referral is considered active for a session only when that user has successfully completed the applicable activation and backend validation requirements for that scheduled session.
 
@@ -150,7 +150,7 @@ Merely registering under a referrer does not make a user active.
 
 A user who has not successfully participated in the relevant session must not be counted as an active direct referral for that session.
 
-5.3 Group Participation
+### 5.3 Group Participation
 
 If a referral group qualifies:
 
@@ -160,15 +160,15 @@ If a referral group qualifies:
 
 The backend must calculate eligibility separately for every scheduled session.
 
-5.4 Parent Group Ineligibility
+### 5.4 Parent Group Ineligibility
 
 A parent group's failure to qualify must not automatically disqualify a child referral group.
 
 A child group may qualify independently when its own referrer and active direct referrals satisfy the eligibility requirements.
 
-6. REFERRAL BONUS RULES
+## 6. REFERRAL BONUS RULES
 
-6.1 Referral Bonus Allocation
+### 6.1 Referral Bonus Allocation
 
 The approved network-wide Referral Bonus allocation is:
 
@@ -180,12 +180,12 @@ The network-wide referral bonus pool per effective mining session is:
 
 These figures are part of the approved SAECOIN token allocation and must remain consistent with:
 
-- "07-Database-Schema.md"
-- "08-Mining-Reward-Specification.md"
+- `07-Database-Schema.md`
+- `08-Mining-Reward-Specification.md`
 
 The 2,000 SAC amount is a network-wide session pool, not a guaranteed individual reward.
 
-6.2 Referral Bonus Eligibility
+### 6.2 Referral Bonus Eligibility
 
 A user may receive a referral bonus only when:
 
@@ -197,7 +197,7 @@ A user may receive a referral bonus only when:
 
 Users who are still completing their initial 21 successful sessions are not eligible for referral bonuses.
 
-6.3 Individual Referral Allocation
+### 6.3 Individual Referral Allocation
 
 The exact individual referral bonus formula has not yet been finalized.
 
@@ -215,7 +215,7 @@ No developer may independently invent or introduce an individual referral bonus 
 
 The final approved formula must be documented in the Mining & Reward Specification and implemented consistently by the backend.
 
-6.4 Duplicate Participation Prevention
+### 6.4 Duplicate Participation Prevention
 
 A user must receive no more than one referral bonus share per scheduled session.
 
@@ -223,9 +223,9 @@ If a user appears in multiple eligible referral calculations because of inconsis
 
 The backend must resolve the user's participation according to the approved referral rules before generating reward records.
 
-7. REFERRAL GROUP CHANGE
+## 7. REFERRAL GROUP CHANGE
 
-7.1 Lifetime Change Limit
+### 7.1 Lifetime Change Limit
 
 A user is allowed only one referral group change during their lifetime.
 
@@ -233,7 +233,7 @@ This opportunity becomes available only after the user completes the initial 21 
 
 A user who has not yet achieved VALID status cannot use the group change feature.
 
-7.2 Selecting a New Referrer
+### 7.2 Selecting a New Referrer
 
 After becoming VALID, the user may select another registered username as their new referrer.
 
@@ -250,7 +250,7 @@ There is no additional ancestry-cycle restriction under the current approved rul
 
 The backend must still enforce the direct referral limit and all other relationship constraints.
 
-7.3 Automatic Group Change
+### 7.3 Automatic Group Change
 
 If the selected referrer is valid and eligible:
 
@@ -262,7 +262,7 @@ If the selected referrer is valid and eligible:
 
 The change must not be completed if the new referrer is invalid or has reached the direct referral limit.
 
-7.4 Invalid Group Change Attempt
+### 7.4 Invalid Group Change Attempt
 
 An invalid group change attempt must:
 
@@ -275,7 +275,7 @@ An unsuccessful attempt does not consume the one permitted group change.
 
 A user cannot return to the same current referrer through the group change feature.
 
-8. GROUP CHANGE EFFECTIVE TIME
+## 8. GROUP CHANGE EFFECTIVE TIME
 
 A successful group change becomes effective from the user's next new scheduled mining session.
 
@@ -289,7 +289,7 @@ The backend must preserve the exact effective session identifier for the relatio
 
 This prevents a group change from modifying an already active or completed session.
 
-9. VALIDITY RESET AFTER GROUP CHANGE
+## 9. VALIDITY RESET AFTER GROUP CHANGE
 
 A successful referral group change resets the user's VALID progress.
 
@@ -305,13 +305,13 @@ After the change:
 
 The user's previous 21-session progress must not be carried into the new group.
 
-9.1 Inactivity Counter
+### 9.1 Inactivity Counter
 
 The 90-session inactivity cancellation counter is suspended while the user is rebuilding VALID status after a group change.
 
 Once the user completes 21 new successful sessions and becomes VALID again, the inactivity monitoring rules resume according to the account validity specification.
 
-10. INITIAL VALIDITY REQUIREMENT
+## 10. INITIAL VALIDITY REQUIREMENT
 
 A newly registered user must complete 21 successful scheduled sessions to become VALID.
 
@@ -324,7 +324,7 @@ During this period:
 
 The same 21-successful-session requirement applies again after a successful referral group change.
 
-11. REFERRAL REWARD PROCESSING
+## 11. REFERRAL REWARD PROCESSING
 
 For every scheduled session, the backend must:
 
@@ -345,7 +345,7 @@ If any validation fails, the affected referral reward processing must remain pen
 
 The backend must never exceed the approved referral budget.
 
-12. REFERRAL HISTORY
+## 12. REFERRAL HISTORY
 
 The system must maintain referral history for each user.
 
@@ -366,7 +366,7 @@ Historical referral relationships must not be silently deleted or overwritten.
 
 The current referral relationship must be identifiable without losing previous relationship records.
 
-13. FRAUD PREVENTION
+## 13. FRAUD PREVENTION
 
 The backend must validate referral operations independently of the mobile app.
 
@@ -387,7 +387,7 @@ Suspicious activity may trigger automatic security review or account suspension 
 
 Referral validation must not rely solely on client-side checks.
 
-14. DATABASE REQUIREMENTS
+## 14. DATABASE REQUIREMENTS
 
 The backend database must support:
 
@@ -411,9 +411,9 @@ Database constraints and transactions must prevent:
 - More than one successful group change per user.
 - Duplicate referral reward records for the same user and session.
 
-The final database implementation must remain consistent with "07-Database-Schema.md".
+The final database implementation must remain consistent with `07-Database-Schema.md`.
 
-15. API REQUIREMENTS
+## 15. API REQUIREMENTS
 
 The backend should provide authenticated operations for:
 
@@ -433,7 +433,7 @@ The mobile application must never determine referral reward eligibility or calcu
 
 Exact endpoint paths and request/response schemas must be defined in the API implementation documentation.
 
-16. USER INTERFACE REQUIREMENTS
+## 16. USER INTERFACE REQUIREMENTS
 
 The mobile app should provide:
 
@@ -459,7 +459,7 @@ The app must clearly communicate that:
 - A successful group change resets VALID progress.
 - Only one successful group change is permitted during the user's lifetime.
 
-17. AUDIT AND ADMINISTRATIVE CONTROLS
+## 17. AUDIT AND ADMINISTRATIVE CONTROLS
 
 All referral-related administrative and backend actions must be auditable.
 
@@ -479,7 +479,7 @@ Admin users must not directly modify historical referral relationships or reward
 
 Any correction must follow the approved backend correction workflow and Main Admin approval process.
 
-18. FAILURE HANDLING
+## 18. FAILURE HANDLING
 
 If referral processing fails:
 
@@ -492,7 +492,7 @@ If referral processing fails:
 
 A retry must use the original session and reward identifiers so that the same reward cannot be credited twice.
 
-19. UNRESOLVED ITEMS REQUIRING APPROVAL
+## 19. UNRESOLVED ITEMS REQUIRING APPROVAL
 
 The following items must be finalized before production implementation:
 
@@ -509,7 +509,7 @@ Until formally approved, these items must remain configurable or unimplemented a
 
 No developer may introduce undocumented token allocation rules.
 
-20. FINAL POLICY
+## 20. FINAL POLICY
 
 The SAECOIN referral system must be deterministic, auditable, secure, and budget-safe.
 

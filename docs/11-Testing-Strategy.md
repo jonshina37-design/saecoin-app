@@ -1,16 +1,16 @@
 > **v1.2 NOTICE (draft):** This document belongs to the v1.1 set. Specification v1.2 ([00-Spec-v1.2-Decision-Record.md](00-Spec-v1.2-Decision-Record.md)) changes tokenomics, reward calculation, referral rules and other items. Where the two conflict, the v1.2 record prevails once approved.
 
-SAECOIN — TESTING STRATEGY
+# SAECOIN — TESTING STRATEGY
 
-Document: 11-Testing-Strategy.md
-Version: 1.1
-Project: SAECOIN App
-Ticker: SAC (Provisional)
-Status: Draft — Pending Approval
+- **Document:** 11-Testing-Strategy.md
+- **Version:** 1.1
+- **Project:** SAECOIN App
+- **Ticker:** SAC (Provisional)
+- **Status:** Draft — Pending Approval
 
 ---
 
-1. PURPOSE
+## 1. PURPOSE
 
 This document defines the testing strategy for the SAECOIN App.
 
@@ -27,7 +27,7 @@ The objectives are to ensure that the application is:
 
 Testing applies to the mobile application, backend services, database, referral system, reward engine, administrative panel, backup system, and public ledger.
 
-2. PROJECT TESTING PRINCIPLES
+## 2. PROJECT TESTING PRINCIPLES
 
 The project must follow these principles:
 
@@ -42,27 +42,28 @@ The project must follow these principles:
 9. Record test results and unresolved defects.
 10. Critical bugs and security vulnerabilities must block public launch.
 
-3. TESTING SCOPE
+## 3. TESTING SCOPE
 
 Testing must cover the following components:
 
-Component| Testing Scope
-Mobile Application| Registration, login, navigation, UI, API integration
-Backend| Business logic, validation, authentication, authorization
-Database| Schema, constraints, transactions, integrity
-Mining Sessions| Activation, session timing, completion, validation
-Reward Engine| Regular Mining, Referral Bonus, allocation limits
-Referral System| Referral codes, groups, eligibility, group changes
-Account System| PENDING, VALID, CANCELLED, SUSPENDED
-KYC| Eligibility, submission, review, access control
-Admin Panel| Roles, approval workflows, audit records
-Public Explorer| Block display, hash verification, signatures
-Backup System| Backup creation, encryption, restoration
-Notifications| In-App history and Push delivery
+| Component | Testing Scope |
+| --- | --- |
+| Mobile Application | Registration, login, navigation, UI, API integration |
+| Backend | Business logic, validation, authentication, authorization |
+| Database | Schema, constraints, transactions, integrity |
+| Mining Sessions | Activation, session timing, completion, validation |
+| Reward Engine | Regular Mining, Referral Bonus, allocation limits |
+| Referral System | Referral codes, groups, eligibility, group changes |
+| Account System | PENDING, VALID, CANCELLED, SUSPENDED |
+| KYC | Eligibility, submission, review, access control |
+| Admin Panel | Roles, approval workflows, audit records |
+| Public Explorer | Block display, hash verification, signatures |
+| Backup System | Backup creation, encryption, restoration |
+| Notifications | In-App history and Push delivery |
 
-4. TESTING ENVIRONMENTS
+## 4. TESTING ENVIRONMENTS
 
-4.1 Development Environment
+### 4.1 Development Environment
 
 Used for:
 
@@ -75,7 +76,7 @@ Used for:
 
 Development data must not contain real production secrets or unnecessary personal information.
 
-4.2 Internal Testing Environment
+### 4.2 Internal Testing Environment
 
 Used for:
 
@@ -89,7 +90,7 @@ Used for:
 
 Internal testing is required before public launch.
 
-4.3 Production Environment
+### 4.3 Production Environment
 
 Production testing must use controlled procedures.
 
@@ -103,13 +104,13 @@ Requirements:
 
 No public Testnet or Beta program is required under the current project scope.
 
-5. MOBILE APPLICATION TESTING
+## 5. MOBILE APPLICATION TESTING
 
 The mobile application uses React Native + Expo + TypeScript.
 
 Testing must cover supported Android and iOS configurations.
 
-5.1 Registration
+### 5.1 Registration
 
 Test cases:
 
@@ -127,7 +128,7 @@ Expected result:
 
 The backend must create only valid accounts and prevent duplicate or invalid referral relationships.
 
-5.2 Login
+### 5.2 Login
 
 Test cases:
 
@@ -146,7 +147,7 @@ Expected result:
 
 Unauthorized access must be rejected.
 
-5.3 Navigation and UI
+### 5.3 Navigation and UI
 
 Verify:
 
@@ -163,7 +164,7 @@ Verify:
 
 The app must not display unverified balance or reward information as authoritative data.
 
-5.4 App Lifecycle
+### 5.4 App Lifecycle
 
 Test:
 
@@ -179,7 +180,7 @@ Expected result:
 
 A previously accepted session activation must remain recorded by the backend. Local application closure or device shutdown must not independently cancel an accepted session.
 
-6. BACKEND TESTING
+## 6. BACKEND TESTING
 
 Backend testing must verify all critical business rules independently of the mobile application.
 
@@ -199,22 +200,23 @@ Test categories:
 
 The backend must reject requests that attempt to submit unauthorized account status, session success, reward amount, or balance changes.
 
-7. MINING SESSION TESTING
+## 7. MINING SESSION TESTING
 
 Mining sessions are virtual scheduled reward participation sessions. They are not actual Proof-of-Work mining.
 
-7.1 Scheduled Session Windows
+### 7.1 Scheduled Session Windows
 
 The three fixed daily UTC slots are:
 
-Session| Start UTC| End UTC
-1| 04:00| 12:00
-2| 12:00| 20:00
-3| 20:00| 04:00 next day
+| Session | Start UTC | End UTC |
+| --- | --- | --- |
+| 1 | 04:00 | 12:00 |
+| 2 | 12:00 | 20:00 |
+| 3 | 20:00 | 04:00 next day |
 
 The backend clock is authoritative.
 
-7.2 Activation Tests
+### 7.2 Activation Tests
 
 Test:
 
@@ -238,7 +240,7 @@ Expected result:
 
 The exact treatment of requests received at the session boundary must be implemented consistently using the approved backend timestamp policy.
 
-7.3 Session Completion Tests
+### 7.3 Session Completion Tests
 
 Test:
 
@@ -257,7 +259,7 @@ A session becomes successful only after the scheduled slot ends and backend vali
 
 Activation alone must not be treated as session success.
 
-7.4 Effective Session Count
+### 7.4 Effective Session Count
 
 Test:
 
@@ -272,7 +274,7 @@ The system must count 2,160 effective sessions.
 
 Backend or mining downtime must pause effective session progression and resume from the previous valid state.
 
-8. ACCOUNT VALIDITY TESTING
+## 8. ACCOUNT VALIDITY TESTING
 
 The initial VALID requirement is 21 successful sessions.
 
@@ -295,7 +297,7 @@ Expected result:
 - After a successful group change, the user must complete 21 new successful sessions.
 - Regular Mining Reward continues during the rebuild period.
 
-8.1 Inactivity Cancellation
+### 8.1 Inactivity Cancellation
 
 The inactivity period is 90 scheduled session slots for VALID users.
 
@@ -317,26 +319,27 @@ The inactivity counter is suspended during the 21-session rebuild period after a
 
 Cancelled users cannot reactivate under the current policy.
 
-9. REWARD ENGINE TESTING
+## 9. REWARD ENGINE TESTING
 
 The reward engine is a critical component.
 
 All calculations must follow the approved Mining & Reward Specification.
 
-9.1 Approved Token Allocation
+### 9.1 Approved Token Allocation
 
 The approved total supply is 31,000,000 SAC.
 
-Allocation| SAC
-Regular Mining| 12,960,000
-Referral Bonus| 4,320,000
-Total App Mining Distribution| 17,280,000
-Initial App Reserve| 1,000,000
-Unused App Mining Allocation transferred to App Reserve| 720,000
-Total App Reserve| 1,720,000
-Founder/Personal Reserve| 12,000,000
-Node Mining| 0
-Total Supply| 31,000,000
+| Allocation | SAC |
+| --- | --- |
+| Regular Mining | 12,960,000 |
+| Referral Bonus | 4,320,000 |
+| Total App Mining Distribution | 17,280,000 |
+| Initial App Reserve | 1,000,000 |
+| Unused App Mining Allocation transferred to App Reserve | 720,000 |
+| Total App Reserve | 1,720,000 |
+| Founder/Personal Reserve | 12,000,000 |
+| Node Mining | 0 |
+| Total Supply | 31,000,000 |
 
 The network-wide pools per effective session are:
 
@@ -346,7 +349,7 @@ The network-wide pools per effective session are:
 
 These are network-wide pools, not guaranteed individual rewards.
 
-9.2 Reward Calculation Tests
+### 9.2 Reward Calculation Tests
 
 Test:
 
@@ -368,7 +371,7 @@ Testing must use approved test vectors once those decisions are finalized.
 
 Developers must not invent expected individual reward values.
 
-9.3 Allocation Integrity Tests
+### 9.3 Allocation Integrity Tests
 
 Verify:
 
@@ -382,11 +385,11 @@ Verify:
 
 The backend must reject any operation that would exceed an approved allocation.
 
-10. REFERRAL SYSTEM TESTING
+## 10. REFERRAL SYSTEM TESTING
 
 Referral testing must cover the complete referral specification.
 
-10.1 Referral Code Tests
+### 10.1 Referral Code Tests
 
 Test:
 
@@ -403,7 +406,7 @@ Expected result:
 
 A referrer may have a maximum of 10 current direct referrals.
 
-10.2 Referral Group Eligibility
+### 10.2 Referral Group Eligibility
 
 Test:
 
@@ -423,7 +426,7 @@ A group qualifies only when the referrer is active and has at least 3 active dir
 
 A user may receive no more than one referral bonus share per session.
 
-10.3 Referral Group Change
+### 10.3 Referral Group Change
 
 Test:
 
@@ -452,7 +455,7 @@ Expected result:
 
 The final individual referral allocation formula must be approved before full reward calculation acceptance.
 
-11. DATABASE TESTING
+## 11. DATABASE TESTING
 
 Database testing must verify:
 
@@ -474,7 +477,7 @@ Critical operations must be transactional.
 
 The database must prevent duplicate reward credit even when requests are retried or processed concurrently.
 
-12. API SECURITY TESTING
+## 12. API SECURITY TESTING
 
 Test:
 
@@ -496,11 +499,11 @@ Expected result:
 
 Unauthorized requests must be rejected without exposing sensitive information or changing protected data.
 
-13. ADMIN PANEL TESTING
+## 13. ADMIN PANEL TESTING
 
 The administrative workflow must follow the approved role and approval model.
 
-13.1 Role Testing
+### 13.1 Role Testing
 
 Test:
 
@@ -517,7 +520,7 @@ Expected result:
 
 Sub-Admins cannot perform restricted final approval or rejection actions.
 
-13.2 Suspension Review
+### 13.2 Suspension Review
 
 Test:
 
@@ -529,7 +532,7 @@ Test:
 - Backend reactivation.
 - Audit log creation.
 
-13.3 Reward Correction
+### 13.3 Reward Correction
 
 Test:
 
@@ -549,7 +552,7 @@ Historical ledger entries must never be deleted or secretly overwritten.
 
 Corrections must follow the approved backend validation and Main Admin approval workflow.
 
-13.4 Admin Recovery
+### 13.4 Admin Recovery
 
 Test:
 
@@ -565,7 +568,7 @@ Test:
 
 Sub-Admins must not recover the Main Admin account.
 
-14. KYC TESTING
+## 14. KYC TESTING
 
 KYC is required only after completion of all 2,160 effective sessions.
 
@@ -590,7 +593,7 @@ Expected result:
 - The balance is not forfeited merely because KYC is pending.
 - KYC documents must not be publicly accessible.
 
-15. PUBLIC LEDGER AND EXPLORER TESTING
+## 15. PUBLIC LEDGER AND EXPLORER TESTING
 
 The public ledger is an app-operated, publicly inspectable and cryptographically verifiable record system.
 
@@ -613,7 +616,7 @@ Testing must cover:
 - Duplicate publication prevention.
 - Historical block verification.
 
-15.1 Signature Verification
+### 15.1 Signature Verification
 
 Test:
 
@@ -627,7 +630,7 @@ Test:
 
 Historical blocks must remain verifiable with their original public verification keys.
 
-15.2 Ledger Correction
+### 15.2 Ledger Correction
 
 Test:
 
@@ -642,7 +645,7 @@ Expected result:
 
 The original block must remain unchanged. A correction must be published as a new block referencing the original record.
 
-15.3 Privacy Testing
+### 15.3 Privacy Testing
 
 Verify that the public explorer never exposes:
 
@@ -655,7 +658,7 @@ Verify that the public explorer never exposes:
 - Sensitive personal information.
 - Private API credentials.
 
-16. NOTIFICATION TESTING
+## 16. NOTIFICATION TESTING
 
 Test In-App and Push notification events:
 
@@ -688,7 +691,7 @@ Verify:
 
 If OS notification permission is denied, In-App notification history must continue to work.
 
-17. BACKUP AND RECOVERY TESTING
+## 17. BACKUP AND RECOVERY TESTING
 
 Backup and recovery are mandatory test areas.
 
@@ -708,7 +711,7 @@ Test:
 - Referral history restoration.
 - Public ledger reference restoration.
 
-17.1 Monthly Recovery Test
+### 17.1 Monthly Recovery Test
 
 A recovery test must be performed monthly.
 
@@ -730,7 +733,7 @@ The restored data must be checked for:
 
 Testing must use a controlled recovery environment rather than overwrite production data.
 
-18. FAILURE AND RECOVERY TESTING
+## 18. FAILURE AND RECOVERY TESTING
 
 Test:
 
@@ -757,7 +760,7 @@ Expected result:
 
 For interrupted session or reward processing, backend validation and the required Admin approval must occur before affected rewards are processed.
 
-19. PERFORMANCE AND LOAD TESTING
+## 19. PERFORMANCE AND LOAD TESTING
 
 Performance testing must evaluate:
 
@@ -779,7 +782,7 @@ The final performance targets must be approved before production launch.
 
 No performance target should be claimed as achieved without recorded test evidence.
 
-20. COMPATIBILITY TESTING
+## 20. COMPATIBILITY TESTING
 
 The application must be tested on supported Android and iOS versions and representative device configurations.
 
@@ -798,7 +801,7 @@ Testing should include:
 
 The supported minimum OS versions and device requirements must be documented before release.
 
-21. REGRESSION TESTING
+## 21. REGRESSION TESTING
 
 Whenever a bug is fixed or a feature is changed:
 
@@ -812,7 +815,7 @@ Whenever a bug is fixed or a feature is changed:
 
 Changes to consensus-like reward rules, session validation, token allocation, or ledger integrity require broader regression testing.
 
-22. AUTOMATED TESTING AND CI
+## 22. AUTOMATED TESTING AND CI
 
 The project should gradually introduce automated testing through the approved CI system.
 
@@ -833,19 +836,20 @@ CI must use controlled test credentials and isolated test data.
 
 Production secrets must never be exposed in CI logs or build artifacts.
 
-23. DEFECT SEVERITY
+## 23. DEFECT SEVERITY
 
 Defects should be classified as follows:
 
-Severity| Description| Release Impact
-Critical| Unauthorized access, reward corruption, data loss, signing key compromise, serious security vulnerability| Blocks release
-High| Major feature failure, incorrect account status, referral or session processing failure| Blocks affected release
-Medium| Important functionality impaired with a reasonable workaround| Requires review
-Low| Minor UI or non-critical behavior issue| May be scheduled for later
+| Severity | Description | Release Impact |
+| --- | --- | --- |
+| Critical | Unauthorized access, reward corruption, data loss, signing key compromise, serious security vulnerability | Blocks release |
+| High | Major feature failure, incorrect account status, referral or session processing failure | Blocks affected release |
+| Medium | Important functionality impaired with a reasonable workaround | Requires review |
+| Low | Minor UI or non-critical behavior issue | May be scheduled for later |
 
 A defect must not be marked resolved until the fix has been verified.
 
-24. PUBLIC LAUNCH TESTING GATE
+## 24. PUBLIC LAUNCH TESTING GATE
 
 Public launch is permitted only after required testing is complete.
 
@@ -875,7 +879,7 @@ The launch gate must verify:
 
 Any unresolved critical bug or critical security vulnerability blocks public launch.
 
-25. TEST REPORT REQUIREMENTS
+## 25. TEST REPORT REQUIREMENTS
 
 Each major testing cycle must produce a test report.
 
@@ -899,7 +903,7 @@ The report should include:
 
 Test reports must be retained as project documentation.
 
-26. UNRESOLVED TESTING DECISIONS
+## 26. UNRESOLVED TESTING DECISIONS
 
 The following items require approval before final production acceptance:
 
@@ -915,7 +919,7 @@ The following items require approval before final production acceptance:
 
 These items must be finalized before the relevant release gate.
 
-27. FINAL TESTING POLICY
+## 27. FINAL TESTING POLICY
 
 SAECOIN must not be released publicly based only on successful application compilation or a visually complete interface.
 
