@@ -1,19 +1,21 @@
-SAECOIN — TECHNICAL REQUIREMENTS SPECIFICATION
+> **v1.2 NOTICE (draft):** This document belongs to the v1.1 set. Specification v1.2 ([00-Spec-v1.2-Decision-Record.md](00-Spec-v1.2-Decision-Record.md)) changes tokenomics, reward calculation, referral rules and other items. Where the two conflict, the v1.2 record prevails once approved.
 
-Document ID: SAECOIN-APP-TR-004
-Version: 1.1
-Project: SAECOIN App
-Status: Draft — Updated for Approved Requirements
-Platforms: Android and iOS
-Framework: React Native + Expo
-Language: TypeScript
-Backend: Shared Server-Authoritative Backend
-API Style: REST API
-Time Standard: UTC
+# SAECOIN — TECHNICAL REQUIREMENTS SPECIFICATION
+
+- **Document ID:** SAECOIN-APP-TR-004
+- **Version:** 1.1
+- **Project:** SAECOIN App
+- **Status:** Draft — Updated for Approved Requirements
+- **Platforms:** Android and iOS
+- **Framework:** React Native + Expo
+- **Language:** TypeScript
+- **Backend:** Shared Server-Authoritative Backend
+- **API Style:** REST API
+- **Time Standard:** UTC
 
 ---
 
-1. PURPOSE
+## 1. PURPOSE
 
 This document defines the technical requirements for developing, operating, securing, and maintaining the SAECOIN mobile application.
 
@@ -35,7 +37,7 @@ It establishes the technical expectations for:
 
 All implementation decisions must remain consistent with the approved project specifications.
 
-2. SYSTEM OVERVIEW
+## 2. SYSTEM OVERVIEW
 
 SAECOIN App consists of the following major components:
 
@@ -56,26 +58,27 @@ The Android and iOS applications share the same backend and business rules.
 
 The backend is the authoritative source for all account, session, reward, referral, and ledger operations.
 
-3. TECHNOLOGY STACK
+## 3. TECHNOLOGY STACK
 
-Component| Technology
-Android Application| React Native
-iOS Application| React Native
-Framework| Expo
-Programming Language| TypeScript
-API Communication| REST API
-Data Format| JSON
-Backend| Server-side application
-Database| Centralized relational database
-Authentication| Backend-managed authentication
-Version Control| Git
-Repository Hosting| GitHub
+| Component | Technology |
+| --- | --- |
+| Android Application | React Native |
+| iOS Application | React Native |
+| Framework | Expo |
+| Programming Language | TypeScript |
+| API Communication | REST API |
+| Data Format | JSON |
+| Backend | Server-side application |
+| Database | Centralized relational database |
+| Authentication | Backend-managed authentication |
+| Version Control | Git |
+| Repository Hosting | GitHub |
 
 Exact backend language, framework, database engine, and infrastructure configuration must follow the approved Backend Specification and Architecture documents.
 
 No alternative mobile framework should be introduced without documented approval.
 
-4. CROSS-PLATFORM REQUIREMENTS
+## 4. CROSS-PLATFORM REQUIREMENTS
 
 The application must support Android and iOS.
 
@@ -94,14 +97,15 @@ Requirements:
 
 Platform-specific implementation must not change business rules.
 
-5. FRONTEND REQUIREMENTS
+## 5. FRONTEND REQUIREMENTS
 
-5.1 Application Structure
+### 5.1 Application Structure
 
 The frontend must be modular.
 
 Suggested structure:
 
+```text
 src/
 │
 ├── app/
@@ -141,10 +145,11 @@ src/
 ├── constants/
 ├── theme/
 └── assets/
+```
 
 This is a proposed organization. The final structure must be aligned with the approved architecture.
 
-5.2 Frontend Responsibilities
+### 5.2 Frontend Responsibilities
 
 The frontend is responsible for:
 
@@ -167,7 +172,7 @@ The frontend must not independently determine:
 - Account cancellation.
 - Public ledger confirmation.
 
-6. BACKEND REQUIREMENTS
+## 6. BACKEND REQUIREMENTS
 
 The backend must provide centralized services for:
 
@@ -191,7 +196,7 @@ The backend must provide centralized services for:
 
 The backend must enforce all important business rules independently of mobile client behavior.
 
-7. API REQUIREMENTS
+## 7. API REQUIREMENTS
 
 The application must communicate with the backend through documented REST APIs.
 
@@ -208,7 +213,7 @@ Requirements:
 9. Prevent duplicate processing.
 10. Avoid exposing internal server details.
 
-7.1 API Response Requirements
+### 7.1 API Response Requirements
 
 Responses should include:
 
@@ -220,7 +225,7 @@ Responses should include:
 
 Sensitive information must never be included unnecessarily.
 
-7.2 API Idempotency
+### 7.2 API Idempotency
 
 Operations that may be retried must use appropriate idempotency controls.
 
@@ -235,7 +240,7 @@ Examples:
 
 Repeated requests must not create duplicate records or duplicate rewards.
 
-8. AUTHENTICATION REQUIREMENTS
+## 8. AUTHENTICATION REQUIREMENTS
 
 The backend must manage authentication securely.
 
@@ -255,9 +260,9 @@ The application must not store passwords or OTP secrets in plain text.
 
 Sensitive authentication data must not be written to logs.
 
-9. TIME AND SESSION REQUIREMENTS
+## 9. TIME AND SESSION REQUIREMENTS
 
-9.1 Authoritative Time
+### 9.1 Authoritative Time
 
 The backend clock is authoritative.
 
@@ -271,16 +276,17 @@ The mobile device clock must not determine:
 - Reward eligibility.
 - Effective session counting.
 
-9.2 Daily Session Schedule
+### 9.2 Daily Session Schedule
 
-Session| Start UTC| End UTC
-Session 1| 04:00| 12:00
-Session 2| 12:00| 20:00
-Session 3| 20:00| 04:00 next day
+| Session | Start UTC | End UTC |
+| --- | --- | --- |
+| Session 1 | 04:00 | 12:00 |
+| Session 2 | 12:00 | 20:00 |
+| Session 3 | 20:00 | 04:00 next day |
 
 Each session lasts eight hours.
 
-9.3 Activation Requirements
+### 9.3 Activation Requirements
 
 - One activation per user per scheduled session.
 - Activation permitted during the entire session window.
@@ -288,7 +294,7 @@ Each session lasts eight hours.
 - Missed sessions cannot be activated retrospectively.
 - Duplicate activation must be rejected or safely treated as an idempotent retry.
 
-9.4 Session Completion
+### 9.4 Session Completion
 
 A session becomes successful only after:
 
@@ -299,7 +305,7 @@ A session becomes successful only after:
 
 Device shutdown or application closure after activation must not cancel a valid activation.
 
-9.5 Effective Session Count
+### 9.5 Effective Session Count
 
 The application has 2,160 effective scheduled sessions.
 
@@ -309,9 +315,9 @@ After recovery, processing must resume from the previous effective-session state
 
 Downtime must not consume effective session allocations.
 
-10. TOKENOMICS REQUIREMENTS
+## 10. TOKENOMICS REQUIREMENTS
 
-10.1 Total Supply
+### 10.1 Total Supply
 
 The approved total supply is:
 
@@ -319,17 +325,18 @@ The approved total supply is:
 
 The application must not create additional SAC beyond the approved allocation.
 
-10.2 Allocation
+### 10.2 Allocation
 
-Category| Allocation
-Regular Mining| 12,960,000 SAC
-Referral Bonus| 4,320,000 SAC
-App Reserve| 1,720,000 SAC
-Founder/Personal Reserve| 12,000,000 SAC
-Node Mining| 0 SAC
-Total| 31,000,000 SAC
+| Category | Allocation |
+| --- | --- |
+| Regular Mining | 12,960,000 SAC |
+| Referral Bonus | 4,320,000 SAC |
+| App Reserve | 1,720,000 SAC |
+| Founder/Personal Reserve | 12,000,000 SAC |
+| Node Mining | 0 SAC |
+| Total | 31,000,000 SAC |
 
-10.3 Mining Distribution
+### 10.3 Mining Distribution
 
 Total App Mining Distribution:
 
@@ -340,7 +347,7 @@ This consists of:
 - Regular Mining: 12,960,000 SAC.
 - Referral Bonus: 4,320,000 SAC.
 
-10.4 App Reserve
+### 10.4 App Reserve
 
 The App Reserve consists of:
 
@@ -352,14 +359,15 @@ The App Reserve distribution policy remains undecided.
 
 It must not be confused with the Founder/Personal Reserve.
 
-10.5 Per-Session Pool
+### 10.5 Per-Session Pool
 
 Each effective session has the following network-wide allocation:
 
-Category| Per Session
-Regular Mining| 6,000 SAC
-Referral Bonus| 2,000 SAC
-Total| 8,000 SAC
+| Category | Per Session |
+| --- | --- |
+| Regular Mining | 6,000 SAC |
+| Referral Bonus | 2,000 SAC |
+| Total | 8,000 SAC |
 
 Across 2,160 effective sessions:
 
@@ -371,7 +379,7 @@ These values are network-wide pools, not guaranteed individual rewards.
 
 The backend must enforce allocation limits.
 
-11. REWARD PROCESSING REQUIREMENTS
+## 11. REWARD PROCESSING REQUIREMENTS
 
 The reward engine must:
 
@@ -390,7 +398,7 @@ Reward processing should normally complete within five minutes after session end
 
 If processing fails, the operation must remain pending until safely reconciled.
 
-11.1 Atomic Processing
+### 11.1 Atomic Processing
 
 Reward record creation and balance updates must be handled atomically where required.
 
@@ -401,9 +409,9 @@ A partial operation must not result in:
 - Duplicate reward crediting.
 - Exceeding the approved category allocation.
 
-12. ACCOUNT VALIDITY REQUIREMENTS
+## 12. ACCOUNT VALIDITY REQUIREMENTS
 
-12.1 Initial Validity
+### 12.1 Initial Validity
 
 A new account requires 21 successful sessions to become VALID.
 
@@ -414,7 +422,7 @@ During this period:
 - Regular Mining Reward follows the approved rules.
 - Referral Bonus is unavailable to the user.
 
-12.2 Inactivity
+### 12.2 Inactivity
 
 After becoming VALID, the account must complete at least one successful session within every rolling window of 90 scheduled session slots.
 
@@ -427,7 +435,7 @@ The counter:
 
 If no successful session occurs within the next 90 slots, the account becomes permanently CANCELLED.
 
-12.3 Cancellation
+### 12.3 Cancellation
 
 Cancelled accounts cannot be reactivated.
 
@@ -435,7 +443,7 @@ The remaining virtual balance is transferred to the App Reserve according to the
 
 Required accounting and audit records must be preserved.
 
-13. REFERRAL REQUIREMENTS
+## 13. REFERRAL REQUIREMENTS
 
 The referral engine must enforce:
 
@@ -448,7 +456,7 @@ The referral engine must enforce:
 - Maximum one Referral Bonus share per user per session.
 - One lifetime Referral Group change.
 
-13.1 Group Change
+### 13.1 Group Change
 
 Group change is allowed only after the initial 21 successful sessions and VALID status.
 
@@ -462,7 +470,7 @@ A successful change:
 
 The backend must enforce the complete group-change policy.
 
-14. KYC REQUIREMENTS
+## 14. KYC REQUIREMENTS
 
 KYC becomes mandatory only after all 2,160 effective sessions are completed.
 
@@ -476,7 +484,7 @@ Requirements:
 
 Provider, accepted documents, and verification workflow remain subject to separate approval.
 
-15. PUBLIC LEDGER REQUIREMENTS
+## 15. PUBLIC LEDGER REQUIREMENTS
 
 The backend must publish an application-operated public ledger after validating session and transaction records.
 
@@ -491,7 +499,7 @@ The ledger must be:
 
 It is not a decentralized or trustless blockchain.
 
-15.1 Public Record Fields
+### 15.1 Public Record Fields
 
 - Block Number.
 - Block Hash.
@@ -507,7 +515,7 @@ It is not a decentralized or trustless blockchain.
 - Session Confirmation.
 - Total Balance.
 
-15.2 Public Verification
+### 15.2 Public Verification
 
 The Explorer must provide the public verification key.
 
@@ -515,7 +523,7 @@ Users must be able to verify block hashes and digital signatures.
 
 Historical public keys must remain available.
 
-15.3 Correction Requirements
+### 15.3 Correction Requirements
 
 Published blocks must never be silently modified or deleted.
 
@@ -531,7 +539,7 @@ Corrections require:
 
 The original block must remain visible.
 
-16. DATABASE REQUIREMENTS
+## 16. DATABASE REQUIREMENTS
 
 The database must preserve:
 
@@ -563,7 +571,7 @@ Requirements:
 
 The final database schema is defined in the Database Schema document.
 
-17. ADMINISTRATIVE REQUIREMENTS
+## 17. ADMINISTRATIVE REQUIREMENTS
 
 The system must support:
 
@@ -582,7 +590,7 @@ Administrators must not directly edit reward balances or delete ledger records.
 
 All important actions must be recorded in the Audit Log.
 
-18. SECURITY REQUIREMENTS
+## 18. SECURITY REQUIREMENTS
 
 The system must implement:
 
@@ -605,7 +613,7 @@ The system must implement:
 
 The detailed controls are defined in the Security Specification.
 
-19. NOTIFICATION REQUIREMENTS
+## 19. NOTIFICATION REQUIREMENTS
 
 The system must support In-App and Push notifications.
 
@@ -630,7 +638,7 @@ If push permission is denied, In-App notification history must remain available.
 
 Deleting a notification must not delete underlying system records.
 
-20. BACKUP AND RECOVERY REQUIREMENTS
+## 20. BACKUP AND RECOVERY REQUIREMENTS
 
 An encrypted backup must be created after every effective mining session.
 
@@ -655,7 +663,7 @@ After an outage, incomplete sessions and rewards must be validated before proces
 
 Required administrative approval must be completed before recovery reward processing.
 
-21. MAINTENANCE REQUIREMENTS
+## 21. MAINTENANCE REQUIREMENTS
 
 During maintenance:
 
@@ -674,7 +682,7 @@ After maintenance:
 - Resume services safely.
 - Record maintenance completion.
 
-22. PERFORMANCE REQUIREMENTS
+## 22. PERFORMANCE REQUIREMENTS
 
 The application and backend should provide:
 
@@ -690,7 +698,7 @@ Caching must never replace backend validation for session eligibility, reward st
 
 Performance targets and capacity limits must be finalized during infrastructure planning and load testing.
 
-23. ERROR HANDLING REQUIREMENTS
+## 23. ERROR HANDLING REQUIREMENTS
 
 The system must handle:
 
@@ -711,7 +719,7 @@ Errors must be recorded appropriately.
 
 The frontend must display understandable messages without exposing internal server details.
 
-24. TESTING REQUIREMENTS
+## 24. TESTING REQUIREMENTS
 
 Testing must cover:
 
@@ -742,7 +750,7 @@ Testing must cover:
 
 Critical failures must block release.
 
-25. DEPLOYMENT REQUIREMENTS
+## 25. DEPLOYMENT REQUIREMENTS
 
 The application must support separate development, testing, and production configurations.
 
@@ -760,7 +768,7 @@ Requirements:
 
 Production secrets must never be committed to the repository.
 
-26. TECHNICAL CONSTRAINTS
+## 26. TECHNICAL CONSTRAINTS
 
 The following constraints are mandatory:
 
@@ -780,7 +788,7 @@ The following constraints are mandatory:
 14. KYC provider and verification details remain undecided.
 15. No guaranteed market value or financial return may be promised.
 
-27. FINAL TECHNICAL POLICY
+## 27. FINAL TECHNICAL POLICY
 
 All implementation must follow the approved project specifications.
 

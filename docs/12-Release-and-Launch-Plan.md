@@ -1,14 +1,16 @@
-SAECOIN — RELEASE AND LAUNCH PLAN
+> **v1.2 NOTICE (draft):** This document belongs to the v1.1 set. Specification v1.2 ([00-Spec-v1.2-Decision-Record.md](00-Spec-v1.2-Decision-Record.md)) changes tokenomics, reward calculation, referral rules and other items. Where the two conflict, the v1.2 record prevails once approved.
 
-Document: 12-Release-and-Launch-Plan.md
-Version: 1.1
-Project: SAECOIN App
-Ticker: SAC (Provisional)
-Status: Draft — Pending Approval
+# SAECOIN — RELEASE AND LAUNCH PLAN
+
+- **Document:** 12-Release-and-Launch-Plan.md
+- **Version:** 1.1
+- **Project:** SAECOIN App
+- **Ticker:** SAC (Provisional)
+- **Status:** Draft — Pending Approval
 
 ---
 
-1. PURPOSE
+## 1. PURPOSE
 
 This document defines the release, deployment, launch, maintenance, monitoring, and recovery plan for the SAECOIN App.
 
@@ -24,7 +26,7 @@ The objectives are to ensure that:
 - Post-launch incidents can be handled safely.
 - Existing user balances and historical records remain protected.
 
-2. RELEASE PRINCIPLES
+## 2. RELEASE PRINCIPLES
 
 The SAECOIN release process must follow these principles:
 
@@ -39,26 +41,26 @@ The SAECOIN release process must follow these principles:
 9. Monitor critical services after deployment.
 10. Keep a rollback or recovery procedure ready.
 
-3. RELEASE STAGES
+## 3. RELEASE STAGES
 
 The project should progress through the following stages.
 
-3.1 Stage 1 — Documentation Finalization
+### 3.1 Stage 1 — Documentation Finalization
 
 Required documents:
 
-- "01-App-PRD.md"
-- "02-UI-UX-Design.md"
-- "03-App-Flow-Specification.md"
-- "04-Technical-Requirements.md"
-- "05-App-Architecture.md"
-- "06-Backend-Specification.md"
-- "07-Database-Schema.md"
-- "08-Mining-Reward-Specification.md"
-- "09-Referral-Specification.md"
-- "10-Security-Specification.md"
-- "11-Testing-Strategy.md"
-- "12-Release-and-Launch-Plan.md"
+- `01-App-PRD.md`
+- `02-UI-UX-Design.md`
+- `03-App-Flow-Specification.md`
+- `04-Technical-Requirements.md`
+- `05-App-Architecture.md`
+- `06-Backend-Specification.md`
+- `07-Database-Schema.md`
+- `08-Mining-Reward-Specification.md`
+- `09-Referral-Specification.md`
+- `10-Security-Specification.md`
+- `11-Testing-Strategy.md`
+- `12-Release-and-Launch-Plan.md`
 
 Before implementation proceeds, the documents must be reviewed for:
 
@@ -73,7 +75,7 @@ Before implementation proceeds, the documents must be reviewed for:
 
 The documents must be treated as a coordinated specification set.
 
-3.2 Stage 2 — Project Foundation
+### 3.2 Stage 2 — Project Foundation
 
 Complete the initial technical foundation:
 
@@ -90,7 +92,7 @@ Complete the initial technical foundation:
 
 The foundation must compile and run in the controlled development environment.
 
-3.3 Stage 3 — Core Application Development
+### 3.3 Stage 3 — Core Application Development
 
 Implement the main application features:
 
@@ -109,7 +111,7 @@ Implement the main application features:
 
 The backend must remain authoritative for all account and reward information.
 
-3.4 Stage 4 — Reward and Referral Implementation
+### 3.4 Stage 4 — Reward and Referral Implementation
 
 Implement:
 
@@ -127,7 +129,7 @@ Implement:
 
 The individual reward formulas and rounding rules must be formally approved before production reward processing is enabled.
 
-3.5 Stage 5 — Administrative System
+### 3.5 Stage 5 — Administrative System
 
 Implement:
 
@@ -147,7 +149,7 @@ Implement:
 
 Sub-Admins must not receive final approval authority for restricted workflows.
 
-3.6 Stage 6 — Public Ledger and Explorer
+### 3.6 Stage 6 — Public Ledger and Explorer
 
 Implement:
 
@@ -166,7 +168,7 @@ The public ledger is an app-operated, publicly inspectable and cryptographically
 
 It is not a decentralized or trustless blockchain.
 
-3.7 Stage 7 — Security and Recovery Readiness
+### 3.7 Stage 7 — Security and Recovery Readiness
 
 Complete:
 
@@ -183,7 +185,7 @@ Complete:
 
 Critical security findings must be resolved before public launch.
 
-3.8 Stage 8 — Internal Testing
+### 3.8 Stage 8 — Internal Testing
 
 Conduct internal testing only.
 
@@ -205,7 +207,7 @@ Internal testing must cover:
 
 Testing results must be documented.
 
-3.9 Stage 9 — Production Preparation
+### 3.9 Stage 9 — Production Preparation
 
 Prepare the production environment:
 
@@ -223,15 +225,15 @@ Prepare the production environment:
 
 Production credentials must never be included in the source repository or mobile application.
 
-3.10 Stage 10 — Public Launch
+### 3.10 Stage 10 — Public Launch
 
 Public launch may proceed only after the launch approval requirements in this document are satisfied.
 
-4. ENVIRONMENT STRATEGY
+## 4. ENVIRONMENT STRATEGY
 
 The project must maintain separate environments.
 
-4.1 Development
+### 4.1 Development
 
 Purpose:
 
@@ -243,7 +245,7 @@ Purpose:
 
 Development credentials and data must remain separate from production.
 
-4.2 Internal Testing
+### 4.2 Internal Testing
 
 Purpose:
 
@@ -256,7 +258,7 @@ Purpose:
 
 Internal testing must use controlled test accounts and isolated data.
 
-4.3 Production
+### 4.3 Production
 
 Purpose:
 
@@ -270,7 +272,7 @@ Purpose:
 
 Production must use approved security and operational configurations.
 
-5. PRODUCTION INFRASTRUCTURE
+## 5. PRODUCTION INFRASTRUCTURE
 
 The production infrastructure must include:
 
@@ -289,7 +291,7 @@ The final hosting provider, server specifications, domain, and infrastructure co
 
 The architecture must not assume that a development laptop is suitable for production hosting.
 
-6. DATABASE AND MIGRATION RELEASE POLICY
+## 6. DATABASE AND MIGRATION RELEASE POLICY
 
 Database changes must be managed carefully.
 
@@ -306,20 +308,20 @@ Requirements:
 
 A failed migration must trigger the documented recovery procedure.
 
-7. RELEASE VERSIONING
+## 7. RELEASE VERSIONING
 
 The project should use semantic versioning where practical.
 
 Format:
 
-"MAJOR.MINOR.PATCH"
+`MAJOR.MINOR.PATCH`
 
 Examples:
 
-- "1.0.0" — First approved public release.
-- "1.0.1" — Bug-fix release.
-- "1.1.0" — Backward-compatible feature release.
-- "2.0.0" — Major release with potentially incompatible changes.
+- `1.0.0` — First approved public release.
+- `1.0.1` — Bug-fix release.
+- `1.1.0` — Backward-compatible feature release.
+- `2.0.0` — Major release with potentially incompatible changes.
 
 Version numbers must be consistent across:
 
@@ -330,7 +332,7 @@ Version numbers must be consistent across:
 
 Build numbers must also be tracked for mobile distribution.
 
-8. RELEASE APPROVAL
+## 8. RELEASE APPROVAL
 
 Every production release must receive the required review and approval.
 
@@ -351,11 +353,11 @@ No unreviewed production deployment is permitted.
 
 The Main Admin must approve operational changes that fall under the documented Main Admin authority.
 
-9. PRE-LAUNCH CHECKLIST
+## 9. PRE-LAUNCH CHECKLIST
 
 The following requirements must be completed before public launch.
 
-9.1 Documentation
+### 9.1 Documentation
 
 - [ ] All 12 specification documents are available.
 - [ ] Cross-document consistency review is complete.
@@ -363,7 +365,7 @@ The following requirements must be completed before public launch.
 - [ ] Token allocation figures are consistent.
 - [ ] API and database definitions are consistent.
 
-9.2 Application
+### 9.2 Application
 
 - [ ] Registration works.
 - [ ] Login works.
@@ -376,7 +378,7 @@ The following requirements must be completed before public launch.
 - [ ] Notification history works.
 - [ ] Error and maintenance states work.
 
-9.3 Backend
+### 9.3 Backend
 
 - [ ] Authentication is secure.
 - [ ] API authorization works.
@@ -387,7 +389,7 @@ The following requirements must be completed before public launch.
 - [ ] Account status transitions work.
 - [ ] Audit logging works.
 
-9.4 Token Allocation
+### 9.4 Token Allocation
 
 - [ ] Regular Mining allocation is validated.
 - [ ] Referral Bonus allocation is validated.
@@ -399,7 +401,7 @@ The following requirements must be completed before public launch.
 - [ ] Individual reward formulas are formally approved.
 - [ ] Rounding and remainder policies are approved.
 
-9.5 Security
+### 9.5 Security
 
 - [ ] Password hashing is implemented.
 - [ ] OTP authentication works.
@@ -410,7 +412,7 @@ The following requirements must be completed before public launch.
 - [ ] Signing keys are protected.
 - [ ] No production secrets are committed.
 
-9.6 Operations
+### 9.6 Operations
 
 - [ ] Production database is ready.
 - [ ] HTTPS is configured.
@@ -421,7 +423,7 @@ The following requirements must be completed before public launch.
 - [ ] Incident response process is ready.
 - [ ] Maintenance mode works.
 
-9.7 Release
+### 9.7 Release
 
 - [ ] Android release build is verified.
 - [ ] iOS release build is verified.
@@ -430,7 +432,7 @@ The following requirements must be completed before public launch.
 - [ ] Release notes are prepared.
 - [ ] Main Admin launch approval is recorded.
 
-10. PUBLIC LAUNCH PROCEDURE
+## 10. PUBLIC LAUNCH PROCEDURE
 
 The public launch must follow a controlled sequence.
 
@@ -454,7 +456,7 @@ The public launch must follow a controlled sequence.
 
 If a critical issue is discovered, affected operations must be stopped or the application placed into maintenance mode.
 
-11. MOBILE APPLICATION DISTRIBUTION
+## 11. MOBILE APPLICATION DISTRIBUTION
 
 The mobile application will be distributed through the approved Android and iOS application distribution channels.
 
@@ -474,7 +476,7 @@ The final package identifiers, signing configuration, and store account details 
 
 Signing keys must be securely backed up and must not be committed to GitHub.
 
-12. POST-LAUNCH MONITORING
+## 12. POST-LAUNCH MONITORING
 
 After public launch, the operational team must monitor:
 
@@ -496,11 +498,11 @@ Monitoring thresholds must be defined and tested before production launch.
 
 Critical failures must alert the Main Admin.
 
-13. MAINTENANCE POLICY
+## 13. MAINTENANCE POLICY
 
 Maintenance may be planned or emergency-based.
 
-13.1 Planned Maintenance
+### 13.1 Planned Maintenance
 
 Before planned maintenance:
 
@@ -509,7 +511,7 @@ Before planned maintenance:
 - Explain the reason when possible.
 - Provide the expected maintenance window when known.
 
-13.2 Emergency Maintenance
+### 13.2 Emergency Maintenance
 
 For emergency maintenance:
 
@@ -519,7 +521,7 @@ For emergency maintenance:
 - Record the reason and start time.
 - Notify the Main Admin.
 
-13.3 Maintenance Completion
+### 13.3 Maintenance Completion
 
 After maintenance:
 
@@ -532,7 +534,7 @@ After maintenance:
 - Notify users that maintenance has ended.
 - Record the maintenance end time.
 
-14. CRITICAL BUG AND SECURITY INCIDENT POLICY
+## 14. CRITICAL BUG AND SECURITY INCIDENT POLICY
 
 If a critical bug or vulnerability is discovered after launch:
 
@@ -551,7 +553,7 @@ If a critical bug or vulnerability is discovered after launch:
 
 Critical bugs must not be ignored to maintain service availability.
 
-15. REWARD PROCESSING OUTAGE AND RECOVERY
+## 15. REWARD PROCESSING OUTAGE AND RECOVERY
 
 If a session or reward process is interrupted:
 
@@ -565,7 +567,7 @@ If a session or reward process is interrupted:
 
 Existing balances must not be reset or deleted during recovery.
 
-16. BACKUP AND RESTORE OPERATIONS
+## 16. BACKUP AND RESTORE OPERATIONS
 
 The backup policy must follow the Security Specification.
 
@@ -588,7 +590,7 @@ Requirements:
 
 If required recovery material is lost, the encrypted backup may become unrecoverable. This risk must be clearly understood by the Main Admin.
 
-17. RELEASE ROLLBACK POLICY
+## 17. RELEASE ROLLBACK POLICY
 
 A release rollback may be necessary if a deployment causes a serious failure.
 
@@ -609,7 +611,7 @@ If a previous application version cannot safely operate with the current databas
 
 All rollback or recovery actions must be logged.
 
-18. POST-LAUNCH REVIEW
+## 18. POST-LAUNCH REVIEW
 
 After launch, the project should conduct a formal operational review.
 
@@ -630,7 +632,7 @@ The review should cover:
 
 Findings must be documented and prioritized.
 
-19. FUTURE RELEASES
+## 19. FUTURE RELEASES
 
 Future releases may include:
 
@@ -645,7 +647,7 @@ Future releases may include:
 
 Future independent blockchain development is a separate project and must not be represented as part of the current centralized SAECOIN App architecture.
 
-20. UNRESOLVED RELEASE DECISIONS
+## 20. UNRESOLVED RELEASE DECISIONS
 
 The following items require approval before production deployment:
 
@@ -668,7 +670,7 @@ The following items require approval before production deployment:
 
 These decisions must be documented before the relevant production release activities.
 
-21. FINAL LAUNCH POLICY
+## 21. FINAL LAUNCH POLICY
 
 SAECOIN must launch only after the required implementation, testing, security review, operational preparation, and approval are complete.
 

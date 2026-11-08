@@ -1,19 +1,21 @@
-SAECOIN — PRODUCT REQUIREMENTS DOCUMENT (PRD)
+> **v1.2 NOTICE (draft):** This document belongs to the v1.1 set. Specification v1.2 ([00-Spec-v1.2-Decision-Record.md](00-Spec-v1.2-Decision-Record.md)) changes tokenomics, reward calculation, referral rules and other items. Where the two conflict, the v1.2 record prevails once approved.
 
-Document ID: SAECOIN-APP-PRD-001
-Version: 1.1
-Project: SAECOIN App
-Product Type: Virtual Mining Reward Application
-Status: Draft — Updated for Approved Requirements
-Platforms: Android and iOS
-Framework: React Native + Expo
-Language: TypeScript
-Backend: Shared server-authoritative backend
-Database: Shared backend database
+# SAECOIN — PRODUCT REQUIREMENTS DOCUMENT (PRD)
+
+- **Document ID:** SAECOIN-APP-PRD-001
+- **Version:** 1.1
+- **Project:** SAECOIN App
+- **Product Type:** Virtual Mining Reward Application
+- **Status:** Draft — Updated for Approved Requirements
+- **Platforms:** Android and iOS
+- **Framework:** React Native + Expo
+- **Language:** TypeScript
+- **Backend:** Shared server-authoritative backend
+- **Database:** Shared backend database
 
 ---
 
-1. PROJECT OVERVIEW
+## 1. PROJECT OVERVIEW
 
 SAECOIN App is a cross-platform mobile application that provides users with a virtual mining reward distribution system.
 
@@ -35,7 +37,7 @@ The application initially operates independently of a decentralized SAECOIN bloc
 
 The backend is authoritative for account status, session validation, referral eligibility, reward calculations, reward balances, and public ledger publication.
 
-2. PROJECT OBJECTIVES
+## 2. PROJECT OBJECTIVES
 
 The primary objectives are:
 
@@ -50,21 +52,22 @@ The primary objectives are:
 9. Protect user accounts and reward records.
 10. Prepare the application architecture for possible future blockchain integration without representing the current system as decentralized.
 
-3. PLATFORM AND TECHNOLOGY REQUIREMENTS
+## 3. PLATFORM AND TECHNOLOGY REQUIREMENTS
 
-Component| Technology
-Android Application| React Native
-iOS Application| React Native
-Framework| Expo
-Programming Language| TypeScript
-Development Environment| Android Studio and approved iOS development tooling
-Backend| Shared server-authoritative backend
-Database| Shared backend database
-API| REST API
-Authentication| Secure server-side authentication
-Version Control| GitHub
+| Component | Technology |
+| --- | --- |
+| Android Application | React Native |
+| iOS Application | React Native |
+| Framework | Expo |
+| Programming Language | TypeScript |
+| Development Environment | Android Studio and approved iOS development tooling |
+| Backend | Shared server-authoritative backend |
+| Database | Shared backend database |
+| API | REST API |
+| Authentication | Secure server-side authentication |
+| Version Control | GitHub |
 
-3.1 Cross-Platform Requirements
+### 3.1 Cross-Platform Requirements
 
 - Android and iOS must use the same backend.
 - Both platforms must follow identical business rules.
@@ -77,9 +80,9 @@ Version Control| GitHub
 
 The project must not introduce a separate reward or referral implementation for either platform.
 
-4. PROJECT SCOPE
+## 4. PROJECT SCOPE
 
-4.1 Included Features
+### 4.1 Included Features
 
 - User registration and authentication.
 - Account recovery.
@@ -99,7 +102,7 @@ The project must not introduce a separate reward or referral implementation for 
 - Backup and recovery.
 - Maintenance and operational controls.
 
-4.2 Excluded Features
+### 4.2 Excluded Features
 
 The initial application does not include:
 
@@ -118,7 +121,7 @@ The initial application does not include:
 
 These features must not be presented as existing application capabilities.
 
-5. USER REGISTRATION AND AUTHENTICATION
+## 5. USER REGISTRATION AND AUTHENTICATION
 
 Users must be able to:
 
@@ -137,7 +140,7 @@ Authentication must be handled securely by the backend.
 
 Sensitive authentication data must never be exposed in public records or application logs.
 
-6. USER ID AND REFERRAL IDENTITY
+## 6. USER ID AND REFERRAL IDENTITY
 
 Each user must have:
 
@@ -155,9 +158,9 @@ The username/referral code must remain unique and permanent.
 
 The application must not expose private account information through public User ID searches.
 
-7. MINING SESSION SYSTEM
+## 7. MINING SESSION SYSTEM
 
-7.1 Mining Concept
+### 7.1 Mining Concept
 
 SAECOIN App Mining is a virtual reward distribution system.
 
@@ -167,18 +170,19 @@ The mobile application does not use the device CPU or GPU to mine cryptocurrency
 
 The backend controls session eligibility, session completion, reward calculation, and reward crediting.
 
-7.2 Daily Session Schedule
+### 7.2 Daily Session Schedule
 
 The system uses three fixed eight-hour UTC sessions:
 
-Session| Start (UTC)| End (UTC)
-Session 1| 04:00| 12:00
-Session 2| 12:00| 20:00
-Session 3| 20:00| 04:00 next day
+| Session | Start (UTC) | End (UTC) |
+| --- | --- | --- |
+| Session 1 | 04:00 | 12:00 |
+| Session 2 | 12:00 | 20:00 |
+| Session 3 | 20:00 | 04:00 next day |
 
 The backend clock is authoritative.
 
-7.3 Session Activation
+### 7.3 Session Activation
 
 - Users must manually activate each eligible session.
 - A user can activate only once per scheduled session.
@@ -188,7 +192,7 @@ The backend clock is authoritative.
 - Each scheduled session is independent.
 - A user cannot activate the same session more than once.
 
-7.4 Session Completion
+### 7.4 Session Completion
 
 A session is successful only after its scheduled eight-hour slot has ended and the backend has validated the session.
 
@@ -206,7 +210,7 @@ The backend must validate:
 
 Client-side timers and device clocks must never be treated as authoritative.
 
-7.5 Device and Network Interruption
+### 7.5 Device and Network Interruption
 
 After a valid activation:
 
@@ -217,7 +221,7 @@ After a valid activation:
 
 A session must not be considered successful merely because the user activated it.
 
-7.6 Reward Processing Time
+### 7.6 Reward Processing Time
 
 After a successful session ends:
 
@@ -226,7 +230,7 @@ After a successful session ends:
 - Processing must resume after recovery and validation.
 - Unique session and reward identifiers must prevent duplicate crediting.
 
-7.7 Effective Session Count
+### 7.7 Effective Session Count
 
 The application has a total target of 2,160 effective scheduled sessions.
 
@@ -236,9 +240,9 @@ After recovery, the system resumes from the previous effective-session state.
 
 Downtime must not silently consume effective session allocations.
 
-8. TOKENOMICS AND APP REWARD ALLOCATION
+## 8. TOKENOMICS AND APP REWARD ALLOCATION
 
-8.1 Total Supply
+### 8.1 Total Supply
 
 The approved total SAECOIN supply is:
 
@@ -246,17 +250,18 @@ The approved total SAECOIN supply is:
 
 The application must operate within the approved allocation and must not create additional SAC.
 
-8.2 Approved Allocation
+### 8.2 Approved Allocation
 
-Category| Allocation
-Regular Mining| 12,960,000 SAC
-Referral Bonus| 4,320,000 SAC
-App Reserve| 1,720,000 SAC
-Founder/Personal Reserve| 12,000,000 SAC
-Node Mining| 0 SAC
-Total| 31,000,000 SAC
+| Category | Allocation |
+| --- | --- |
+| Regular Mining | 12,960,000 SAC |
+| Referral Bonus | 4,320,000 SAC |
+| App Reserve | 1,720,000 SAC |
+| Founder/Personal Reserve | 12,000,000 SAC |
+| Node Mining | 0 SAC |
+| Total | 31,000,000 SAC |
 
-8.3 App Mining Distribution
+### 8.3 App Mining Distribution
 
 The App Mining Distribution consists of:
 
@@ -264,7 +269,7 @@ The App Mining Distribution consists of:
 - Referral Bonus: 4,320,000 SAC.
 - Total App Mining Distribution: 17,280,000 SAC.
 
-8.4 App Reserve
+### 8.4 App Reserve
 
 The App Reserve consists of:
 
@@ -276,14 +281,15 @@ The App Reserve distribution policy remains undecided and must be specified sepa
 
 The App Reserve must not be confused with the Founder/Personal Reserve.
 
-8.5 Per-Session Reward Pool
+### 8.5 Per-Session Reward Pool
 
 Each effective session has a network-wide reward pool:
 
-Category| Per Session
-Regular Mining| 6,000 SAC
-Referral Bonus| 2,000 SAC
-Total| 8,000 SAC
+| Category | Per Session |
+| --- | --- |
+| Regular Mining | 6,000 SAC |
+| Referral Bonus | 2,000 SAC |
+| Total | 8,000 SAC |
 
 Across 2,160 effective sessions:
 
@@ -295,9 +301,9 @@ These are network-wide session pools, not guaranteed individual rewards.
 
 Individual reward allocations must be calculated deterministically by the backend and must never exceed the available category budget.
 
-9. ACCOUNT VALIDITY
+## 9. ACCOUNT VALIDITY
 
-9.1 Initial Validity
+### 9.1 Initial Validity
 
 A newly registered account must complete 21 successful mining sessions to become VALID.
 
@@ -305,7 +311,7 @@ Only successful sessions count.
 
 An activation alone does not count as a successful session.
 
-9.2 Initial 21 Sessions
+### 9.2 Initial 21 Sessions
 
 During the first 21 successful sessions:
 
@@ -315,7 +321,7 @@ During the first 21 successful sessions:
 
 After the 21st successful session is validated, the account becomes VALID.
 
-9.3 Inactivity After Validity
+### 9.3 Inactivity After Validity
 
 A VALID account must complete at least one successful session within every rolling window of 90 scheduled session slots.
 
@@ -328,7 +334,7 @@ The inactivity counter:
 
 If the user completes no successful session within the next 90 scheduled slots, the account becomes permanently CANCELLED.
 
-9.4 Cancellation
+### 9.4 Cancellation
 
 A CANCELLED account:
 
@@ -340,9 +346,9 @@ A CANCELLED account:
 
 The application must clearly distinguish account cancellation from temporary suspension.
 
-10. REFERRAL SYSTEM
+## 10. REFERRAL SYSTEM
 
-10.1 Referral Code
+### 10.1 Referral Code
 
 Each username is the user's permanent referral code.
 
@@ -354,13 +360,13 @@ The system must not create pending referral relationships for invalid codes.
 
 Self-referral is prohibited.
 
-10.2 Direct Referral Limit
+### 10.2 Direct Referral Limit
 
 A user may have a maximum of 10 direct referrals.
 
 The backend must enforce this limit.
 
-10.3 Referral Eligibility
+### 10.3 Referral Eligibility
 
 Referral Bonus eligibility depends on the approved referral group rules.
 
@@ -373,7 +379,7 @@ If the parent group is not eligible, a qualifying child group may still particip
 
 Each user may receive at most one Referral Bonus share per session.
 
-10.4 Group Change
+### 10.4 Group Change
 
 A user may change their Referral Group once during their lifetime.
 
@@ -397,7 +403,7 @@ After a successful group change:
 - Referral Bonus is disabled until the account becomes VALID again.
 - The 90-slot inactivity counter is suspended during this rebuild period.
 
-11. KYC REQUIREMENTS
+## 11. KYC REQUIREMENTS
 
 KYC is required only after the user completes all 2,160 effective sessions.
 
@@ -415,9 +421,9 @@ If KYC is required but not completed:
 
 The KYC provider, accepted documents, verification workflow, and data retention policy remain subject to separate approval.
 
-12. PUBLIC BLOCK LEDGER AND EXPLORER
+## 12. PUBLIC BLOCK LEDGER AND EXPLORER
 
-12.1 Ledger Concept
+### 12.1 Ledger Concept
 
 After a session ends, the backend validates the relevant database records and publishes an application-operated public block ledger.
 
@@ -434,7 +440,7 @@ This is not a decentralized or trustless blockchain.
 
 The backend remains the authoritative source of application records.
 
-12.2 Public Block Information
+### 12.2 Public Block Information
 
 The Explorer should display:
 
@@ -452,7 +458,7 @@ The Explorer should display:
 - Session Confirmation.
 - Total Balance.
 
-12.3 Public Verification
+### 12.3 Public Verification
 
 The application must publish the relevant public verification key through the Explorer.
 
@@ -460,7 +466,7 @@ Users must be able to verify block hashes and digital signatures.
 
 Historical public keys must remain available so older blocks can continue to be verified.
 
-12.4 Correction Policy
+### 12.4 Correction Policy
 
 Published blocks must never be silently deleted or modified.
 
@@ -474,7 +480,7 @@ If a correction is required:
 6. The original block remains visible.
 7. The correction is recorded in the Audit Log.
 
-12.5 Signing Key Replacement
+### 12.5 Signing Key Replacement
 
 If a signing key is lost, compromised, or replaced:
 
@@ -484,7 +490,7 @@ If a signing key is lost, compromised, or replaced:
 - New blocks use the new signing key.
 - Key replacement must be recorded in the Audit Log.
 
-12.6 Privacy
+### 12.6 Privacy
 
 Public records must never expose:
 
@@ -496,7 +502,7 @@ Public records must never expose:
 - Personal contact information.
 - Sensitive account data.
 
-13. NOTIFICATION SYSTEM
+## 13. NOTIFICATION SYSTEM
 
 The application must support:
 
@@ -529,7 +535,7 @@ If operating-system push permission is denied, In-App notification history must 
 
 Users can manage push permissions through their Android or iOS operating-system settings.
 
-14. APPLICATION SCREENS
+## 14. APPLICATION SCREENS
 
 The initial application should include:
 
@@ -554,7 +560,7 @@ The initial application should include:
 
 The complete UI layouts will be defined in the UI/UX Design Specification.
 
-15. HOME DASHBOARD
+## 15. HOME DASHBOARD
 
 The Home Dashboard should display:
 
@@ -575,13 +581,13 @@ The Home Dashboard should display:
 
 The dashboard must clearly distinguish virtual reward balances from actual blockchain assets.
 
-16. ADMINISTRATION
+## 16. ADMINISTRATION
 
 The application requires a restricted administrative system.
 
 Administrative operations must be role-based and auditable.
 
-16.1 Admin Roles
+### 16.1 Admin Roles
 
 The initial administrative structure includes:
 
@@ -600,7 +606,7 @@ Sub-Admins may:
 
 Sub-Admins must not have final approval or rejection authority.
 
-16.2 Administrative Approval
+### 16.2 Administrative Approval
 
 The standard workflow is:
 
@@ -608,7 +614,7 @@ Request Received → Sub-Admin Verification → Main Admin Review → Approve/Re
 
 The backend must validate requests before the Main Admin receives them for final approval.
 
-16.3 Account Suspension
+### 16.3 Account Suspension
 
 Administrators must not directly suspend, cancel, or delete user accounts.
 
@@ -624,7 +630,7 @@ The system must:
 - Reactivate the account after approval.
 - Keep the account suspended after rejection.
 
-16.4 Reward Corrections
+### 16.4 Reward Corrections
 
 Administrators must not directly edit or delete reward ledger entries.
 
@@ -642,7 +648,7 @@ Reward corrections require:
 
 All corrections must preserve the original record and create an auditable correction entry.
 
-16.5 Admin Authentication
+### 16.5 Admin Authentication
 
 Admin login must use:
 
@@ -663,7 +669,7 @@ Recovery codes must be one-time-use and securely protected.
 
 All recovery operations must be logged, and existing sessions must be revoked after successful recovery.
 
-17. SECURITY REQUIREMENTS
+## 17. SECURITY REQUIREMENTS
 
 The application must implement:
 
@@ -688,9 +694,9 @@ The backend must remain authoritative for account status, session validation, re
 
 No mobile client may independently approve or create rewards.
 
-18. BACKUP, MAINTENANCE AND RECOVERY
+## 18. BACKUP, MAINTENANCE AND RECOVERY
 
-18.1 Backup
+### 18.1 Backup
 
 The system must create an encrypted backup after every effective mining session.
 
@@ -711,7 +717,7 @@ The approved backup destinations include:
 
 Monthly recovery testing must be performed.
 
-18.2 Maintenance
+### 18.2 Maintenance
 
 During planned or emergency maintenance:
 
@@ -723,7 +729,7 @@ During planned or emergency maintenance:
 - Users must receive appropriate notifications.
 - Operations may resume only after backend validation.
 
-18.3 Recovery
+### 18.3 Recovery
 
 After a system failure:
 
@@ -734,7 +740,7 @@ After a system failure:
 - Unique IDs and idempotency must prevent duplicate rewards.
 - Recovery actions must be logged.
 
-19. TESTING REQUIREMENTS
+## 19. TESTING REQUIREMENTS
 
 The application must be tested for:
 
@@ -766,7 +772,7 @@ The application must be tested for:
 
 Testing must include invalid, abusive, boundary, and recovery scenarios.
 
-20. RELEASE STRATEGY
+## 20. RELEASE STRATEGY
 
 The application will be developed and validated in stages.
 
@@ -834,7 +840,7 @@ Public Testnet or public Beta is not mandatory. Internal testing must be complet
 
 Critical bugs and unresolved security vulnerabilities must block release.
 
-21. FUTURE DEVELOPMENT
+## 21. FUTURE DEVELOPMENT
 
 After the SAECOIN App is completed and launched, the project may separately consider:
 
@@ -849,7 +855,7 @@ After the SAECOIN App is completed and launched, the project may separately cons
 
 These are separate development phases and must not be represented as current application functionality.
 
-22. FINAL REQUIREMENTS
+## 22. FINAL REQUIREMENTS
 
 The SAECOIN App must:
 
@@ -872,5 +878,5 @@ The SAECOIN App must:
 
 END OF DOCUMENT
 
-Document Status: Draft — Updated for User Review
-Next Document: 02 — UI/UX Design SpecificationSpecification
+Document Status: Draft — Updated for Approved Requirements  
+Next Document: 02 — UI/UX Design Specification

@@ -1,14 +1,16 @@
-SAECOIN — SECURITY SPECIFICATION
+> **v1.2 NOTICE (draft):** This document belongs to the v1.1 set. Specification v1.2 ([00-Spec-v1.2-Decision-Record.md](00-Spec-v1.2-Decision-Record.md)) changes tokenomics, reward calculation, referral rules and other items. Where the two conflict, the v1.2 record prevails once approved.
 
-Document: 10-Security-Specification.md
-Version: 1.1
-Project: SAECOIN App
-Ticker: SAC (Provisional)
-Status: Draft — Pending Approval
+# SAECOIN — SECURITY SPECIFICATION
+
+- **Document:** 10-Security-Specification.md
+- **Version:** 1.1
+- **Project:** SAECOIN App
+- **Ticker:** SAC (Provisional)
+- **Status:** Draft — Pending Approval
 
 ---
 
-1. PURPOSE
+## 1. PURPOSE
 
 This document defines the security requirements and controls for the SAECOIN App.
 
@@ -33,7 +35,7 @@ SAECOIN is a centralized client-server application. The backend is the authorita
 
 Security controls must reflect this architecture.
 
-2. SECURITY PRINCIPLES
+## 2. SECURITY PRINCIPLES
 
 The project must follow these principles:
 
@@ -48,7 +50,7 @@ The project must follow these principles:
 9. Recoverability: backups and recovery procedures must be tested.
 10. Fail safely: security failures must not result in unauthorized reward credit or data modification.
 
-3. THREAT MODEL
+## 3. THREAT MODEL
 
 The system must consider threats including:
 
@@ -78,9 +80,9 @@ The system must consider threats including:
 
 The threat model must be reviewed as the system evolves.
 
-4. ACCOUNT SECURITY
+## 4. ACCOUNT SECURITY
 
-4.1 Registration
+### 4.1 Registration
 
 Registration must be processed and validated by the backend.
 
@@ -96,7 +98,7 @@ The backend must:
 
 Client-side validation may improve usability but must never replace backend validation.
 
-4.2 Password Security
+### 4.2 Password Security
 
 Passwords must never be stored in plaintext.
 
@@ -114,7 +116,7 @@ Requirements:
 
 A general-purpose fast hash such as SHA-256 must not be used alone for password storage.
 
-4.3 Login Protection
+### 4.3 Login Protection
 
 Login endpoints must implement appropriate controls against:
 
@@ -133,7 +135,7 @@ Controls should include:
 
 Permanent account cancellation must not be triggered automatically by ordinary failed login attempts.
 
-4.4 Password Reset
+### 4.4 Password Reset
 
 Password reset must require a verified recovery method.
 
@@ -148,9 +150,9 @@ Requirements:
 
 The final email or OTP provider remains subject to implementation approval.
 
-5. AUTHENTICATION AND SESSION SECURITY
+## 5. AUTHENTICATION AND SESSION SECURITY
 
-5.1 Authentication Tokens
+### 5.1 Authentication Tokens
 
 Authentication tokens must be generated and validated by the backend.
 
@@ -163,7 +165,7 @@ Requirements:
 - Revoke sessions when required.
 - Avoid placing credentials in URLs.
 
-5.2 Refresh Tokens
+### 5.2 Refresh Tokens
 
 If refresh tokens are implemented:
 
@@ -173,7 +175,7 @@ If refresh tokens are implemented:
 - Revoke the relevant token family when compromise is suspected.
 - Never expose refresh tokens in ordinary application logs.
 
-5.3 Session Management
+### 5.3 Session Management
 
 The backend must support:
 
@@ -186,11 +188,11 @@ The backend must support:
 
 Sensitive account changes may require re-authentication.
 
-6. ADMINISTRATOR SECURITY
+## 6. ADMINISTRATOR SECURITY
 
 Administrative accounts have access to sensitive operational information and must receive stronger protection than ordinary accounts.
 
-6.1 Administrator Roles
+### 6.1 Administrator Roles
 
 The initial administrative structure consists of:
 
@@ -209,7 +211,7 @@ Sub-Admins may:
 
 Sub-Admins must not have final approval or rejection authority for restricted administrative workflows.
 
-6.2 Admin Login
+### 6.2 Admin Login
 
 Admin login requires:
 
@@ -226,7 +228,7 @@ OTP requirements:
 
 Email OTP recovery is also available under the approved recovery workflow. The email provider and delivery configuration remain implementation decisions.
 
-6.3 Main Admin Recovery
+### 6.3 Main Admin Recovery
 
 Main Admin recovery requires:
 
@@ -248,7 +250,7 @@ Sub-Admins must not be allowed to recover the Main Admin account.
 
 The Backup Recovery Code must be stored and handled securely. It must not be stored in plaintext in the application database.
 
-6.4 Administrative Action Restrictions
+### 6.4 Administrative Action Restrictions
 
 Admins must not directly:
 
@@ -261,9 +263,9 @@ Admins must not directly:
 
 Administrative requests must follow the documented backend validation and approval workflow.
 
-7. ACCOUNT SUSPENSION AND CANCELLATION
+## 7. ACCOUNT SUSPENSION AND CANCELLATION
 
-7.1 Automatic Security Suspension
+### 7.1 Automatic Security Suspension
 
 The backend may automatically suspend an account when suspicious activity or a security threat is detected.
 
@@ -279,7 +281,7 @@ Every automatic suspension must record:
 
 The user must be able to submit evidence through the approved review process.
 
-7.2 Admin Review
+### 7.2 Admin Review
 
 The review workflow is:
 
@@ -294,7 +296,7 @@ Main Admin approval reactivates the account.
 
 If the Main Admin rejects the request, the account remains suspended.
 
-7.3 Account Cancellation
+### 7.3 Account Cancellation
 
 Account cancellation is separate from security suspension.
 
@@ -304,7 +306,7 @@ The system must not provide a user-facing Account Delete option under the curren
 
 Data retention, privacy rights, and any legally required deletion or anonymization process must be reviewed before public launch.
 
-8. API SECURITY
+## 8. API SECURITY
 
 All backend APIs must enforce security controls.
 
@@ -337,7 +339,7 @@ The backend must never trust client-submitted:
 
 These values must be determined or verified by the authoritative backend.
 
-9. REPLAY AND DUPLICATE REQUEST PROTECTION
+## 9. REPLAY AND DUPLICATE REQUEST PROTECTION
 
 Sensitive operations must be protected against replay and duplicate processing.
 
@@ -364,7 +366,7 @@ Requirements:
 
 A repeated request must not generate duplicate SAC rewards or duplicate financial ledger entries.
 
-10. MINING SESSION SECURITY
+## 10. MINING SESSION SECURITY
 
 Mining sessions represent scheduled virtual reward participation. They are not actual Proof-of-Work mining.
 
@@ -384,7 +386,7 @@ The mobile device clock must never determine authoritative session eligibility.
 
 App closure, network interruption, or device shutdown after accepted activation must not independently invalidate the session.
 
-11. REWARD AND BALANCE SECURITY
+## 11. REWARD AND BALANCE SECURITY
 
 The backend is the sole authority for SAC reward calculations and balances.
 
@@ -401,20 +403,21 @@ Security requirements:
 9. Reward corrections must follow the approved correction workflow.
 10. Every administrative correction must be auditable.
 
-11.1 Allocation Limits
+### 11.1 Allocation Limits
 
 The approved project allocation is:
 
-Allocation| SAC
-Regular Mining| 12,960,000
-Referral Bonus| 4,320,000
-Total App Mining Distribution| 17,280,000
-Initial App Reserve| 1,000,000
-Unused App Mining Allocation transferred to App Reserve| 720,000
-Total App Reserve| 1,720,000
-Founder/Personal Reserve| 12,000,000
-Node Mining| 0
-Total Supply| 31,000,000
+| Allocation | SAC |
+| --- | --- |
+| Regular Mining | 12,960,000 |
+| Referral Bonus | 4,320,000 |
+| Total App Mining Distribution | 17,280,000 |
+| Initial App Reserve | 1,000,000 |
+| Unused App Mining Allocation transferred to App Reserve | 720,000 |
+| Total App Reserve | 1,720,000 |
+| Founder/Personal Reserve | 12,000,000 |
+| Node Mining | 0 |
+| Total Supply | 31,000,000 |
 
 The network-wide session pools are:
 
@@ -426,7 +429,7 @@ These are network-wide pools, not guaranteed individual rewards.
 
 The backend must enforce all approved limits and must never exceed the total supply.
 
-12. DATABASE SECURITY
+## 12. DATABASE SECURITY
 
 Database security must include:
 
@@ -445,15 +448,15 @@ Production database credentials must never be committed to source control.
 
 Database backups must not be publicly accessible.
 
-13. ENCRYPTION AND DATA PROTECTION
+## 13. ENCRYPTION AND DATA PROTECTION
 
-13.1 Data in Transit
+### 13.1 Data in Transit
 
 All production communication involving authentication, personal information, administrative operations, or reward data must use HTTPS with modern TLS configuration.
 
 Plain HTTP may be used only for controlled local development environments.
 
-13.2 Data at Rest
+### 13.2 Data at Rest
 
 Sensitive information must be encrypted at rest where appropriate.
 
@@ -468,7 +471,7 @@ This includes:
 
 Encryption keys must be managed separately from the encrypted data.
 
-13.3 Sensitive Data Handling
+### 13.3 Sensitive Data Handling
 
 The system must not expose:
 
@@ -484,7 +487,7 @@ The system must not expose:
 
 Sensitive information must not appear in ordinary application logs, public explorer records, or error messages.
 
-14. KYC SECURITY
+## 14. KYC SECURITY
 
 KYC is required only after the user completes all 2,160 effective mining sessions, according to the product requirements.
 
@@ -503,7 +506,7 @@ Security requirements:
 
 The KYC provider, document types, retention period, and data protection process remain subject to approval.
 
-15. PUBLIC LEDGER SECURITY
+## 15. PUBLIC LEDGER SECURITY
 
 The public ledger is an app-operated, publicly inspectable and cryptographically verifiable record system.
 
@@ -520,7 +523,7 @@ Security requirements:
 - Old public verification keys must remain available for historical verification.
 - Historical blocks must remain immutable.
 
-15.1 Signing Key Protection
+### 15.1 Signing Key Protection
 
 Private signing keys must be stored securely and must never be published.
 
@@ -536,7 +539,7 @@ If a signing key is lost or compromised:
 6. New blocks must use the new signing key.
 7. The replacement must be recorded in the Audit Log.
 
-15.2 Ledger Corrections
+### 15.2 Ledger Corrections
 
 Historical blocks must not be secretly modified.
 
@@ -551,7 +554,7 @@ A correction must:
 - Preserve the original block.
 - Appear in the Explorer as a correction relationship.
 
-16. BACKUP AND RECOVERY SECURITY
+## 16. BACKUP AND RECOVERY SECURITY
 
 Backups must be encrypted and integrity-verified.
 
@@ -564,7 +567,7 @@ The backup system must support:
 - Backup failure alerts.
 - Monthly recovery testing.
 
-16.1 Backup Encryption
+### 16.1 Backup Encryption
 
 Backup encryption must use:
 
@@ -575,7 +578,7 @@ Backup encryption must use:
 
 The password and encryption key must not be stored together in the same unprotected location.
 
-16.2 Recovery Key
+### 16.2 Recovery Key
 
 The Recovery Key must be stored offline and separately from the normal backup files.
 
@@ -590,7 +593,7 @@ If both the required Recovery Key and other valid recovery material are lost, th
 
 This limitation must be clearly communicated to the Main Admin.
 
-16.3 Recovery Testing
+### 16.3 Recovery Testing
 
 A recovery test must be performed monthly using available backup sources:
 
@@ -610,7 +613,7 @@ The test must verify:
 
 Test results must be recorded.
 
-17. SECURITY LOGGING AND AUDIT
+## 17. SECURITY LOGGING AND AUDIT
 
 Security-relevant events must be logged.
 
@@ -644,7 +647,7 @@ Logs must:
 - Be protected against unauthorized modification.
 - Be retained according to the approved retention policy.
 
-18. DEPENDENCY AND SUPPLY-CHAIN SECURITY
+## 18. DEPENDENCY AND SUPPLY-CHAIN SECURITY
 
 All third-party dependencies must be reviewed before production use.
 
@@ -668,7 +671,7 @@ The project should use:
 
 Untrusted installation scripts and packages must not be executed without review.
 
-19. MOBILE APPLICATION SECURITY
+## 19. MOBILE APPLICATION SECURITY
 
 The React Native + Expo mobile application must follow secure development practices.
 
@@ -689,7 +692,7 @@ The mobile application is an untrusted client from the backend's perspective.
 
 Obfuscation or client-side checks must not be treated as substitutes for backend security.
 
-20. SECURITY INCIDENT RESPONSE
+## 20. SECURITY INCIDENT RESPONSE
 
 The project must maintain an incident response process.
 
@@ -710,7 +713,7 @@ For critical vulnerabilities or reward-integrity threats, the backend may stop a
 
 The system must preserve existing balances and historical records during incident response.
 
-21. MAINTENANCE AND OUTAGE SECURITY
+## 21. MAINTENANCE AND OUTAGE SECURITY
 
 During planned or emergency maintenance:
 
@@ -725,7 +728,7 @@ During planned or emergency maintenance:
 
 After restoration, the backend must validate pending sessions and reward operations before processing them.
 
-22. MONTHLY ADMIN SECURITY TESTING
+## 22. MONTHLY ADMIN SECURITY TESTING
 
 Monthly Admin Security Testing is mandatory under the project operations policy.
 
@@ -753,7 +756,7 @@ Findings must be documented with:
 - Responsible person.
 - Resolution status.
 
-23. SECURITY TESTING REQUIREMENTS
+## 23. SECURITY TESTING REQUIREMENTS
 
 Before public launch, the project must complete appropriate security testing.
 
@@ -775,7 +778,7 @@ Required categories include:
 
 Critical security findings must block public launch until resolved and verified.
 
-24. UNRESOLVED SECURITY DECISIONS
+## 24. UNRESOLVED SECURITY DECISIONS
 
 The following details require formal approval before production deployment:
 
@@ -796,7 +799,7 @@ The following details require formal approval before production deployment:
 
 These items must not be replaced with undocumented assumptions.
 
-25. FINAL SECURITY POLICY
+## 25. FINAL SECURITY POLICY
 
 Security is mandatory throughout SAECOIN development and operation.
 
@@ -810,4 +813,4 @@ The application must not launch publicly until critical security requirements ha
 
 ---
 
-END OF DOCUMENTDOCUMENT
+END OF DOCUMENT
