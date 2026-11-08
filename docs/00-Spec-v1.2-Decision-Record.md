@@ -34,7 +34,7 @@ Every item carries one of three labels.
 | D-06 | The smallest SAC unit has **8 decimal places**: 1 SAC = 100,000,000 units. | DECIDED |
 | D-07 | Only **VALID** referrals count toward the "at least three active direct referrals" rule. | DECIDED |
 | D-08 | Registration uses **phone OTP, one account per phone number**. | DECIDED |
-| D-09 | Minimum user age and supported countries: see O-02. | OPEN |
+| D-09 | **Minimum user age is 18.** The app is **available in all countries** (owner decision; the first focus markets are Bangladesh, India, Pakistan and Nepal). Every country has its own on/off switch by phone country code, so any country can be switched off quickly without a new release if a legal review, an authority or an app store requires it (see O-02, O-16). | DECIDED (age, intended countries) |
 | D-10 | After the 2,160 sessions end, the owner will launch **a separate blockchain of their own**. | DECIDED |
 | D-11 | **Founder release schedule:** the 12,000,000 SAC stay fully locked for 12 months counted from Genesis Block 0. After that, 1,000,000 SAC are released on the same calendar day each month, 12 times (months 12 to 23 after genesis), so the allocation is fully released about 24 months after genesis. Each release is a public `FOUNDER_RELEASE` transfer from the locked founder account to the owner's available account. Releases cannot be skipped ahead, enlarged or reversed by the backend. | DECIDED |
 
@@ -340,7 +340,7 @@ User ID: v1.1 defines it three ways (PRD, architecture, schema). v1.2 uses `user
 | ID | Decision needed |
 |---|---|
 | O-01 | ~~Release schedule for the locked 12,000,000 SAC~~ Decided as D-11. Remaining detail: confirm that the 12 months are counted from Genesis Block 0 (public launch). |
-| O-02 | Minimum user age and the list of supported countries. |
+| O-02 | Legal review per country. Risk is highest where authorities describe crypto activity as illegal (reported for Bangladesh and Nepal) and in the US, EU and China. The owner has chosen to keep all countries available; the per-country switch is the safeguard. How age is checked (self-declared date of birth or ID verification) depends on O-07. |
 | O-03 | Production server timing. The owner plans a separate server after user growth. The drafting recommendation is a rented server from public launch, with the laptop used only for development and internal testing, because a laptop is exposed to power loss, sleep and home-network risk while handling user rewards. |
 | O-04 | Task and advertisement program: types, limits per user, payout rules, ad networks. |
 | O-05 | How balances move to the future blockchain (claim, airdrop, swap) and that chain's parameters. |
@@ -354,6 +354,7 @@ User ID: v1.1 defines it three ways (PRD, architecture, schema). v1.2 uses `user
 | O-13 | Brand: colours, logo, fonts. |
 | O-14 | Backend language and database. Suggestion: TypeScript with PostgreSQL, so types can be shared with the Expo app. |
 | O-15 | Confirm the PROPOSED items in this record, especially section 6.3 and section 9. |
+| O-16 | PROPOSED: switch off by default the countries under international sanctions (for example those on the US OFAC list), because Google Play, Apple, SMS providers and payment partners may enforce it. Owner to confirm. |
 
 ---
 
