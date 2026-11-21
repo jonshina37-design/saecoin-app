@@ -1,24 +1,30 @@
-# SAECOIN — rules for coding
+# SAECOIN — rules for working in this repo
 
-Status: planning stage. The specs in `docs/` are the source of truth.
+Status: design phase. **Documentation only. Do not write implementation code** unless the owner explicitly approves a phase in `docs/06-roadmap.md`.
 
 ## Spec precedence
-1. `docs/00-Spec-v1.2-Decision-Record.md` (DECIDED items) wins over docs 01–12.
-2. PROPOSED / OPEN items must not be implemented as final; ask the owner first.
 
-## Coding rules
-- TypeScript everywhere (strict mode). Backend: Node.js + PostgreSQL (D-12).
-- SAC amounts are integers in units of 10^-8 SAC (1 SAC = 100,000,000 units). Never use floats for money. Use int64/BigInt-safe types.
-- Every SAC lives in exactly one account; a reward is a transfer between accounts. No negative balances. The sum of all accounts is always 31,000,000 SAC (3.1×10^15 units).
-- The reward engine is a pure function (inputs → transfers), with no I/O, so it can be unit tested against the worked examples in the decision record.
-- Session close order: validate activations → calculate rewards → atomic ledger + balance transfer → sign and publish block.
-- Leftovers and dust go to TASK_POOL as SESSION_LEFTOVER; never carry over to the next session's pool.
-- Founder allocation (12M) is locked 12 months from Genesis Block 0, then 1,000,000 SAC per month for 12 months (D-11), via `FOUNDER_RELEASE` ledger transfers only.
-- Supported countries are config, not hard-coded: every country has its own on/off switch by phone country code, changeable without a release (all enabled by default, per D-09; sanctioned countries are off by default, D-13). Users must be 18+.
-- Client: Telegram Mini App first (React + TypeScript), native Expo app later, both on the same backend (D-14). Always verify Telegram initData signature on the backend; never trust the client.
-- The backend is the only authority; the client never decides rewards.
-- Public wording: "verifiable public ledger", not "blockchain".
+1. `docs/00-decision-record.md` wins over every other document.
+2. Only **DECIDED** and **CARRIED** items may be treated as final. **PROPOSED** and **OPEN** items must not be implemented as final; ask the owner first.
+3. Never reintroduce anything listed under "SUPERSEDED" in the decision record (31M supply, 12M reserve, Task Pool, referral pool, session claims, centralized reward backend).
+
+## Numbers
+
+- Max supply 21,000,000 SAC = 2,100,000,000,000,000 units (1 SAC = 100,000,000 units).
+- Mining 18,900,000 SAC; founder reserve 2,100,000 SAC; reserve locked 2 years, then 5% per month (20 releases).
+- If you change any figure, update `docs/00`, `docs/01`, and `README.md` together, and re-verify the arithmetic by running it.
+
+## Coding rules (for when code is approved)
+
+- Money is an integer in units of 10^-8 SAC. Never use floating point for amounts.
+- Consensus code is deterministic. Avoid any dependence on wall-clock time, locale, or unordered iteration.
+- No admin keys, backdoors, hidden premine, or any path that bypasses a timelock.
+- Change as little consensus logic as possible relative to the codebase being forked.
+- Do not write custom cryptography.
 
 ## Safety
-- Never commit secrets (.env, keys, tokens). See `.gitignore`.
-- Not legal advice: the owner must get legal review before launch.
+
+- Never commit secrets: keys, seeds, recovery phrases, `.env` files. See `.gitignore`.
+- Never push to `main` without the owner's approval. Work on a branch.
+- Do not make claims about price, returns, or listings in any text.
+- Not legal advice: the owner must obtain legal review before launch.
