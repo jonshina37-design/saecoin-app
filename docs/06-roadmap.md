@@ -6,8 +6,8 @@ Gated by evidence, not by dates. Move to the next phase only when the exit crite
 
 Cost: time only.
 
-- Owner confirms or changes every PROPOSED item in doc 00.
-- Choose the PoW algorithm and difficulty algorithm (O-01, O-02).
+- Owner confirms or changes the remaining PROPOSED items (P-10, P-11) in doc 00.
+- Choose the PoW algorithm (O-01) by benchmarking candidates on a low-end phone and a laptop against the D-10 requirement, and choose the difficulty algorithm (O-02).
 - Decide the codebase to fork (O-09) and how the reserve outputs are created (O-06).
 - Write a short whitepaper from docs 00–02.
 

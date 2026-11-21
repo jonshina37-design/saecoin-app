@@ -1,6 +1,6 @@
 # 03 — Network and Nodes
 
-Status: PROPOSED unless noted. Follows from D-01 (anyone can run a node) and D-06 (no money spent).
+Status: follows from D-01 (anyone can run a node), D-06 (no money spent) and D-15 (fair launch). Operational details below are PROPOSED unless tagged.
 
 ## 1. Node roles
 
@@ -38,7 +38,7 @@ Recommendation: treat a small recurring seed-node cost as part of the project, n
 A new chain with a few miners is fragile:
 
 - With little hashrate, one participant could control more than half of it and rewrite recent history (51% attack).
-- Mitigations: a hard-to-rent algorithm (P-04), conservative confirmation counts for exchanges or merchants, a fast difficulty algorithm, and transparent communication about the risk.
+- Mitigations: an algorithm that is hard to rent or accelerate within the D-10 requirement (O-01), conservative confirmation counts for exchanges or merchants, a fast difficulty algorithm, and transparent communication about the risk.
 - The founder should not mine a dominant share of early blocks. This protects both the chain and the founder's credibility.
 
 ## 5. Monitoring (non-authoritative)

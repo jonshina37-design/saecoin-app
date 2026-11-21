@@ -6,9 +6,9 @@ Status as of 2026-11-21. This is the single source of truth. If any other docume
 
 | Tag | Meaning | May be implemented as final? |
 | --- | --- | --- |
-| **DECIDED** | The owner stated it explicitly. | Yes |
-| **CARRIED** | Stated by the owner in an earlier decision, not re-confirmed on 2026-11-20. Still assumed. | Yes, but flag if it conflicts with a DECIDED item |
-| **PROPOSED** | A recommendation made during the 2026-11-20 design review. The owner has not confirmed it. | **No** — ask the owner first |
+| **DECIDED** | The owner stated or confirmed it explicitly. | Yes |
+| **CARRIED** | Stated by the owner in an earlier decision, not re-confirmed on 2026-11-20/21. Still assumed. | Yes, but flag if it conflicts with a DECIDED item |
+| **PROPOSED** | A recommendation not yet confirmed by the owner. | **No** — ask the owner first |
 | **OPEN** | Nobody has decided. | **No** |
 
 ## DECIDED
@@ -18,10 +18,18 @@ Status as of 2026-11-21. This is the single source of truth. If any other docume
 | D-01 | SAECOIN (SAC) is an independent, decentralized Proof-of-Work blockchain. No central backend is an authority over consensus or balances. Anyone can run a full node without permission. | 2026-11-09 |
 | D-02 | Maximum supply is **21,000,000 SAC**. | 2026-11-20 |
 | D-03 | Founder reserve is **2,100,000 SAC** (10%). The remaining **18,900,000 SAC** (90%) is for mining. | 2026-11-20 |
-| D-04 | The founder reserve is locked for **2 years**. After that it unlocks at **5% per month** (20 monthly releases). | 2026-11-20 |
-| D-05 | The founder has no control over any SAC other than the reserve, and has no special consensus, governance, minting, or admin privileges. The network runs on its own. | 2026-11-20 |
+| D-04 | The founder reserve is locked for **2 years**, then unlocks at **5% per month** (20 monthly releases). | 2026-11-20 |
+| D-05 | The founder has no control over any SAC other than the reserve, and no special consensus, governance, minting, or admin privileges. The network runs on its own. | 2026-11-20 |
 | D-06 | The project is started with no money spent, bootstrapped from zero in the way Bitcoin was. | 2026-11-20 |
 | D-07 | SAECOIN is separate from the SAECOIN AI business. Neither depends on the other. | 2026-11-15 |
+| D-08 *(P-01)* | All 18.9M mining SAC is issued as a **block subsidy** to the miner of each block. No claim pools, no Task Pool, no referral pool, no session claims. | 2026-11-21 |
+| D-09 *(P-02, P-03)* | Target block time **10 minutes**; halving every **210,000 blocks**; initial subsidy **45 SAC** (2 × 210,000 × 45 = 18,900,000). | 2026-11-21 |
+| D-10 *(replaces P-04)* | **Requirement:** the mining algorithm must let both **phones and laptops** mine. SHA-256d therefore does not qualify. The specific algorithm is still OPEN (O-01). | 2026-11-21 |
+| D-11 *(P-05)* | The founder reserve is created as **20 height-locked outputs** at genesis, one per monthly release, with a public address and no override path. | 2026-11-21 |
+| D-12 *(P-06)* | The app is a **non-custodial wallet** with an optional miner companion; there is no reward backend. | 2026-11-21 |
+| D-13 *(P-07)* | The founder holds the reserve keys in a **multisig / hardware-wallet** setup with a documented backup. | 2026-11-21 |
+| D-14 *(P-08)* | The founder does **not sell** SAC. SAC enters circulation by mining and, after the lock, by the founder's released reserve. | 2026-11-21 |
+| D-15 *(P-09)* | **Fair launch**: open-source code, announced start time, public genesis, reserve disclosed in advance. | 2026-11-21 |
 
 ## CARRIED (earlier owner decisions)
 
@@ -29,37 +37,29 @@ Status as of 2026-11-21. This is the single source of truth. If any other docume
 | --- | --- | --- |
 | C-01 | Coin precision is 8 decimal places; all arithmetic is integer. | 1 SAC = 100,000,000 units |
 | C-02 | UTXO transaction model. | |
-| C-03 | Proof-of-Work consensus; no Proof-of-Stake and no delegation. | Algorithm is OPEN (O-01) |
-| C-04 | Wallet is non-custodial. | |
-| C-05 | App users must be 18+, and each country has an on/off switch. | Applies to the app only; revisit in doc 04 |
+| C-03 | Proof-of-Work consensus; no Proof-of-Stake and no delegation. | Algorithm is OPEN (O-01) under D-10 |
+| C-04 | Wallet is non-custodial. | Reinforced by D-12 |
+| C-05 | App users must be 18+, and each country has an on/off switch. | Applies to the app only; revisit (O-12) |
 
 ## SUPERSEDED — do not reintroduce
-
-These came from earlier drafts and conflict with the decisions above.
 
 | Superseded item | Replaced by |
 | --- | --- |
 | 31,000,000 SAC supply | D-02 (21,000,000) |
 | 12,000,000 SAC founder reserve; 1-year lock; 1M SAC per month | D-03, D-04 |
-| 17,000,000 mining pool, 2,000,000 Task Pool, Referral Pool | D-03 and P-01 (no pools) |
-| Centralized "virtual mining" sessions, phone-OTP signup, referral groups, session claims with fee, 2,160 / 3,100 session counts | P-01, P-06 |
-| Telegram Mini App as the primary client | P-06 |
+| 17,000,000 mining pool, 2,000,000 Task Pool, Referral Pool | D-03, D-08 |
+| Centralized "virtual mining" sessions, phone-OTP signup, referral groups, session claims with fee, 2,160 / 3,100 session counts | D-08, D-12 |
+| Telegram Mini App as the primary client | D-12 |
+| "CPU-friendly (RandomX-class), SHA-256d as fallback" (P-04) | D-10 |
 
-The old v1.x specification set (12 documents plus the TypeScript reward engine) is preserved in Git history on `main` and was removed from this branch because it described the centralized design.
+The old v1.x specification set (12 documents plus the TypeScript reward engine) is preserved in the Git history of `main`.
 
 ## PROPOSED (awaiting owner confirmation)
 
 | ID | Proposal | Why |
 | --- | --- | --- |
-| P-01 | All 18.9M mining SAC is issued as a **block subsidy** to the miner of each block. No claim pools, no Task Pool, no referral pool, no session claims. | Simplest, most proven. Gives miners a real incentive from block 1, which is what secures a young chain. No sybil problem and no central claim server. |
-| P-02 | Target block time **10 minutes**. | Matches Bitcoin, fewer orphans. A shorter time is an alternative (see doc 02). |
-| P-03 | Halving every **210,000 blocks**; initial subsidy **45 SAC**. | 2 × 210,000 × 45 = 18,900,000 exactly. |
-| P-04 | Use a **CPU-friendly** PoW algorithm rather than SHA-256d. | A young SHA-256d chain can be attacked with rented hashpower. CPU-friendly mining also fits the goal of putting SAC in ordinary people's hands. |
-| P-05 | Founder reserve is created as **20 height-locked outputs** at genesis, one per monthly release, with a public address and no override path. | Makes D-04 and D-05 enforced by the protocol, not by promise. |
-| P-06 | The app is a **non-custodial wallet** (and optional miner companion), with no reward backend. | Follows from D-01 and D-05. |
-| P-07 | The founder holds the reserve keys in a **multisig / hardware-wallet** setup with a documented backup. | A single lost key loses the reserve for good. |
-| P-08 | The founder does **not sell** SAC. SAC enters circulation only by mining (and after the lock, by the founder's own released reserve). | Avoids securities-law exposure; consistent with a fair launch. |
-| P-09 | **Fair launch**: open-source code, announced start time, public genesis, reserve disclosed in advance. | Trust is the scarce resource for a new chain. |
+| P-10 | Choose a **moderate-memory, CPU-oriented** algorithm with audited **ARM64 and x86-64** implementations, chosen by the evaluation criteria in doc 02 section 3. | The D-10 requirement forces a trade-off between phone-friendliness and ASIC/GPU resistance; the memory setting is the dial. |
+| P-11 | Ship the **mining** build of the mobile client **outside** the app stores (direct APK / open-source channels), and keep the store version **wallet-only**, unless current store policies allow mining. Mining is opt-in, visible, and by default runs only while charging. | App-store rules on on-device mining (verify current policy), and protection against "cryptojacking" accusations. |
 
 ## OPEN
 

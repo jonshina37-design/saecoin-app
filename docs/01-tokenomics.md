@@ -1,12 +1,12 @@
 # 01 — Tokenomics
 
-Status: D-02, D-03, D-04 are DECIDED. The issuance schedule (subsidy, halving) is PROPOSED (P-01, P-03). See [00 — Decision Record](00-decision-record.md).
+Status: D-02, D-03, D-04 (supply, reserve, lock) and D-08, D-09, D-11 (block-subsidy issuance, 10-minute blocks, 45 SAC, 210,000-block halving, 20 timelocked reserve outputs) are DECIDED. See [00 — Decision Record](00-decision-record.md).
 
 ## 1. Supply
 
 | Allocation | Amount (SAC) | Share | Tag |
 | --- | ---: | ---: | --- |
-| Mining (block subsidy) | 18,900,000 | 90% | DECIDED amount, PROPOSED mechanism |
+| Mining (block subsidy) | 18,900,000 | 90% | DECIDED |
 | Founder reserve | 2,100,000 | 10% | DECIDED |
 | **Maximum supply** | **21,000,000** | 100% | DECIDED |
 
@@ -19,7 +19,7 @@ Status: D-02, D-03, D-04 are DECIDED. The issuance schedule (subsidy, halving) i
 - Locked for 2 years, then 5% per month: 105,000 SAC per month, 20 releases, total exactly 2,100,000.
 - The reserve gives no consensus power and no control over any other coin (D-05).
 
-### Release schedule (PROPOSED implementation, P-05)
+### Release schedule (DECIDED, D-11; exact block heights are derived from the 10-minute block time)
 
 Use block heights, not dates, because the chain cannot know calendar time reliably. With a 10-minute target block time: 144 blocks per day, one "month" = 30 days = 4,320 blocks.
 
@@ -37,13 +37,13 @@ Rules for the implementation:
 3. There is no admin key and no override: the schedule cannot be shortened by anyone.
 4. Heights are only approximately calendar time. If hashrate drops, blocks come slower and the lock lasts longer in real time. This is a property to disclose, not hide.
 
-## 3. Mining issuance (PROPOSED, P-01 / P-03)
+## 3. Mining issuance (DECIDED, D-08 / D-09)
 
 All mining SAC is paid to the block's miner as the block subsidy.
 
 | Parameter | Value |
 | --- | --- |
-| Target block time | 10 minutes (P-02) |
+| Target block time | 10 minutes |
 | Halving interval | 210,000 blocks (about 4 years) |
 | Initial subsidy | 45 SAC |
 | Check | 2 × 210,000 × 45 = 18,900,000 SAC |

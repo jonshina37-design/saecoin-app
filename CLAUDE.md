@@ -12,6 +12,7 @@ Status: design phase. **Documentation only. Do not write implementation code** u
 
 - Max supply 21,000,000 SAC = 2,100,000,000,000,000 units (1 SAC = 100,000,000 units).
 - Mining 18,900,000 SAC; founder reserve 2,100,000 SAC; reserve locked 2 years, then 5% per month (20 releases).
+- Block time 10 minutes; halving every 210,000 blocks; initial subsidy 45 SAC (D-09). The mining algorithm must let phones and laptops mine (D-10); do not pick SHA-256d, and do not choose a specific algorithm until the owner approves it (O-01).
 - If you change any figure, update `docs/00`, `docs/01`, and `README.md` together, and re-verify the arithmetic by running it.
 
 ## Coding rules (for when code is approved)

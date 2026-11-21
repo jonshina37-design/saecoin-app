@@ -9,14 +9,16 @@ An independent, decentralized Proof-of-Work cryptocurrency, started from zero in
 | Item | Value | Status |
 | --- | --- | --- |
 | Maximum supply | 21,000,000 SAC | Decided |
-| Mining (block subsidy) | 18,900,000 SAC (90%) | Decided amount; mechanism proposed |
+| Mining (block subsidy) | 18,900,000 SAC (90%), all paid to block miners | Decided |
 | Founder reserve | 2,100,000 SAC (10%) | Decided |
-| Reserve lock | 2 years, then 5% per month (20 releases) | Decided |
+| Reserve lock | 2 years, then 5% per month (20 releases), enforced by timelocked outputs | Decided |
+| Block time / halving / initial subsidy | 10 min / 210,000 blocks / 45 SAC | Decided |
+| Mining hardware | Phones and laptops must both be able to mine | Decided requirement; algorithm open |
 | Precision | 8 decimals | Carried |
-| Consensus | Proof-of-Work, UTXO | Carried; algorithm open |
-| Block time / halving / initial subsidy | 10 min / 210,000 blocks / 45 SAC | Proposed |
+| Consensus | Proof-of-Work, UTXO | Carried |
+| Wallet | Non-custodial, optional miner companion | Decided |
 
-"Proposed" means a recommendation awaiting the owner's confirmation. See the [Decision Record](docs/00-decision-record.md).
+"Open" means not yet decided. See the [Decision Record](docs/00-decision-record.md).
 
 ## Principles
 
