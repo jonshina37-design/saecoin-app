@@ -30,6 +30,8 @@ Status as of 2026-11-21. This is the single source of truth. If any other docume
 | D-13 *(P-07)* | The founder holds the reserve keys in a **multisig / hardware-wallet** setup with a documented backup. | 2026-11-21 |
 | D-14 *(P-08)* | The founder does **not sell** SAC. SAC enters circulation by mining and, after the lock, by the founder's released reserve. | 2026-11-21 |
 | D-15 *(P-09)* | **Fair launch**: open-source code, announced start time, public genesis, reserve disclosed in advance. | 2026-11-21 |
+| D-16 *(P-10)* | Choose a **moderate-memory, CPU-oriented** algorithm with audited **ARM64 and x86-64** implementations, selected by the criteria in doc 02 section 3. The specific algorithm is chosen only after benchmarking on at least one low-end phone and one laptop (O-01). | 2026-11-21 |
+| D-17 *(P-11)* | The **mining** build of the mobile client is distributed **outside** the app stores (direct APK / open-source channels); the store version is **wallet-only**, unless current store policies allow mining. Mining is opt-in, visible, and by default runs only while charging. Use one official website, signed releases, and published hashes. | 2026-11-21 |
 
 ## CARRIED (earlier owner decisions)
 
@@ -56,10 +58,7 @@ The old v1.x specification set (12 documents plus the TypeScript reward engine) 
 
 ## PROPOSED (awaiting owner confirmation)
 
-| ID | Proposal | Why |
-| --- | --- | --- |
-| P-10 | Choose a **moderate-memory, CPU-oriented** algorithm with audited **ARM64 and x86-64** implementations, chosen by the evaluation criteria in doc 02 section 3. | The D-10 requirement forces a trade-off between phone-friendliness and ASIC/GPU resistance; the memory setting is the dial. |
-| P-11 | Ship the **mining** build of the mobile client **outside** the app stores (direct APK / open-source channels), and keep the store version **wallet-only**, unless current store policies allow mining. Mining is opt-in, visible, and by default runs only while charging. | App-store rules on on-device mining (verify current policy), and protection against "cryptojacking" accusations. |
+None at the moment. All earlier proposals (P-01 to P-11) were confirmed on 2026-11-21 and are recorded above as D-08 to D-17.
 
 ## OPEN
 

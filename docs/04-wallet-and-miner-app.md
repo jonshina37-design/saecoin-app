@@ -1,6 +1,6 @@
 # 04 — Wallet and Miner App
 
-Status: D-12 (non-custodial wallet with optional miner companion) and D-10 (phones and laptops can mine) are DECIDED. P-11 (how the mining build is distributed) is PROPOSED. C-05 (18+, per-country switch) is CARRIED and under review.
+Status: D-12 (non-custodial wallet with optional miner companion), D-10 (phones and laptops can mine) and D-17 (how the mining build is distributed) are DECIDED. C-05 (18+, per-country switch) is CARRIED and under review.
 
 ## 1. Role of the app
 
@@ -9,7 +9,7 @@ The earlier design used the app as a client of a centralized reward server (virt
 | Component | Purpose | Tag |
 | --- | --- | --- |
 | Wallet | Create and back up keys, show balance, send and receive SAC | DECIDED (D-12, C-04) |
-| Miner companion | Mines SAC on the device (phone and laptop), opt-in | DECIDED requirement (D-10); distribution PROPOSED (P-11) |
+| Miner companion | Mines SAC on the device (phone and laptop), opt-in | DECIDED (D-10 requirement, D-17 distribution) |
 | Reserve schedule view | Shows the public founder-reserve unlock schedule | PROPOSED |
 | Block explorer link | Read-only, optional | PROPOSED |
 
@@ -19,14 +19,14 @@ The owner wants both to be able to mine. What that means in practice:
 
 - **Algorithm:** the choice is constrained by D-10; see doc 02 section 3 for the memory trade-off.
 - **Expectations:** a laptop will earn much more than a phone. Phone mining yields small amounts. The app must say this plainly and never advertise earnings.
-- **Heat and battery:** sustained mining throttles and drains phones. Default client behavior (P-11): opt-in, visible status, runs only while charging and below a temperature limit, with a one-tap stop.
+- **Heat and battery:** sustained mining throttles and drains phones. Default client behavior (D-17): opt-in, visible status, runs only while charging and below a temperature limit, with a one-tap stop.
 - **No hidden mining:** mining must never start without the user's clear consent. Hidden or silent mining is "cryptojacking": it harms users, gets apps flagged as malware, and creates legal exposure.
 
 ### App-store constraint (verify before building)
 
 As far as I know, both Google Play and the Apple App Store restrict or prohibit apps that mine cryptocurrency on the device itself (remote-controlled mining is treated differently). Current policies must be checked before planning any distribution.
 
-Proposal P-11:
+Decision D-17 (the current store policies must still be verified at build time):
 
 | Build | Channel | Contents |
 | --- | --- | --- |

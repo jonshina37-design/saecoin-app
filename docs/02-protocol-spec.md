@@ -41,7 +41,7 @@ The requirement creates a real tension that the owner should understand before c
 | **Verification cost.** Every node must verify each block's proof of work. | An algorithm that is slow to verify makes phone nodes and light clients impractical. |
 | **Rented and stolen CPUs.** Cloud CPUs and botnets can attack any CPU-oriented chain. | Reduce with a fast difficulty algorithm, high confirmation counts, and monitoring; cannot be eliminated. |
 
-### Algorithm selection criteria (for O-01; see also P-10)
+### Algorithm selection criteria (for O-01; see D-16)
 
 An algorithm qualifies only if all of these are satisfied:
 
@@ -56,7 +56,7 @@ Candidates to evaluate (no choice made; I have not benchmarked any of them, and 
 - Memory-moderate CPU algorithms in the Yespower and Argon2 families, which are generally designed for small to medium memory and ARM-friendly.
 - RandomX-class algorithms: strong ASIC resistance, but good mining speed normally needs about 2 GB of memory, with a slower light mode of about 256 MB. That may exclude many phones and needs testing.
 
-Recommendation (P-10, PROPOSED): pick a moderate-memory, CPU-oriented algorithm that passes the criteria above, then confirm with a benchmark on at least one low-end phone and one laptop before freezing it.
+Decision (D-16): pick a moderate-memory, CPU-oriented algorithm that passes the criteria above, then confirm with a benchmark on at least one low-end phone and one laptop before freezing it.
 
 ### Difficulty adjustment
 
