@@ -58,7 +58,11 @@ The old v1.x specification set (12 documents plus the TypeScript reward engine) 
 
 ## PROPOSED (awaiting owner confirmation)
 
-None at the moment. All earlier proposals (P-01 to P-11) were confirmed on 2026-11-21 and are recorded above as D-08 to D-17.
+All earlier proposals (P-01 to P-11) were confirmed on 2026-11-21 and are recorded above as D-08 to D-17.
+
+| ID | Proposal | Why |
+| --- | --- | --- |
+| P-12 | For D-10, define the **minimum mining phone** as mid-range and up: about 6 GB RAM, 64-bit ARM, from roughly the last 5–6 years. Every phone can still use the wallet. Benchmark RandomX on that class first; fall back to a lighter algorithm only if it fails (doc 08, sections 5 and 6). | Phones need roughly 6 GB RAM for RandomX mining in practice; budget 2–4 GB phones are marginal. "Phones can mine" must not be read as "every phone earns." Supports O-18, O-01, and O-09 (Bitcoin Core fork). |
 
 ## OPEN
 

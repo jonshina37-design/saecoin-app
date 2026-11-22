@@ -10,5 +10,6 @@
 | 05 | [Security and Legal](05-security-and-legal.md) | Risks, legal topics, launch gates |
 | 06 | [Roadmap](06-roadmap.md) | Phases gated by evidence |
 | 07 | [Open Questions](07-open-questions.md) | Everything not yet decided |
+| 08 | [Codebase and Algorithm Evaluation](08-codebase-and-algorithm-evaluation.md) | Research note for O-01, O-02, O-09: RandomX vs yespower, Bitcoin Core fork, benchmark plan |
 
 Project overview: [../README.md](../README.md)
