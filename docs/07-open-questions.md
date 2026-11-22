@@ -9,7 +9,7 @@ Nothing here may be implemented as final. Items marked **blocking** must be sett
 | O-03 | Block size / weight limit | Keep conservative | Yes |
 | O-04 | Fee policy and minimum relay fee | Fees go to the miner | No |
 | O-05 | Coinbase maturity | 100 blocks as in Bitcoin, or shorter | No |
-| O-06 | How reserve outputs are created at genesis | Bitcoin Core's genesis coinbase is unspendable; use block 1 or a modified genesis | Yes |
+| O-06 | How reserve outputs are created at genesis | Bitcoin Core's genesis coinbase is unspendable. Proposal P-13: a consensus rule at block 1; full design in doc 09 | Yes |
 | O-07 | Signature scheme and address format | Conservative default: Bitcoin-style on secp256k1 | Yes |
 | O-08 | Network identity | Magic bytes, ports, address prefixes, seed nodes | No |
 | O-09 | Codebase to fork | Lean: Bitcoin Core fork (see doc 08 section 3); avoid from-scratch | Yes |
@@ -22,3 +22,5 @@ Nothing here may be implemented as final. Items marked **blocking** must be sett
 | O-16 | Whether to disclose the reserve schedule in the whitepaper | Strongly recommended | No |
 | O-17 | Mobile mining distribution and platform limits | D-17: store version wallet-only, mining build outside stores; verify current Google Play and App Store policies; iOS background mining may be impossible | No |
 | O-18 | What counts as a "phone" for D-10 (minimum RAM, CPU, age) | Options and recommendation in doc 08 section 5; decides the algorithm shortlist. Proposed answer: P-12 (mid-range and up, about 6 GB RAM) | Yes |
+| O-19 | First reserve lock height | 103,680 (24 x 30 days = 720 days) or 105,120 (730 days); see doc 09 section 3 | No |
+| O-20 | Genesis mechanism after the codebase choice | Block-1 consensus rule (P-13) vs modified genesis handling; see doc 09 section 2 | Yes |

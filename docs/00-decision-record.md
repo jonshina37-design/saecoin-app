@@ -63,6 +63,7 @@ All earlier proposals (P-01 to P-11) were confirmed on 2026-11-21 and are record
 | ID | Proposal | Why |
 | --- | --- | --- |
 | P-12 | For D-10, define the **minimum mining phone** as mid-range and up: about 6 GB RAM, 64-bit ARM, from roughly the last 5–6 years. Every phone can still use the wallet. Benchmark RandomX on that class first; fall back to a lighter algorithm only if it fails (doc 08, sections 5 and 6). | Phones need roughly 6 GB RAM for RandomX mining in practice; budget 2–4 GB phones are marginal. "Phones can mine" must not be read as "every phone earns." Supports O-18, O-01, and O-09 (Bitcoin Core fork). |
+| P-13 | Create the 20 reserve outputs through a **consensus rule at block 1** (the coinbase must contain exactly these outputs), each a **height-locked 2-of-3 multisig** (P2WSH-style), 105,000 SAC each, first lock at height 103,680, then every 4,320 blocks. Details, tests, and custody in [09](09-genesis-and-reserve-design.md). | Bitcoin Core's genesis coinbase is unspendable; a block-1 rule is a small, verifiable change that makes D-04, D-05, and D-11 protocol-enforced. |
 
 ## OPEN
 

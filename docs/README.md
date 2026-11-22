@@ -11,5 +11,6 @@
 | 06 | [Roadmap](06-roadmap.md) | Phases gated by evidence |
 | 07 | [Open Questions](07-open-questions.md) | Everything not yet decided |
 | 08 | [Codebase and Algorithm Evaluation](08-codebase-and-algorithm-evaluation.md) | Research note for O-01, O-02, O-09: RandomX vs yespower, Bitcoin Core fork, benchmark plan |
+| 09 | [Genesis and Reserve Design](09-genesis-and-reserve-design.md) | O-06: block-1 rule, 20 timelocked multisig outputs, key custody, tests |
 
 Project overview: [../README.md](../README.md)
