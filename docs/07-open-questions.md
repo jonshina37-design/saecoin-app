@@ -20,7 +20,7 @@ Nothing here may be implemented as final. Items marked **blocking** must be sett
 | O-14 | Ticker and name confirmation | SAC is "provisional" in earlier drafts; check for conflicts | No |
 | O-15 | Reserve custody setup | Multisig threshold, hardware wallets, backup locations | No |
 | O-16 | Whether to disclose the reserve schedule in the whitepaper | Strongly recommended | No |
-| O-17 | Mobile mining distribution and platform limits | D-17: store version wallet-only, mining build outside stores; verify current Google Play and App Store policies; iOS background mining may be impossible | No |
+| O-17 | Mobile mining distribution and platform limits | D-17 and P-14: store version has the wallet plus remote miner management, phone mining only in an Android direct build (phase 2); verify current Google Play and App Store policies; iOS background mining may be impossible | No |
 | O-18 | What counts as a "phone" for D-10 (minimum RAM, CPU, age) | Options and recommendation in doc 08 section 5; decides the algorithm shortlist. Proposed answer: P-12 (mid-range and up, about 6 GB RAM) | Yes |
 | O-19 | First reserve lock height | 103,680 (24 x 30 days = 720 days) or 105,120 (730 days); see doc 09 section 3 | No |
 | O-20 | Genesis mechanism after the codebase choice | Block-1 consensus rule (P-13) vs modified genesis handling; see doc 09 section 2 | Yes |

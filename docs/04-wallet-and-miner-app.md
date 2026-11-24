@@ -30,8 +30,15 @@ Decision D-17 (the current store policies must still be verified at build time):
 
 | Build | Channel | Contents |
 | --- | --- | --- |
-| Store version | Google Play / App Store | **Wallet only** |
-| Mining version | Direct APK download, open-source channels, and desktop installers | Wallet plus miner |
+| Store version | Google Play / App Store | Wallet, plus **remote management** of a miner that runs on the user's own computer or server (start, stop, hashrate, earnings). No mining on the phone |
+| Desktop version | Official website installers (Windows, Linux, macOS) | Wallet plus miner |
+| Android direct build (phase 2, P-14) | Direct APK download, open-source channels | Wallet plus on-device mining, only if the benchmarks in doc 08 pass |
+
+### Launch scope (P-14, PROPOSED)
+
+Phase 1 (launch): phone wallet in the stores (Android and iPhone) with remote miner management, and the desktop miner. Phase 2: add the Android direct build with on-device mining, only if benchmarks show the minimum phone class (P-12) can mine safely. D-10 stays the long-term requirement and the algorithm is still chosen to be phone-capable (D-16), but phone mining is not part of the launch.
+
+Whether Apple accepts remote management of the user's own miner must be checked with Apple's current review guidelines before relying on it. Apple also requires wallet apps to come from an organization-enrolled developer (verify the current wording), which means a registered legal entity may be needed for the iPhone release.
 
 iOS in particular is unlikely to allow background mining at all, so mining on iPhones may not be possible; this is a platform limit, not a protocol limit.
 
