@@ -24,3 +24,5 @@ Nothing here may be implemented as final. Items marked **blocking** must be sett
 | O-18 | What counts as a "phone" for D-10 (minimum RAM, CPU, age) | Options and recommendation in doc 08 section 5; decides the algorithm shortlist. Proposed answer: P-12 (mid-range and up, about 6 GB RAM) | Yes |
 | O-19 | First reserve lock height | 103,680 (24 x 30 days = 720 days) or 105,120 (730 days); see doc 09 section 3 | No |
 | O-20 | Genesis mechanism after the codebase choice | Block-1 consensus rule (P-13) vs modified genesis handling; see doc 09 section 2 | Yes |
+| O-21 | Light-server / indexer protocol for wallets, and who runs the first server | Electrum-style or REST; user must be able to run their own; see doc 10 section 3 | Yes |
+| O-22 | Coin type number for key derivation and address prefix | Choose with O-08; see doc 10 section 4 | No |
