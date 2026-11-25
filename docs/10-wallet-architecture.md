@@ -1,6 +1,6 @@
 # 10 — Wallet Architecture (draft)
 
-Status: direction decided (D-23); implementation details below are proposals. **Documentation only: no wallet code is written until the owner explicitly approves a phase.** It builds on D-12 (non-custodial wallet), C-04, D-14, D-17, and P-14. Chain-specific parts depend on D-18, D-19, and O-08.
+Status: direction decided (D-23); implementation details below are proposals. **Documentation only: no wallet code is written until the owner explicitly approves a phase.** It builds on D-12 (non-custodial wallet), C-04, D-14, D-17, and D-22. Chain-specific parts depend on D-18, D-19, and O-08.
 
 ## 1. Principles
 
@@ -68,9 +68,9 @@ Included:
 Not in the MVP:
 - Multiple accounts, hardware-wallet support, multisig (the founder reserve uses separate tooling, doc 09)
 - Swaps, fiat on-ramps, price charts, push notifications (privacy)
-- Miner management (P-14, phase 2) and the reserve-schedule viewer (read-only, later)
+- Miner management (D-22, phase 2) and the reserve-schedule viewer (read-only, later)
 
-### Mining tracking (phase 2, P-14)
+### Mining tracking (phase 2, D-22)
 
 The wallet separates mining data into three classes, and labels each one in the UI:
 
