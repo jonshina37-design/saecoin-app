@@ -1,6 +1,6 @@
 # 09 — Genesis and Founder Reserve Design (O-06)
 
-Status: design proposal (P-13). It implements the DECIDED items D-03, D-04, D-05, D-11, and D-13 and does not change them. Everything marked "proposed" needs owner approval. It is independent of the PoW algorithm choice (O-01).
+Status: design confirmed by the owner (D-21, D-24). It implements D-03, D-04, D-05, D-11, and D-13 and does not change them. Items still marked "proposed" below (for example, the 2-of-3 threshold details) need owner approval. It is independent of the PoW algorithm choice (O-01).
 
 ## 1. What must be true
 
@@ -24,7 +24,7 @@ In Bitcoin Core, the genesis block's coinbase output cannot be spent, because it
 | B. Modified genesis handling | Change the client so genesis outputs enter the UTXO set | Reserve exists from block 0 | Larger, riskier change to core code |
 | C. Pre-funded outputs in a normal transaction | Founder creates a transaction | No special consensus rule | Not enforced by the protocol, which defeats D-05; **rejected** |
 
-**Proposed: Option A.**
+**Decided (D-21): Option A.**
 
 Rules for Option A:
 1. At height 1 only, the coinbase may pay the normal subsidy plus the reserve outputs, and the block is invalid if any of the 20 outputs is missing, altered, or has a different amount or script.
@@ -57,7 +57,7 @@ Note on the off-by-one: in Bitcoin's rules, a transaction with `nLockTime = N` i
 
 ### Two honest caveats about "2 years"
 
-1. 24 months × 30 days = **720 days**, which is slightly under two calendar years (730 days). If the owner wants a full 730 days, the first lock height would be 105,120. **Open choice (O-19):** keep 103,680 (matches the "24 months of 30 days" convention) or use 105,120.
+1. 24 months × 30 days = **720 days**, which is slightly under two calendar years (730 days). **Decided (D-24):** the first lock height is 103,680 (the "24 months of 30 days" convention). A full 730 days would have been 105,120; it was not chosen.
 2. Height is not calendar time. If blocks come slower or faster than 10 minutes on average, the real-time lock moves. This is inherent to a height lock, and the whitepaper should say so.
 
 ## 4. How the founder spends a released part
@@ -116,6 +116,5 @@ Before launch, publish: the 20 scripts, their addresses, the amounts, the lock h
 
 | ID | Item |
 | --- | --- |
-| O-19 | First lock height: 103,680 (720 days) or 105,120 (730 days) |
 | O-15 | Exact multisig threshold, vendors, locations, and inheritance arrangement |
-| O-20 | Whether to use Option A (consensus rule at block 1) as proposed, or a different genesis mechanism, after the codebase choice (O-09) |
+| O-20 | *Resolved* — Option A (consensus rule at block 1) confirmed as D-21, with the codebase fixed by D-18 |

@@ -34,6 +34,11 @@ Status as of 2026-11-21. This is the single source of truth. If any other docume
 | D-17 *(P-11)* | The **mining** build of the mobile client is distributed **outside** the app stores (direct APK / open-source channels); the store version is **wallet-only**, unless current store policies allow mining. Mining is opt-in, visible, and by default runs only while charging. Use one official website, signed releases, and published hashes. | 2026-11-21 |
 | D-18 *(O-09)* | The codebase is a **fork of Bitcoin Core** (transparent UTXO model, minimal consensus changes, reference implementation of the chosen PoW reused as is). No from-scratch chain. | 2026-11-25 |
 | D-19 *(O-07)* | Transactions use **Bitcoin-style signatures on secp256k1** and **segwit-style addresses** (the address prefix is still open, O-08 / O-22). | 2026-11-25 |
+| D-20 *(P-12)* | For D-10, the **minimum mining phone** is mid-range and up: about 6 GB RAM, 64-bit ARM, from roughly the last 5–6 years. Every phone can use the wallet. RandomX is benchmarked on that class first; a lighter algorithm is used only if it fails (doc 08, sections 5 and 6). | 2026-11-25 |
+| D-21 *(P-13)* | The 20 reserve outputs are created by a **consensus rule at block 1** (the coinbase must contain exactly these outputs), each a **height-locked 2-of-3 multisig** (P2WSH-style), 105,000 SAC each, first lock at height 103,680, then every 4,320 blocks. Details, tests, and custody in [09](09-genesis-and-reserve-design.md). | 2026-11-25 |
+| D-22 *(P-14)* | **Phased phone mining.** Launch with the phone wallet in the stores (with remote management of the user's own miner) and the desktop miner. On-device Android mining (direct APK, outside the stores) comes in phase 2, only if benchmarks pass. D-10 and D-16 are unchanged. Details in doc 04. | 2026-11-25 |
+| D-23 *(P-15)* | **SAC-only, non-custodial wallet first**, built in parallel with the chain and tested on a test network; not a multi-coin wallet. Design in [10](10-wallet-architecture.md). No wallet code until the owner approves phase W1. | 2026-11-25 |
+| D-24 *(O-19)* | The first reserve lock height is **103,680** (24 months of 30 days = 720 days). | 2026-11-25 |
 
 ## CARRIED (earlier owner decisions)
 
@@ -60,14 +65,7 @@ The old v1.x specification set (12 documents plus the TypeScript reward engine) 
 
 ## PROPOSED (awaiting owner confirmation)
 
-All earlier proposals (P-01 to P-11) were confirmed on 2026-11-21 and are recorded above as D-08 to D-17.
-
-| ID | Proposal | Why |
-| --- | --- | --- |
-| P-12 | For D-10, define the **minimum mining phone** as mid-range and up: about 6 GB RAM, 64-bit ARM, from roughly the last 5–6 years. Every phone can still use the wallet. Benchmark RandomX on that class first; fall back to a lighter algorithm only if it fails (doc 08, sections 5 and 6). | Phones need roughly 6 GB RAM for RandomX mining in practice; budget 2–4 GB phones are marginal. "Phones can mine" must not be read as "every phone earns." Supports O-18, O-01, and O-09 (Bitcoin Core fork). |
-| P-13 | Create the 20 reserve outputs through a **consensus rule at block 1** (the coinbase must contain exactly these outputs), each a **height-locked 2-of-3 multisig** (P2WSH-style), 105,000 SAC each, first lock at height 103,680, then every 4,320 blocks. Details, tests, and custody in [09](09-genesis-and-reserve-design.md). | Bitcoin Core's genesis coinbase is unspendable; a block-1 rule is a small, verifiable change that makes D-04, D-05, and D-11 protocol-enforced. |
-| P-14 | **Phased phone mining.** Launch with the phone wallet in the stores (with remote management of the user's own miner) and the desktop miner. Add on-device Android mining (direct APK, outside the stores) in phase 2, only if benchmarks pass. D-10 and D-16 are unchanged; only the launch scope is reduced. Details in doc 04. | Google Play and the App Store prohibit on-device mining but allow off-device processing and, on Google Play, remote management. A smaller launch is more reliable. |
-| P-15 | **SAC-only, non-custodial wallet first**, built in parallel with the chain and tested on a test network. Not a multi-coin wallet. Design in [10](10-wallet-architecture.md); no wallet code until the owner approves phase W1. | A wallet cannot work without a chain, so it runs in parallel, not before. A multi-coin wallet would be a very large, high-risk product for one person. |
+None at the moment. All proposals (P-01 to P-15) were confirmed and are recorded above as D-08 to D-24 (D-18 and D-19 came from open questions O-09 and O-07).
 
 ## OPEN
 
