@@ -28,3 +28,4 @@ Nothing here may be implemented as final. Items marked **blocking** must be sett
 | O-22 | Coin type number for key derivation and address prefix | Choose with O-08; see doc 10 section 4 | No |
 
 | O-23 | Local miner API for the wallet (hashrate, shares, status) and how the wallet pairs with a miner | See doc 10, section on mining tracking; LAN first, authenticated and encrypted | Yes |
+| O-24 | Who pays for the audit and legal review; owner's spending cap before launch | See doc 11 | No |
