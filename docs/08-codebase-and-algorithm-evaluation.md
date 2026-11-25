@@ -1,12 +1,12 @@
 # 08 — Codebase and Algorithm Evaluation
 
-Status: research note, **not a decision**. It supports O-01 (algorithm), O-02 (difficulty), O-09 (codebase) and the D-10 / D-16 requirements. Prepared 2026-11-21 from public sources. I have not benchmarked anything myself, and several sources are project blogs or vendor pages; figures are marked accordingly.
+Status: research note, **not a decision**. It supports O-01 (algorithm), O-02 (difficulty), D-18 (codebase) and the D-10 / D-16 requirements. Prepared 2026-11-21 from public sources. I have not benchmarked anything myself, and several sources are project blogs or vendor pages; figures are marked accordingly.
 
 ## 1. Summary
 
 | Question | Current lean | Confidence |
 | --- | --- | --- |
-| Codebase (O-09) | Fork **Bitcoin Core**, keep the transparent UTXO model, replace the PoW check | Medium-high. At least one live project did exactly this (self-reported). |
+| Codebase (D-18) | Fork **Bitcoin Core**, keep the transparent UTXO model, replace the PoW check | Medium-high. At least one live project did exactly this (self-reported). |
 | Algorithm (O-01) | Benchmark **RandomX** against **yespower** on real devices before choosing. Lean RandomX only if the minimum phone class you define can actually run it. | Medium. Real phone mining of RandomX is documented; budget phones are a problem. |
 | Difficulty (O-02) | A **per-block** algorithm (ASERT or LWMA), not Bitcoin's 2016-block retarget | Medium-high. |
 | Custom or hybrid PoW | **Do not** | High. Unaudited cryptography is the biggest consensus risk. |
@@ -38,7 +38,7 @@ The one decision only you can make: **what counts as a "phone" under D-10** (see
 
 At about 14.8 ms per light-mode hash on one desktop core, verifying 210,000 headers (about 4 years of 10-minute blocks) takes about 52 minutes. Phones will be slower. Only full nodes need to do this, and wallets can rely on a node, but it argues for checkpoints or assumed-valid snapshots for fast initial sync, and for keeping phone nodes optional.
 
-## 3. Codebase options (O-09)
+## 3. Codebase options (D-18)
 
 | Option | Pros | Cons |
 | --- | --- | --- |

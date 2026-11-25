@@ -29,7 +29,7 @@ Status: direction decided (D-23); implementation details below are proposals. **
 | --- | --- | --- |
 | **UI** | Screens, navigation, language | No |
 | **Wallet core** (TypeScript library) | Key generation, derivation, transaction building, signing, fee estimation, partially signed transactions | No (chain parameters injected) |
-| **Chain adapter** | Address encoding (prefix TBD), network parameters, script types, timelock awareness, testnet/mainnet switch | **Yes** (O-07, O-08, O-09) |
+| **Chain adapter** | Address encoding (prefix TBD), network parameters, script types, timelock awareness, testnet/mainnet switch | **Yes** (O-08) |
 | **Data layer** | Talks to a node or indexer through a documented open protocol; server list; basic header verification where feasible | Partly |
 | **Secure storage** | Android Keystore (iOS Keychain later) holding the encrypted seed, gated by biometrics or a PIN | No |
 
@@ -114,7 +114,7 @@ How it works:
 
 | Phase | Work | Exit |
 | --- | --- | --- |
-| W0 | This document; owner decisions on O-08, O-21, O-22, O-23 (O-07 and O-09 are decided: D-19, D-18) | Chain-specific inputs fixed |
+| W0 | This document; owner decisions on O-08, O-21, O-22, O-23 (address format and codebase are decided: D-19, D-18) | Chain-specific inputs fixed |
 | W1 | Wallet core library with tests, running against a local test network | All test vectors pass |
 | W2 | Android MVP on testnet | A test user can create, receive, send, restore |
 | W3 | Closed testing and an independent review | No unresolved high-severity findings |

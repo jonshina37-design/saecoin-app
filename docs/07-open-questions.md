@@ -9,11 +9,7 @@ Nothing here may be implemented as final. Items marked **blocking** must be sett
 | O-03 | Block size / weight limit | Keep conservative | Yes |
 | O-04 | Fee policy and minimum relay fee | Fees go to the miner | No |
 | O-05 | Coinbase maturity | 100 blocks as in Bitcoin, or shorter | No |
-| O-06 | *Resolved* — how reserve outputs are created at genesis | D-21: consensus rule at block 1; full design in doc 09 | No |
-| O-07 | *Resolved* — signature scheme and address format | D-19: Bitcoin-style on secp256k1, segwit-style addresses. The prefix remains open (O-08, O-22) | No |
 | O-08 | Network identity | Magic bytes, ports, address prefixes, seed nodes | No |
-| O-09 | *Resolved* — codebase to fork | D-18: Bitcoin Core fork (see doc 08 section 3) | No |
-| O-10 | *Resolved* — owner confirmation of proposals | P-01 to P-11 were confirmed on 2026-11-21: now D-08 to D-17 in doc 00 | No |
 | O-11 | Genesis timestamp and launch date | Announce well in advance | No |
 | O-12 | Legal handling of 18+ and country switches | Likely not enforceable at protocol level; legal advice needed | No |
 | O-13 | Open-source license | MIT / Apache-2.0 / other; decide before publishing code | No |
@@ -21,9 +17,6 @@ Nothing here may be implemented as final. Items marked **blocking** must be sett
 | O-15 | Reserve custody setup | Multisig threshold, hardware wallets, backup locations | No |
 | O-16 | Whether to disclose the reserve schedule in the whitepaper | Strongly recommended | No |
 | O-17 | Mobile mining distribution and platform limits | D-17 and D-22: store version has the wallet plus remote miner management, phone mining only in an Android direct build (phase 2); verify current Google Play and App Store policies; iOS background mining may be impossible | No |
-| O-18 | *Resolved* — what counts as a "phone" for D-10 | D-20: mid-range and up (about 6 GB RAM, 64-bit ARM, last 5–6 years) | No |
-| O-19 | *Resolved* — first reserve lock height | D-24: 103,680 (720 days) | No |
-| O-20 | *Resolved* — genesis mechanism | D-21: block-1 consensus rule (codebase decided in D-18) | No |
 | O-21 | Light-server / indexer protocol for wallets, and who runs the first server | Electrum-style or REST; user must be able to run their own; see doc 10 section 3 | Yes |
 | O-22 | Coin type number for key derivation and address prefix | Choose with O-08; see doc 10 section 4 | No |
 

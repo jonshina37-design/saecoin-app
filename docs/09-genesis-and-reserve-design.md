@@ -1,4 +1,4 @@
-# 09 — Genesis and Founder Reserve Design (O-06)
+# 09 — Genesis and Founder Reserve Design 
 
 Status: design confirmed by the owner (D-21, D-24). It implements D-03, D-04, D-05, D-11, and D-13 and does not change them. Items still marked "proposed" below (for example, the 2-of-3 threshold details) need owner approval. It is independent of the PoW algorithm choice (O-01).
 
@@ -117,4 +117,3 @@ Before launch, publish: the 20 scripts, their addresses, the amounts, the lock h
 | ID | Item |
 | --- | --- |
 | O-15 | Exact multisig threshold, vendors, locations, and inheritance arrangement |
-| O-20 | *Resolved* — Option A (consensus rule at block 1) confirmed as D-21, with the codebase fixed by D-18 |

@@ -65,7 +65,7 @@ Bitcoin retargets every 2,016 blocks (about 2 weeks). On a brand-new chain whose
 ## 4. Genesis
 
 1. A fixed genesis block defines the network.
-2. The 20 height-locked reserve outputs (see doc 01) are created at launch. Note: in Bitcoin Core the genesis coinbase output is not spendable, so the reserve outputs must be created in a way the chosen codebase supports (for example, consensus-validated outputs in block 1, or a modified genesis). This is a design task (O-06).
+2. The 20 height-locked reserve outputs (see doc 01) are created at launch. Note: in Bitcoin Core the genesis coinbase output is not spendable, so the reserve outputs must be created in a way the chosen codebase supports (for example, consensus-validated outputs in block 1, or a modified genesis). This is decided: D-21, see doc 09.
 3. The genesis timestamp, message, reserve address and all parameters are published before the network starts.
 
 ## 5. Transactions and addresses

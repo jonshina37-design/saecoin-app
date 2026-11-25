@@ -8,7 +8,6 @@ Cost: time only.
 
 - All proposals so far are confirmed (doc 00); only OPEN items remain.
 - Choose the PoW algorithm (O-01) by benchmarking candidates on a low-end phone and a laptop against the D-10 requirement, and choose the difficulty algorithm (O-02).
-- Decide the codebase to fork (O-09) and how the reserve outputs are created (decided: D-21).
 - Write a short whitepaper from docs 00–02.
 
 Exit: no OPEN items remain that block consensus; the supply invariants are written as tests.

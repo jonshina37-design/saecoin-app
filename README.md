@@ -36,9 +36,6 @@ Start with [docs/README.md](docs/README.md). The decision record is [docs/00-dec
 
 SAECOIN AI (an AI API aggregation business) is a separate project and is independent of this blockchain.
 
-## History
-
-An earlier centralized design (31M supply, virtual mining sessions, referrals, TypeScript reward engine) was replaced on 2026-11-21. It remains available in the Git history of the `main` branch.
 
 ## Disclaimer
 

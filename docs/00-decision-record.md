@@ -1,6 +1,6 @@
 # 00 — Decision Record
 
-Status as of 2026-11-21. This is the single source of truth. If any other document disagrees with this one, this one wins.
+Status as of 2026-11-25. This is the single source of truth. If any other document disagrees with this one, this one wins.
 
 ## How to read this record
 
@@ -22,23 +22,23 @@ Status as of 2026-11-21. This is the single source of truth. If any other docume
 | D-05 | The founder has no control over any SAC other than the reserve, and no special consensus, governance, minting, or admin privileges. The network runs on its own. | 2026-11-20 |
 | D-06 | The project is started with no money spent, bootstrapped from zero in the way Bitcoin was. | 2026-11-20 |
 | D-07 | SAECOIN is separate from the SAECOIN AI business. Neither depends on the other. | 2026-11-15 |
-| D-08 *(P-01)* | All 18.9M mining SAC is issued as a **block subsidy** to the miner of each block. No claim pools, no Task Pool, no referral pool, no session claims. | 2026-11-21 |
-| D-09 *(P-02, P-03)* | Target block time **10 minutes**; halving every **210,000 blocks**; initial subsidy **45 SAC** (2 × 210,000 × 45 = 18,900,000). | 2026-11-21 |
-| D-10 *(replaces P-04)* | **Requirement:** the mining algorithm must let both **phones and laptops** mine. SHA-256d therefore does not qualify. The specific algorithm is still OPEN (O-01). | 2026-11-21 |
-| D-11 *(P-05)* | The founder reserve is created as **20 height-locked outputs** at genesis, one per monthly release, with a public address and no override path. | 2026-11-21 |
-| D-12 *(P-06)* | The app is a **non-custodial wallet** with an optional miner companion; there is no reward backend. | 2026-11-21 |
-| D-13 *(P-07)* | The founder holds the reserve keys in a **multisig / hardware-wallet** setup with a documented backup. | 2026-11-21 |
-| D-14 *(P-08)* | The founder does **not sell** SAC. SAC enters circulation by mining and, after the lock, by the founder's released reserve. | 2026-11-21 |
-| D-15 *(P-09)* | **Fair launch**: open-source code, announced start time, public genesis, reserve disclosed in advance. | 2026-11-21 |
-| D-16 *(P-10)* | Choose a **moderate-memory, CPU-oriented** algorithm with audited **ARM64 and x86-64** implementations, selected by the criteria in doc 02 section 3. The specific algorithm is chosen only after benchmarking on at least one low-end phone and one laptop (O-01). | 2026-11-21 |
-| D-17 *(P-11)* | The **mining** build of the mobile client is distributed **outside** the app stores (direct APK / open-source channels); the store version is **wallet-only**, unless current store policies allow mining. Mining is opt-in, visible, and by default runs only while charging. Use one official website, signed releases, and published hashes. | 2026-11-21 |
-| D-18 *(O-09)* | The codebase is a **fork of Bitcoin Core** (transparent UTXO model, minimal consensus changes, reference implementation of the chosen PoW reused as is). No from-scratch chain. | 2026-11-25 |
-| D-19 *(O-07)* | Transactions use **Bitcoin-style signatures on secp256k1** and **segwit-style addresses** (the address prefix is still open, O-08 / O-22). | 2026-11-25 |
-| D-20 *(P-12)* | For D-10, the **minimum mining phone** is mid-range and up: about 6 GB RAM, 64-bit ARM, from roughly the last 5–6 years. Every phone can use the wallet. RandomX is benchmarked on that class first; a lighter algorithm is used only if it fails (doc 08, sections 5 and 6). | 2026-11-25 |
-| D-21 *(P-13)* | The 20 reserve outputs are created by a **consensus rule at block 1** (the coinbase must contain exactly these outputs), each a **height-locked 2-of-3 multisig** (P2WSH-style), 105,000 SAC each, first lock at height 103,680, then every 4,320 blocks. Details, tests, and custody in [09](09-genesis-and-reserve-design.md). | 2026-11-25 |
-| D-22 *(P-14)* | **Phased phone mining.** Launch with the phone wallet in the stores (with remote management of the user's own miner) and the desktop miner. On-device Android mining (direct APK, outside the stores) comes in phase 2, only if benchmarks pass. D-10 and D-16 are unchanged. Details in doc 04. | 2026-11-25 |
-| D-23 *(P-15)* | **SAC-only, non-custodial wallet first**, built in parallel with the chain and tested on a test network; not a multi-coin wallet. Design in [10](10-wallet-architecture.md). No wallet code until the owner approves phase W1. | 2026-11-25 |
-| D-24 *(O-19)* | The first reserve lock height is **103,680** (24 months of 30 days = 720 days). | 2026-11-25 |
+| D-08 | All 18.9M mining SAC is issued as a **block subsidy** to the miner of each block. No claim pools, no Task Pool, no referral pool, no session claims. | 2026-11-21 |
+| D-09 | Target block time **10 minutes**; halving every **210,000 blocks**; initial subsidy **45 SAC** (2 × 210,000 × 45 = 18,900,000). | 2026-11-21 |
+| D-10 | **Requirement:** the mining algorithm must let both **phones and laptops** mine. SHA-256d therefore does not qualify. The specific algorithm is still OPEN (O-01). | 2026-11-21 |
+| D-11 | The founder reserve is created as **20 height-locked outputs** at genesis, one per monthly release, with a public address and no override path. | 2026-11-21 |
+| D-12 | The app is a **non-custodial wallet** with an optional miner companion; there is no reward backend. | 2026-11-21 |
+| D-13 | The founder holds the reserve keys in a **multisig / hardware-wallet** setup with a documented backup. | 2026-11-21 |
+| D-14 | The founder does **not sell** SAC. SAC enters circulation by mining and, after the lock, by the founder's released reserve. | 2026-11-21 |
+| D-15 | **Fair launch**: open-source code, announced start time, public genesis, reserve disclosed in advance. | 2026-11-21 |
+| D-16 | Choose a **moderate-memory, CPU-oriented** algorithm with audited **ARM64 and x86-64** implementations, selected by the criteria in doc 02 section 3. The specific algorithm is chosen only after benchmarking on at least one low-end phone and one laptop (O-01). | 2026-11-21 |
+| D-17 | The **mining** build of the mobile client is distributed **outside** the app stores (direct APK / open-source channels); the store version is **wallet-only**, unless current store policies allow mining. Mining is opt-in, visible, and by default runs only while charging. Use one official website, signed releases, and published hashes. | 2026-11-21 |
+| D-18 | The codebase is a **fork of Bitcoin Core** (transparent UTXO model, minimal consensus changes, reference implementation of the chosen PoW reused as is). No from-scratch chain. | 2026-11-25 |
+| D-19 | Transactions use **Bitcoin-style signatures on secp256k1** and **segwit-style addresses** (the address prefix is still open, O-08 / O-22). | 2026-11-25 |
+| D-20 | For D-10, the **minimum mining phone** is mid-range and up: about 6 GB RAM, 64-bit ARM, from roughly the last 5–6 years. Every phone can use the wallet. RandomX is benchmarked on that class first; a lighter algorithm is used only if it fails (doc 08, sections 5 and 6). | 2026-11-25 |
+| D-21 | The 20 reserve outputs are created by a **consensus rule at block 1** (the coinbase must contain exactly these outputs), each a **height-locked 2-of-3 multisig** (P2WSH-style), 105,000 SAC each, first lock at height 103,680, then every 4,320 blocks. Details, tests, and custody in [09](09-genesis-and-reserve-design.md). | 2026-11-25 |
+| D-22 | **Phased phone mining.** Launch with the phone wallet in the stores (with remote management of the user's own miner) and the desktop miner. On-device Android mining (direct APK, outside the stores) comes in phase 2, only if benchmarks pass. D-10 and D-16 are unchanged. Details in doc 04. | 2026-11-25 |
+| D-23 | **SAC-only, non-custodial wallet first**, built in parallel with the chain and tested on a test network; not a multi-coin wallet. Design in [10](10-wallet-architecture.md). No wallet code until the owner approves phase W1. | 2026-11-25 |
+| D-24 | The first reserve lock height is **103,680** (24 months of 30 days = 720 days). | 2026-11-25 |
 
 ## CARRIED (earlier owner decisions)
 
@@ -49,23 +49,6 @@ Status as of 2026-11-21. This is the single source of truth. If any other docume
 | C-03 | Proof-of-Work consensus; no Proof-of-Stake and no delegation. | Algorithm is OPEN (O-01) under D-10 |
 | C-04 | Wallet is non-custodial. | Reinforced by D-12 |
 | C-05 | App users must be 18+, and each country has an on/off switch. | Applies to the app only; revisit (O-12) |
-
-## SUPERSEDED — do not reintroduce
-
-| Superseded item | Replaced by |
-| --- | --- |
-| 31,000,000 SAC supply | D-02 (21,000,000) |
-| 12,000,000 SAC founder reserve; 1-year lock; 1M SAC per month | D-03, D-04 |
-| 17,000,000 mining pool, 2,000,000 Task Pool, Referral Pool | D-03, D-08 |
-| Centralized "virtual mining" sessions, phone-OTP signup, referral groups, session claims with fee, 2,160 / 3,100 session counts | D-08, D-12 |
-| Telegram Mini App as the primary client | D-12 |
-| "CPU-friendly (RandomX-class), SHA-256d as fallback" (P-04) | D-10 |
-
-The old v1.x specification set (12 documents plus the TypeScript reward engine) is preserved in the Git history of `main`.
-
-## PROPOSED (awaiting owner confirmation)
-
-None at the moment. All proposals (P-01 to P-15) were confirmed and are recorded above as D-08 to D-24 (D-18 and D-19 came from open questions O-09 and O-07).
 
 ## OPEN
 

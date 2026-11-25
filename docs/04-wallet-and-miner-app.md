@@ -4,7 +4,7 @@ Status: D-12 (non-custodial wallet with optional miner companion), D-10 (phones 
 
 ## 1. Role of the app
 
-The earlier design used the app as a client of a centralized reward server (virtual sessions, OTP signup, referrals). That is incompatible with D-01 and D-05 and has been removed. The app is now a client of the chain:
+The app is a client of the chain; no central server holds balances or decides rewards (D-01, D-05):
 
 | Component | Purpose | Tag |
 | --- | --- | --- |
@@ -52,7 +52,7 @@ iOS in particular is unlikely to allow background mining at all, so mining on iP
 
 ## 4. Onboarding and restrictions (CARRIED, under review)
 
-18+ confirmation and per-country on/off switches were decided for the old, centralized app. For a non-custodial wallet and open-source software they may be neither enforceable nor appropriate, because a decentralized protocol cannot block users by country. Whether these apply only to officially distributed app builds is a legal question (see doc 05) and is OPEN (O-12).
+18+ confirmation and per-country on/off switches are carried as C-05. For a non-custodial wallet and open-source software they may be neither enforceable nor appropriate, because a decentralized protocol cannot block users by country. Whether these apply only to officially distributed app builds is a legal question (see doc 05) and is OPEN (O-12).
 
 ## 5. Out of scope for now
 

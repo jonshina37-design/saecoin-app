@@ -8,7 +8,7 @@ Status: planning note, documentation only. Nothing here is a DECIDED item except
 - D-04, D-21: the founder reserve cannot be spent for 2 years (first lock height 103,680, about 720 days after launch at 10-minute blocks).
 - D-14: the founder does not sell SAC. D-15: fair launch, with no presale.
 
-So every cost before and during the first 2 years must be paid in fiat, from the owner's pocket or from donations. Nothing may be funded by selling SAC or by any central reward program (see doc 00, SUPERSEDED items).
+So every cost before and during the first 2 years must be paid in fiat, from the owner's pocket or from donations. Nothing may be funded by selling SAC or by any central reward program.
 
 ## 2. What actually needs to run
 
@@ -47,7 +47,7 @@ The audit and the legal review are the real budget items. The servers are small 
 | Ads on the website or explorer only | Acceptable | Never inside the wallet; no tracking SDKs (doc 10, principle 3) |
 | Selling SAC, presale, or private allocation | **No** | Violates D-14 and D-15 |
 | Pay-to-mine fee, liquidity-pool payments from miners | **No** | Advised against earlier; looks like a scheme and creates legal exposure |
-| Referral or tap-to-earn programs | **No** | SUPERSEDED, and a known trust problem |
+| Referral or tap-to-earn programs | **No** | Not part of the plan; a known trust problem |
 | Spending from the reserve | Not possible for 2 years | After release, the owner may spend released reserve coins under the disclosed schedule; this is not guaranteed to be worth anything, so it must not be the funding plan |
 
 ## 5. Keeping costs near zero (phase by phase)

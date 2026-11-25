@@ -26,7 +26,7 @@ Never commit secrets, keys, or recovery phrases to the repository.
 | Founder prominence | A 10% reserve and a leading promotional role mean authorities may treat the founder as the key person even without technical control (D-05). |
 | Country restrictions | Crypto status differs by country and changes over time. Earlier notes target Bangladesh, India, Pakistan, and Nepal as focus markets. I cannot confirm their current rules; obtain local legal advice for each. |
 | Tax | Mining income and reserve releases may be taxable for the owner and for users. |
-| Sanctions | The owner should understand sanctions rules; the earlier "sanctioned countries off by default" idea needs legal framing (O-12). |
+| Sanctions | The owner should understand sanctions rules; country restrictions in the app need legal framing (O-12). |
 | App-store rules | Store distribution must follow each store's crypto and mining policies (see doc 04). |
 | Cryptojacking | Mining on users' phones without clear, informed consent is harmful and may be illegal. The miner must be opt-in and visible (doc 04). |
 | Consumer claims | No statement about price, returns, listing, or redemption. |

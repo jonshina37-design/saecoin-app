@@ -6,7 +6,7 @@ Status: design phase. **Documentation only. Do not write implementation code** u
 
 1. `docs/00-decision-record.md` wins over every other document.
 2. Only **DECIDED** and **CARRIED** items may be treated as final. **PROPOSED** and **OPEN** items must not be implemented as final; ask the owner first.
-3. Never reintroduce anything listed under "SUPERSEDED" in the decision record (31M supply, 12M reserve, Task Pool, referral pool, session claims, centralized reward backend).
+3. Do not change a DECIDED item without the owner's explicit approval, and do not add central servers, admin keys, or reward programs that control balances (D-01, D-05).
 
 ## Numbers
 
