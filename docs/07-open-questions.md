@@ -10,9 +10,9 @@ Nothing here may be implemented as final. Items marked **blocking** must be sett
 | O-04 | Fee policy and minimum relay fee | Fees go to the miner | No |
 | O-05 | Coinbase maturity | 100 blocks as in Bitcoin, or shorter | No |
 | O-06 | How reserve outputs are created at genesis | Bitcoin Core's genesis coinbase is unspendable. Proposal P-13: a consensus rule at block 1; full design in doc 09 | Yes |
-| O-07 | Signature scheme and address format | Conservative default: Bitcoin-style on secp256k1 | Yes |
+| O-07 | *Resolved* — signature scheme and address format | D-19: Bitcoin-style on secp256k1, segwit-style addresses. The prefix remains open (O-08, O-22) | No |
 | O-08 | Network identity | Magic bytes, ports, address prefixes, seed nodes | No |
-| O-09 | Codebase to fork | Lean: Bitcoin Core fork (see doc 08 section 3); avoid from-scratch | Yes |
+| O-09 | *Resolved* — codebase to fork | D-18: Bitcoin Core fork (see doc 08 section 3) | No |
 | O-10 | *Resolved* — owner confirmation of proposals | P-01 to P-11 were confirmed on 2026-11-21: now D-08 to D-17 in doc 00 | No |
 | O-11 | Genesis timestamp and launch date | Announce well in advance | No |
 | O-12 | Legal handling of 18+ and country switches | Likely not enforceable at protocol level; legal advice needed | No |
@@ -26,3 +26,5 @@ Nothing here may be implemented as final. Items marked **blocking** must be sett
 | O-20 | Genesis mechanism after the codebase choice | Block-1 consensus rule (P-13) vs modified genesis handling; see doc 09 section 2 | Yes |
 | O-21 | Light-server / indexer protocol for wallets, and who runs the first server | Electrum-style or REST; user must be able to run their own; see doc 10 section 3 | Yes |
 | O-22 | Coin type number for key derivation and address prefix | Choose with O-08; see doc 10 section 4 | No |
+
+| O-23 | Local miner API for the wallet (hashrate, shares, status) and how the wallet pairs with a miner | See doc 10, section on mining tracking; LAN first, authenticated and encrypted | Yes |

@@ -1,6 +1,6 @@
 # 10 — Wallet Architecture (draft)
 
-Status: design proposal (P-15). **Documentation only: no wallet code is written until the owner explicitly approves a phase.** It builds on D-12 (non-custodial wallet), C-04, D-14, D-17, and P-14. Chain-specific parts depend on O-07, O-08, and O-09.
+Status: design proposal (P-15). **Documentation only: no wallet code is written until the owner explicitly approves a phase.** It builds on D-12 (non-custodial wallet), C-04, D-14, D-17, and P-14. Chain-specific parts depend on D-18, D-19, and O-08.
 
 ## 1. Principles
 
@@ -70,6 +70,24 @@ Not in the MVP:
 - Swaps, fiat on-ramps, price charts, push notifications (privacy)
 - Miner management (P-14, phase 2) and the reserve-schedule viewer (read-only, later)
 
+### Mining tracking (phase 2, P-14)
+
+The wallet separates mining data into three classes, and labels each one in the UI:
+
+| Data | Source | Trust level |
+| --- | --- | --- |
+| **Blocks found and rewards earned** | On-chain: coinbase transactions paying the wallet's addresses, read through the indexer (needs an `is_coinbase` flag) | **Verified by the chain** |
+| **Hashrate, accepted and rejected shares, uptime, status** | The miner itself, through a local API (hashrate over short and long windows, shares, threads, state) | Reported by the user's own software |
+| **Pool statistics and pending payouts** | The pool's API, if a pool is used; actual payouts are on-chain | Pool's claim until the payout appears on-chain |
+
+How it works:
+1. **Rewards.** The miner's reward address is a wallet address. A coinbase output to it appears as "mined", immature until the maturity period passes (O-05), then spendable. The "Mining" tab lists blocks found with height and a maturity countdown.
+2. **Live stats.** The miner exposes a small local API. The wallet pairs by scanning a QR code that carries the address and a secret token. Connection is on the local network first and is authenticated and encrypted. Reaching a miner over the internet needs the user's own VPN or tunnel, because exposing a miner API publicly is unsafe. On the Android direct build (phase 2), the on-device miner reports through the same internal interface, plus battery state and temperature.
+3. **Solo versus pool.** Solo mining shows blocks found only; for a small miner this is a lottery. Pool mining shows shares, and payouts are verified on-chain.
+4. **No projections.** The wallet shows only what happened: blocks found, rewards received, shares, uptime. It does not forecast income or show prices, consistent with principle 7. A neutral statistics view (for example, your share of the network hashrate) is allowed because it states a fact.
+5. **Privacy.** Mining statistics stay on the device. No telemetry is sent to the project.
+6. **Limit.** Hashrate cannot be proven on-chain. Only blocks found are proof of work done.
+
 ## 6. Threats and mitigations
 
 | Threat | Mitigation |
@@ -96,7 +114,7 @@ Not in the MVP:
 
 | Phase | Work | Exit |
 | --- | --- | --- |
-| W0 | This document; owner decisions on O-07, O-08, O-09, O-21, O-22 | Chain-specific inputs fixed |
+| W0 | This document; owner decisions on O-08, O-21, O-22, O-23 (O-07 and O-09 are decided: D-19, D-18) | Chain-specific inputs fixed |
 | W1 | Wallet core library with tests, running against a local test network | All test vectors pass |
 | W2 | Android MVP on testnet | A test user can create, receive, send, restore |
 | W3 | Closed testing and an independent review | No unresolved high-severity findings |
@@ -112,4 +130,5 @@ Nothing before W1 involves code, and W1 needs the owner's approval.
 | --- | --- |
 | O-21 | Light-server / indexer protocol, and who runs the first server |
 | O-22 | Coin type number for derivation and address prefix choice (with O-08) |
-| O-07, O-08, O-09 | Address and signature format, network identity, codebase (see doc 07) |
+| O-08 | Network identity and address prefix (see doc 07); address and signature format (D-19) and codebase (D-18) are decided |
+| O-23 | Local miner API and wallet-miner pairing (see the mining tracking section) |

@@ -70,7 +70,7 @@ Bitcoin retargets every 2,016 blocks (about 2 weeks). On a brand-new chain whose
 
 ## 5. Transactions and addresses
 
-- Standard transfers, signature scheme, and address format are OPEN (O-07). Using the well-tested Bitcoin-style scheme (ECDSA/Schnorr on secp256k1) is the conservative default.
+- Signature scheme and address format are DECIDED (D-19): Bitcoin-style signatures on secp256k1 and segwit-style addresses; the address prefix is OPEN (O-08). Using the well-tested Bitcoin-style scheme (ECDSA/Schnorr on secp256k1) is the conservative default.
 - Height timelocks (CLTV-style) are required for the reserve schedule.
 
 ## 6. Network protocol
@@ -78,7 +78,7 @@ Bitcoin retargets every 2,016 blocks (about 2 weeks). On a brand-new chain whose
 - Peer-to-peer gossip of transactions and blocks, as in Bitcoin.
 - A unique network identifier (magic bytes, default ports) so SAC nodes never talk to other chains. OPEN (O-08).
 
-## 7. Implementation approach (OPEN, O-09)
+## 7. Implementation approach (DECIDED, D-18: Bitcoin Core fork)
 
 | Option | Pros | Cons |
 | --- | --- | --- |

@@ -32,6 +32,8 @@ Status as of 2026-11-21. This is the single source of truth. If any other docume
 | D-15 *(P-09)* | **Fair launch**: open-source code, announced start time, public genesis, reserve disclosed in advance. | 2026-11-21 |
 | D-16 *(P-10)* | Choose a **moderate-memory, CPU-oriented** algorithm with audited **ARM64 and x86-64** implementations, selected by the criteria in doc 02 section 3. The specific algorithm is chosen only after benchmarking on at least one low-end phone and one laptop (O-01). | 2026-11-21 |
 | D-17 *(P-11)* | The **mining** build of the mobile client is distributed **outside** the app stores (direct APK / open-source channels); the store version is **wallet-only**, unless current store policies allow mining. Mining is opt-in, visible, and by default runs only while charging. Use one official website, signed releases, and published hashes. | 2026-11-21 |
+| D-18 *(O-09)* | The codebase is a **fork of Bitcoin Core** (transparent UTXO model, minimal consensus changes, reference implementation of the chosen PoW reused as is). No from-scratch chain. | 2026-11-25 |
+| D-19 *(O-07)* | Transactions use **Bitcoin-style signatures on secp256k1** and **segwit-style addresses** (the address prefix is still open, O-08 / O-22). | 2026-11-25 |
 
 ## CARRIED (earlier owner decisions)
 
