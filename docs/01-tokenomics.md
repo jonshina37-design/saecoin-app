@@ -32,7 +32,7 @@ Use block heights, not dates, because the chain cannot know calendar time reliab
 
 Rules for the implementation:
 
-1. The 20 outputs are created at genesis, each with a height timelock (CLTV-style).
+1. The 20 founder reserve outputs are created in the Block 1 coinbase transaction under the mandatory consensus rule defined in Decision D-21. Each output has its specified height-based timelock (CLTV-style).
 2. The reserve address is published before launch so anyone can verify it.
 3. There is no admin key and no override: the schedule cannot be shortened by anyone.
 4. Heights are only approximately calendar time. If hashrate drops, blocks come slower and the lock lasts longer in real time. This is a property to disclose, not hide.
